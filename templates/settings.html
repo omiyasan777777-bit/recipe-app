@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="margin-bottom:20px;">
+  <a href="{{ url_for('index') }}" style="font-size:15px; color:#0085ff; text-decoration:none;">← 戻る</a>
+</div>
+
+<div class="card">
+  <h2 style="font-size:18px; font-weight:700; margin-bottom:6px;">⚙️ Bluesky アカウント設定</h2>
+  <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.6;">
+    一度設定すると次回から不要です。<br>
+    パスワードは <strong>アプリパスワード</strong>（通常のパスワードではありません）を使用してください。
+  </p>
+
+  <div class="card" style="background:#fef9c3; border:1px solid #fde68a; margin-bottom:20px;">
+    <p style="font-size:14px; color:#92400e; line-height:1.8;">
+      <strong>📌 アプリパスワードの取得方法</strong><br>
+      1. Bluesky アプリを開く<br>
+      2. 設定 → プライバシーとセキュリティ<br>
+      3. 「アプリパスワード」→「アプリパスワードを追加」<br>
+      4. 表示されたパスワードをコピー
+    </p>
+  </div>
+
+  <form method="post">
+    <div class="form-group">
+      <label for="handle">Bluesky ハンドル</label>
+      <input type="text" id="handle" name="handle"
+             placeholder="例: yourname.bsky.social"
+             value="{{ handle or '' }}"
+             autocomplete="username"
+             autocapitalize="none">
+    </div>
+
+    <div class="form-group">
+      <label for="password">アプリパスワード</label>
+      <input type="password" id="password" name="password"
+             placeholder="xxxx-xxxx-xxxx-xxxx"
+             autocomplete="current-password">
+      <p class="hint">🔒 このパスワードはお使いのPC内にのみ保存されます</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">
+      💾 保存して接続確認
+    </button>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,107 +1,91 @@
-# Bluesky 予約投稿ツール
+# 🦋 Bluesky 予約投稿ツール
 
-Bluesky (AT Protocol) に対応した CLI ベースの予約投稿ツールです。
-SQLite でスケジュールを管理し、バックグラウンドデーモンが時刻を監視して自動投稿します。
+スマホのブラウザから簡単に使える、Bluesky の予約投稿ツールです。
 
-## セットアップ
+---
 
-### 1. 依存パッケージのインストール
+## ✅ 3ステップで使えます
+
+### ① パッケージをインストール（最初の1回だけ）
 
 ```bash
 pip install -r requirements.txt
-# または
-pip install -e .
 ```
 
-### 2. 認証情報の設定
-
-`.env.example` をコピーして `.env` を作成し、Bluesky の認証情報を入力します。
+### ② Web アプリを起動
 
 ```bash
-cp .env.example .env
+python web_app.py
 ```
 
-`.env` を編集:
+ターミナルに以下のように表示されます：
 
 ```
-BLUESKY_HANDLE=yourhandle.bsky.social
-BLUESKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
+==================================================
+  🦋 Bluesky 予約投稿ツール
+==================================================
+
+  ブラウザで以下のURLを開いてください:
+
+  📱 スマホ(同じWi-Fi) → お使いのPCのIPアドレス:5000
+  💻 このPC           → http://localhost:5000
+
+  終了するには Ctrl+C を押してください
+==================================================
 ```
 
-> **アプリパスワード**は Bluesky の設定 → セキュリティ → アプリパスワード から発行できます。
+### ③ ブラウザで開く
 
-### 3. 認証確認
+- **このPCから使う場合**: `http://localhost:5000`
+- **スマホから使う場合（同じWi-Fiに接続してください）**:
+  1. PC のIPアドレスを調べる（Windowsは `ipconfig`、Macは `ifconfig` で確認）
+  2. スマホのブラウザで `http://[PCのIPアドレス]:5000` を開く
+
+---
+
+## 📱 使い方（画面の説明）
+
+### 初回：アカウント設定
+
+初回起動時は自動的に設定画面に移動します。
+
+1. **Bluesky ハンドル** を入力（例: `yourname.bsky.social`）
+2. **アプリパスワード** を入力
+   - Bluesky アプリ → 設定 → プライバシーとセキュリティ → アプリパスワード → 追加
+3. 「保存して接続確認」をタップ
+
+### 投稿を予約する
+
+1. 右下の **＋ ボタン** をタップ
+2. 投稿したい文章を入力（300文字まで）
+3. 投稿したい日時を選択
+4. 画像がある場合はアップロード（任意）
+5. 「🚀 予約する」をタップ
+
+### 予約一覧を確認する
+
+ホーム画面でスケジュール済みの投稿が一覧表示されます。
+- **⏳ 待機中** — まだ投稿されていません
+- **✅ 送信済み** — 投稿完了です
+- **❌ 失敗** — エラーが発生しました（削除して再登録してください）
+
+---
+
+## ⚙️ CLI (上級者向け)
+
+コマンドラインからも操作できます。
 
 ```bash
-python main.py verify
-```
-
-## 使い方
-
-### 投稿をスケジュール登録
-
-```bash
-python main.py add "こんにちは！予約投稿のテストです。" --at "2026-03-10 15:00"
-
-# タイムゾーン付き (ISO 8601)
-python main.py add "Hello from Bluesky!" --at "2026-03-10T15:00:00+09:00"
-
-# 画像付き (最大4枚)
-python main.py add "写真シェア！" --at "2026-03-10 12:00" --image ./photo1.jpg --image ./photo2.png
-```
-
-### スケジュール一覧表示
-
-```bash
+python main.py add "投稿内容" --at "2026-03-10 15:00"
 python main.py list
-
-# ステータス絞り込み (pending / posted / failed)
-python main.py list --status pending
-python main.py list --status posted
+python main.py delete 3
 ```
 
-### 投稿削除
+詳細は `python main.py --help` を参照してください。
 
-```bash
-python main.py delete 3   # ID=3 の投稿を削除
-```
+---
 
-### デーモン起動（常駐監視）
+## データについて
 
-```bash
-# 60秒ごとに確認 (デフォルト)
-python main.py run
-
-# 30秒ごとに確認
-python main.py run --interval 30
-```
-
-### 期限到来済みの投稿を即時送信
-
-```bash
-python main.py send-due
-```
-
-## コマンド一覧
-
-| コマンド | 説明 |
-|---|---|
-| `add TEXT --at DATETIME` | 投稿をスケジュール登録 |
-| `list [--status STATUS]` | 登録済み投稿の一覧表示 |
-| `delete ID` | 投稿を削除 |
-| `run [--interval SECONDS]` | スケジューラーデーモンを起動 |
-| `send-due` | 期限到来済み投稿を即時送信 |
-| `verify` | 認証情報の確認 |
-
-## データベース
-
-デフォルトでは `~/.bluesky_scheduler/posts.db` に SQLite で保存されます。
-`DB_PATH` 環境変数でパスを変更できます。
-
-## 投稿ステータス
-
-| ステータス | 説明 |
-|---|---|
-| `pending` | 未送信・待機中 |
-| `posted` | 送信済み |
-| `failed` | 送信失敗（エラーメッセージが記録されます） |
+投稿スケジュールは `~/.bluesky_scheduler/posts.db` に自動保存されます。
+認証情報はプロジェクト直下の `.env` ファイルに保存されます（他人に見せないでください）。

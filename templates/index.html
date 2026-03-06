@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="tabs">
+  <a href="{{ url_for('index') }}" class="tab {% if not status_filter %}active{% endif %}">すべて</a>
+  <a href="{{ url_for('index', status='pending') }}" class="tab {% if status_filter=='pending' %}active{% endif %}">⏳ 待機中</a>
+  <a href="{{ url_for('index', status='posted') }}" class="tab {% if status_filter=='posted' %}active{% endif %}">✅ 送信済み</a>
+  <a href="{{ url_for('index', status='failed') }}" class="tab {% if status_filter=='failed' %}active{% endif %}">❌ 失敗</a>
+</div>
+
+{% if posts %}
+  {% for post in posts %}
+  <div class="card">
+    <p class="post-text">{{ post.text }}</p>
+    <div class="post-meta">
+      <span class="badge badge-{{ post.status }}">
+        {% if post.status == 'pending' %}⏳ 待機中
+        {% elif post.status == 'posted' %}✅ 送信済み
+        {% else %}❌ 失敗
+        {% endif %}
+      </span>
+      {% if post.status == 'pending' %}
+        <span>📅 {{ post.scheduled_at.strftime('%Y年%m月%d日 %H:%M') }}</span>
+      {% elif post.status == 'posted' and post.posted_at %}
+        <span>✅ {{ post.posted_at.strftime('%Y年%m月%d日 %H:%M') }} 投稿済み</span>
+      {% endif %}
+      {% if post.image_paths %}
+        <span>🖼️ 画像あり</span>
+      {% endif %}
+    </div>
+    {% if post.error %}
+    <p style="font-size:13px; color:#ef4444; margin-top:8px;">⚠️ {{ post.error }}</p>
+    {% endif %}
+    {% if post.status == 'pending' %}
+    <div class="post-actions">
+      <form action="{{ url_for('delete', post_id=post.id) }}" method="post"
+            onsubmit="return confirm('この予約投稿を削除しますか？')">
+        <button class="btn btn-outline" style="font-size:14px; padding:8px 16px;">🗑️ 削除</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <div class="empty-icon">📭</div>
+    <p class="empty-text">予約投稿はまだありません</p>
+    <p style="font-size:14px; color:#94a3b8; margin-top:8px;">右下の ＋ ボタンから追加できます</p>
+  </div>
+{% endif %}
+
+<a href="{{ url_for('add') }}" class="fab">＋</a>
+
+{% endblock %}
