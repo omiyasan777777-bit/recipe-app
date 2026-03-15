@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="margin-bottom:20px;">
+  <a href="{{ url_for('templates_list') }}" style="font-size:15px; color:#0085ff; text-decoration:none;">← テンプレート一覧</a>
+</div>
+
+<div class="card">
+  <h2 style="font-size:18px; font-weight:700; margin-bottom:4px;">✏️ テンプレートから投稿を作成</h2>
+  <p style="font-size:14px; color:var(--gray-400); margin-bottom:20px;">{{ tmpl.name }}</p>
+
+  <form method="post" id="use-form">
+
+    {% set vars = tmpl.variables() %}
+    {% if vars %}
+    <div style="background:var(--gray-100); border-radius:var(--radius); padding:12px 14px; margin-bottom:20px; font-size:14px; line-height:1.7; white-space:pre-wrap; color:var(--gray-600);">{{ tmpl.body }}{% if tmpl.hashtags %}
+{{ tmpl.hashtags }}{% endif %}</div>
+
+    <h3 style="font-size:15px; font-weight:700; margin-bottom:14px;">📝 変数を入力</h3>
+
+    {% for var in vars %}
+    <div class="form-group">
+      <label for="var_{{ var }}">{{ var }}</label>
+      <input type="text" id="var_{{ var }}" name="var_{{ var }}"
+             placeholder="{{ var }} を入力してください"
+             value="{{ form.get('var_' ~ var, '') }}"
+             oninput="updatePreview()">
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="background:var(--gray-100); border-radius:var(--radius); padding:12px 14px; margin-bottom:20px; font-size:15px; line-height:1.7; white-space:pre-wrap;">{{ tmpl.body }}{% if tmpl.hashtags %}
+{{ tmpl.hashtags }}{% endif %}</div>
+    {% endif %}
+
+    <div class="form-group">
+      <label>プレビュー</label>
+      <textarea id="preview-area" name="preview_text" readonly
+                style="background:var(--gray-50); color:var(--gray-800); resize:none;"
+                rows="5"></textarea>
+      <div class="char-count">
+        <span id="preview-count" class="char-ok">0</span> / 300 文字
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="scheduled_at">投稿日時</label>
+      <input type="datetime-local" id="scheduled_at" name="scheduled_at"
+             value="{{ form.get('scheduled_at', '') }}"
+             min="{{ now_str }}">
+      <p class="hint">📅 この日時になったら自動で投稿されます</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">🚀 予約する</button>
+  </form>
+</div>
+
+<script>
+  const templateBody = {{ tmpl.body | tojson }};
+  const templateHashtags = {{ tmpl.hashtags | tojson }};
+  const varNames = {{ tmpl.variables() | tojson }};
+
+  function updatePreview() {
+    let text = templateBody;
+    for (const v of varNames) {
+      const el = document.getElementById('var_' + v);
+      const val = el ? el.value : '';
+      text = text.split('{' + v + '}').join(val);
+    }
+    if (templateHashtags) {
+      text = text.trimEnd() + '\n' + templateHashtags;
+    }
+
+    const area = document.getElementById('preview-area');
+    const count = document.getElementById('preview-count');
+    area.value = text;
+    const n = text.length;
+    count.textContent = n;
+    count.className = n > 300 ? 'char-over' : n > 260 ? 'char-warn' : 'char-ok';
+  }
+
+  // datetime-local の min を今より1分後に設定
+  const dt = document.getElementById('scheduled_at');
+  if (dt && !dt.value) {
+    const now = new Date(Date.now() + 60000);
+    now.setSeconds(0, 0);
+    const pad = n => String(n).padStart(2, '0');
+    dt.value =
+      `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}` +
+      `T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  }
+
+  updatePreview();
+</script>
+
+{% endblock %}

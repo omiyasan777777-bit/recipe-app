@@ -22,7 +22,7 @@ from flask import (
 from dotenv import load_dotenv, set_key
 
 from bluesky_scheduler.config import get_db_path, get_credentials
-from bluesky_scheduler.storage import Storage
+from bluesky_scheduler.storage import Storage, Template
 
 load_dotenv()
 
@@ -164,6 +164,115 @@ def settings():
 
     handle, _ = get_credentials()
     return render_template("settings.html", handle=handle)
+
+
+# ── テンプレートジェネレーター ────────────────────────────────────
+
+@app.route("/templates")
+def templates_list():
+    if not credentials_set():
+        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
+        return redirect(url_for("settings"))
+    storage = get_storage()
+    templates = storage.list_templates()
+    return render_template("templates_list.html", templates=templates)
+
+
+@app.route("/templates/new", methods=["GET", "POST"])
+def template_new():
+    if not credentials_set():
+        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
+        return redirect(url_for("settings"))
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        body = request.form.get("body", "").strip()
+        hashtags = request.form.get("hashtags", "").strip()
+
+        errors = []
+        if not name:
+            errors.append("テンプレート名を入力してください。")
+        if not body:
+            errors.append("テンプレート本文を入力してください。")
+
+        if errors:
+            for e in errors:
+                flash(e, "danger")
+            return render_template("template_new.html", form=request.form)
+
+        storage = get_storage()
+        storage.add_template(name, body, hashtags)
+        flash(f"✅ テンプレート「{name}」を保存しました。", "success")
+        return redirect(url_for("templates_list"))
+
+    return render_template("template_new.html", form={})
+
+
+@app.route("/templates/<int:template_id>/delete", methods=["POST"])
+def template_delete(template_id: int):
+    storage = get_storage()
+    storage.delete_template(template_id)
+    flash("テンプレートを削除しました。", "success")
+    return redirect(url_for("templates_list"))
+
+
+@app.route("/templates/<int:template_id>/use", methods=["GET", "POST"])
+def template_use(template_id: int):
+    if not credentials_set():
+        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
+        return redirect(url_for("settings"))
+
+    storage = get_storage()
+    tmpl = storage.get_template(template_id)
+    if not tmpl:
+        flash("テンプレートが見つかりませんでした。", "danger")
+        return redirect(url_for("templates_list"))
+
+    now_str = datetime.now().strftime("%Y-%m-%dT%H:%M")
+
+    if request.method == "POST":
+        # Collect variable values
+        values = {var: request.form.get(f"var_{var}", "").strip() for var in tmpl.variables()}
+        generated_text = tmpl.render(values)
+        scheduled_at_str = request.form.get("scheduled_at", "").strip()
+
+        errors = []
+        if len(generated_text) > 300:
+            errors.append(f"生成されたテキストが300文字を超えています（{len(generated_text)}文字）。テンプレートまたは入力を短くしてください。")
+        if not scheduled_at_str:
+            errors.append("投稿日時を選択してください。")
+
+        scheduled_at = None
+        if scheduled_at_str:
+            try:
+                scheduled_at = datetime.fromisoformat(scheduled_at_str).astimezone()
+                if scheduled_at <= datetime.now().astimezone():
+                    errors.append("投稿日時は現在より未来の時刻を指定してください。")
+            except ValueError:
+                errors.append("日時の形式が正しくありません。")
+
+        if errors:
+            for e in errors:
+                flash(e, "danger")
+            return render_template(
+                "template_use.html",
+                tmpl=tmpl,
+                generated_text=generated_text,
+                form=request.form,
+                now_str=now_str,
+            )
+
+        storage.add_post(generated_text, scheduled_at)
+        flash(f"✅ 予約完了！ {scheduled_at.strftime('%Y年%m月%d日 %H:%M')} に投稿されます。", "success")
+        return redirect(url_for("index"))
+
+    return render_template(
+        "template_use.html",
+        tmpl=tmpl,
+        generated_text="",
+        form={},
+        now_str=now_str,
+    )
 
 
 # ── バックグラウンドスケジューラー ────────────────────────────────

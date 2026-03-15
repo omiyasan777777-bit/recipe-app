@@ -1,7 +1,37 @@
+import re
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+
+class Template:
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        body: str,
+        hashtags: str,
+        created_at: datetime,
+    ):
+        self.id = id
+        self.name = name
+        self.body = body          # template text with {変数名} placeholders
+        self.hashtags = hashtags  # hashtags to append (e.g. "#料理 #レシピ")
+        self.created_at = created_at
+
+    def variables(self) -> list[str]:
+        """Extract unique variable names from template body."""
+        return list(dict.fromkeys(re.findall(r'\{(\w+)\}', self.body)))
+
+    def render(self, values: dict[str, str]) -> str:
+        """Render template by substituting variables."""
+        text = self.body
+        for key, value in values.items():
+            text = text.replace(f'{{{key}}}', value)
+        if self.hashtags:
+            text = text.rstrip() + '\n' + self.hashtags
+        return text
 
 
 class Post:
@@ -48,6 +78,15 @@ class Storage:
                     posted_at   TEXT,
                     error       TEXT,
                     image_paths TEXT
+                )
+            """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS post_templates (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name       TEXT NOT NULL,
+                    body       TEXT NOT NULL,
+                    hashtags   TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL
                 )
             """)
             conn.commit()
@@ -141,6 +180,49 @@ class Storage:
             )
             conn.commit()
         return cur.rowcount > 0
+
+    # ── Template methods ────────────────────────────────────────────
+
+    def add_template(self, name: str, body: str, hashtags: str = "") -> Template:
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            cur = conn.execute(
+                "INSERT INTO post_templates (name, body, hashtags, created_at) VALUES (?, ?, ?, ?)",
+                (name, body, hashtags, now),
+            )
+            conn.commit()
+            return self.get_template(cur.lastrowid)
+
+    def get_template(self, template_id: int) -> Optional[Template]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM post_templates WHERE id = ?", (template_id,)
+            ).fetchone()
+        return self._row_to_template(row) if row else None
+
+    def list_templates(self) -> list[Template]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM post_templates ORDER BY created_at DESC"
+            ).fetchall()
+        return [self._row_to_template(r) for r in rows]
+
+    def delete_template(self, template_id: int) -> bool:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "DELETE FROM post_templates WHERE id = ?", (template_id,)
+            )
+            conn.commit()
+        return cur.rowcount > 0
+
+    def _row_to_template(self, row: sqlite3.Row) -> Template:
+        return Template(
+            id=row["id"],
+            name=row["name"],
+            body=row["body"],
+            hashtags=row["hashtags"],
+            created_at=self._str_to_dt(row["created_at"]),
+        )
 
     def _row_to_post(self, row: sqlite3.Row) -> Post:
         return Post(
