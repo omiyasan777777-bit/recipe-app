@@ -275,6 +275,13 @@ def template_use(template_id: int):
     )
 
 
+# ── 楽天アフィリエイトジェネレーター ─────────────────────────────
+
+@app.route("/rakuten")
+def rakuten():
+    return render_template("rakuten.html")
+
+
 # ── バックグラウンドスケジューラー ────────────────────────────────
 
 def _scheduler_loop():
