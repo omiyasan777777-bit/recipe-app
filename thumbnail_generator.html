@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>🖼️ サムネイルプロンプト生成</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #0085ff; --blue-dk: #006dcc;
+      --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+      --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+      --red: #ef4444; --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--gray-50); color: var(--gray-800); min-height: 100vh;
+    }
+    header {
+      background: #fff; border-bottom: 1px solid var(--gray-200);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 600px; margin: 0 auto; padding: 0 16px;
+      height: 56px; display: flex; align-items: center;
+    }
+    .header-title { font-size: 18px; font-weight: 700; color: var(--blue); }
+    main { max-width: 600px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
+    }
+    label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+    input[type="text"], select {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); font-size: 16px; font-family: inherit;
+      color: var(--gray-800); background: #fff; appearance: none;
+      -webkit-appearance: none; outline: none; transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: var(--blue); }
+    .form-group { margin-bottom: 20px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 20px; border-radius: var(--radius); border: none;
+      font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: opacity .15s, transform .1s; -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--blue); color: #fff; width: 100%; }
+    .btn-outline {
+      background: transparent; color: var(--gray-600);
+      border: 1.5px solid var(--gray-200); font-size: 14px; padding: 8px 14px;
+    }
+    .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .style-chip {
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+    }
+    .style-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .mood-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mood-tag {
+      padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+      user-select: none;
+    }
+    .mood-tag.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .result-card { border: 2px solid var(--blue); }
+    .prompt-box {
+      background: var(--gray-100); border-radius: 10px; padding: 14px;
+      font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+      font-family: 'Courier New', monospace; color: var(--gray-800); user-select: all;
+    }
+    .result-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .result-label { font-size: 14px; font-weight: 700; color: var(--blue); }
+    .action-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .variation-item {
+      background: var(--gray-100); border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; font-family: 'Courier New', monospace; line-height: 1.6;
+      cursor: pointer; transition: background .15s;
+    }
+    .variation-item:hover { background: var(--gray-200); }
+    .variation-label {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: .05em; margin-bottom: 6px; font-family: inherit;
+    }
+    .variations-list { display: flex; flex-direction: column; gap: 10px; }
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-600); }
+    #empty {
+      text-align: center; padding: 48px 16px; color: var(--gray-400);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <span class="header-title">🖼️ サムネイルプロンプト生成</span>
+  </div>
+</header>
+<main>
+
+  <div class="card">
+    <div class="form-group">
+      <label>タイトル・テーマ</label>
+      <input type="text" id="title" placeholder="例: 簡単10分チキンカレーの作り方" maxlength="100">
+    </div>
+
+    <div class="form-group">
+      <label>プラットフォーム</label>
+      <select id="platform">
+        <option value="youtube">YouTube サムネイル</option>
+        <option value="blog">ブログ・記事アイキャッチ</option>
+        <option value="sns">SNS（正方形）</option>
+        <option value="general">汎用</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>スタイル</label>
+      <div class="style-grid">
+        <div class="style-chip active" data-style="photorealistic">📷 フォトリアル</div>
+        <div class="style-chip" data-style="illustration">🎨 イラスト</div>
+        <div class="style-chip" data-style="flat">🟦 フラットデザイン</div>
+        <div class="style-chip" data-style="cinematic">🎬 シネマティック</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>雰囲気・ムード（複数可）</label>
+      <div class="mood-wrap">
+        <div class="mood-tag" data-mood="bright, cheerful">明るい・元気</div>
+        <div class="mood-tag" data-mood="calm, minimalist">落ち着いた</div>
+        <div class="mood-tag" data-mood="luxurious, premium">高級感</div>
+        <div class="mood-tag" data-mood="cozy, warm">温かみ</div>
+        <div class="mood-tag" data-mood="energetic, dynamic">エネルギッシュ</div>
+        <div class="mood-tag" data-mood="dark, moody">ダーク</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>カラースキーム（任意）</label>
+      <input type="text" id="colors" placeholder="例: 赤と白、パステルカラー、モノクロ">
+    </div>
+
+    <div class="form-group" style="margin-bottom:0">
+      <label>追加キーワード（任意）</label>
+      <input type="text" id="keywords" placeholder="例: 俯瞰、食材、木のテーブル">
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="form-group" style="margin-bottom:0">
+      <label>出力言語</label>
+      <select id="lang">
+        <option value="en">English（英語）</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">✨ プロンプトを生成</button>
+
+  <div id="empty">
+    <div class="empty-icon">🖼️</div>
+    <div>タイトルを入力して生成ボタンを押してください</div>
+  </div>
+
+  <div id="result" style="display:none">
+    <div class="card result-card">
+      <div class="result-header">
+        <span class="result-label">生成されたプロンプト</span>
+        <button class="btn btn-outline" id="copy-btn" onclick="copyPrompt()">📋 コピー</button>
+      </div>
+      <div class="prompt-box" id="prompt-box"></div>
+      <div class="action-row">
+        <button class="btn btn-outline" onclick="copyMidjourney()">🎨 Midjourney 用</button>
+        <button class="btn btn-outline" onclick="copyDalle()">🤖 DALL-E 用</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">他のスタイルで試す</div>
+      <div class="variations-list" id="variations"></div>
+    </div>
+  </div>
+
+</main>
+<script>
+  const STYLES = {
+    photorealistic: { en: "photorealistic, high quality photography, DSLR, sharp focus, professional lighting", ja: "フォトリアル、高品質写真、シャープなフォーカス、プロ照明" },
+    illustration:   { en: "digital illustration, vibrant colors, detailed artwork, concept art style", ja: "デジタルイラスト、鮮やかな色彩、詳細なアートワーク" },
+    flat:           { en: "flat design, vector art, clean lines, bold colors, minimal shadows", ja: "フラットデザイン、ベクターアート、クリーンなライン、ボールドカラー" },
+    cinematic:      { en: "cinematic, dramatic lighting, depth of field, film grain, movie poster style", ja: "シネマティック、ドラマチックな照明、被写界深度、映画ポスタースタイル" },
+  };
+  const PLATFORMS = {
+    youtube: { en: "YouTube thumbnail, 16:9 aspect ratio, eye-catching, bold composition", ja: "YouTubeサムネイル、16:9、目を引くデザイン" },
+    blog:    { en: "blog header image, 16:9 wide format, editorial style", ja: "ブログアイキャッチ、16:9、エディトリアルスタイル" },
+    sns:     { en: "social media post, square 1:1 format, visually striking", ja: "SNS投稿画像、正方形1:1、インパクトのある" },
+    general: { en: "digital artwork, versatile composition, high resolution", ja: "デジタルアートワーク、汎用構図、高解像度" },
+  };
+  const QUALITY = { en: "8K resolution, masterpiece, best quality, highly detailed", ja: "8K解像度、マスターピース、最高品質、高精細" };
+  const STYLE_LABELS = { photorealistic:"フォトリアル風", illustration:"イラスト風", flat:"フラットデザイン風", cinematic:"シネマティック風" };
+
+  let currentStyle = "photorealistic";
+  let activeModels = new Set();
+  let lastPrompt = "";
+
+  // style chips
+  document.querySelectorAll('.style-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentStyle = el.dataset.style;
+    });
+  });
+
+  // mood tags
+  document.querySelectorAll('.mood-tag').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('active');
+      if (el.classList.contains('active')) activeModels.add(el.dataset.mood);
+      else activeModels.delete(el.dataset.mood);
+    });
+  });
+
+  function buildPrompt(title, platform, style, moods, colors, keywords, lang) {
+    const parts = [];
+    if (lang === 'en') {
+      parts.push(`Thumbnail image for: "${title}"`);
+      parts.push(PLATFORMS[platform].en);
+      parts.push(STYLES[style].en);
+      if (moods.length) parts.push(moods.join(', '));
+      if (colors) parts.push(`color scheme: ${colors}`);
+      if (keywords) parts.push(keywords);
+      parts.push(QUALITY.en);
+    } else {
+      parts.push(`「${title}」のサムネイル画像`);
+      parts.push(PLATFORMS[platform].ja);
+      parts.push(STYLES[style].ja);
+      if (moods.length) parts.push(moods.map(m => m.split(',')[0].trim()).join('、'));
+      if (colors) parts.push(`カラースキーム: ${colors}`);
+      if (keywords) parts.push(keywords);
+      parts.push(QUALITY.ja);
+    }
+    return parts.join(', ');
+  }
+
+  function generate() {
+    const title = document.getElementById('title').value.trim();
+    if (!title) { alert('タイトル・テーマを入力してください'); return; }
+
+    const platform = document.getElementById('platform').value;
+    const lang = document.getElementById('lang').value;
+    const colors = document.getElementById('colors').value.trim();
+    const keywords = document.getElementById('keywords').value.trim();
+    const moods = Array.from(activeModels);
+
+    lastPrompt = buildPrompt(title, platform, currentStyle, moods, colors, keywords, lang);
+    document.getElementById('prompt-box').textContent = lastPrompt;
+    document.getElementById('result').style.display = '';
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('copy-btn').textContent = '📋 コピー';
+
+    // variations
+    const varBox = document.getElementById('variations');
+    varBox.innerHTML = '';
+    Object.keys(STYLES).filter(s => s !== currentStyle).forEach(s => {
+      const vp = buildPrompt(title, platform, s, [], '', '', lang);
+      const div = document.createElement('div');
+      div.className = 'variation-item';
+      div.innerHTML = `<div class="variation-label">${STYLE_LABELS[s]}</div><div>${vp}</div>`;
+      div.onclick = () => {
+        lastPrompt = vp;
+        document.getElementById('prompt-box').textContent = vp;
+        document.getElementById('copy-btn').textContent = '📋 コピー';
+      };
+      varBox.appendChild(div);
+    });
+
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyPrompt() {
+    navigator.clipboard.writeText(lastPrompt).then(() => {
+      document.getElementById('copy-btn').textContent = '✅ コピー済み';
+      setTimeout(() => { document.getElementById('copy-btn').textContent = '📋 コピー'; }, 2000);
+    });
+  }
+
+  function copyMidjourney() {
+    const p = '/imagine prompt: ' + lastPrompt + ' --ar 16:9 --v 6';
+    navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！'));
+  }
+
+  function copyDalle() {
+    let p = lastPrompt.replace(/^Thumbnail image for: ".*?",\s*/, '').replace(/^「.*?」のサムネイル画像,\s*/, '');
+    navigator.clipboard.writeText(p).then(() => alert('DALL-E用プロンプトをコピーしました！'));
+  }
+</script>
+</body>
+</html>
