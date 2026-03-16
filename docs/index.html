@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>楽天アフィリエイトリンク生成ツール</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #bf0000; --red-dk: #8b0000;
+      --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+      --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+      --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--gray-50); color: var(--gray-800); min-height: 100vh;
+    }
+    header {
+      background: var(--red); position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    }
+    .header-inner {
+      max-width: 720px; margin: 0 auto; padding: 0 16px;
+      height: 56px; display: flex; align-items: center;
+    }
+    .header-title { font-size: 18px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    main { max-width: 720px; margin: 0 auto; padding: 20px 16px; }
+    .card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--gray-600); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+    .hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; line-height: 1.6; }
+    input[type="text"], textarea, select {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); font-size: 15px; font-family: inherit;
+      color: var(--gray-800); background: #fff; outline: none; transition: border-color .15s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--red); }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .form-group { margin-bottom: 16px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 11px 20px; border-radius: var(--radius); border: none;
+      font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: var(--red-dk); }
+    .btn-full { width: 100%; }
+    .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+    .btn-copy { background: var(--gray-100); color: var(--gray-600); border: 1.5px solid var(--gray-200); }
+    .btn-copy:hover { background: var(--gray-200); }
+    .btn-copy.copied { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--gray-200); }
+    .tab-btn {
+      padding: 8px 16px; border: none; background: none; font-size: 14px; font-weight: 600;
+      color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .output-block { border: 1.5px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+    .output-header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--gray-100); padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--gray-600);
+    }
+    .output-body {
+      padding: 12px; font-size: 13px; font-family: 'Courier New', monospace;
+      word-break: break-all; line-height: 1.6; background: #fff; white-space: pre-wrap; min-height: 44px;
+    }
+    .save-badge { font-size: 12px; color: #166534; background: #dcfce7; padding: 3px 8px; border-radius: 999px; display: none; margin-left: 8px; }
+    .section-heading { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub { font-size: 14px; color: var(--gray-400); margin-bottom: 20px; }
+    .format-select-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .format-select-row label { margin: 0; }
+    .format-select-row select { width: auto; min-width: 160px; }
+    .bulk-result-item { border: 1.5px solid var(--gray-200); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+    .bulk-result-url { font-size: 12px; color: var(--gray-400); padding: 6px 12px; background: var(--gray-100); word-break: break-all; }
+    .bulk-result-body { padding: 10px 12px; font-size: 13px; font-family: 'Courier New', monospace; word-break: break-all; }
+    .bulk-result-actions { padding: 6px 12px; display: flex; gap: 8px; border-top: 1px solid var(--gray-200); }
+    code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    a { color: var(--red); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      楽天アフィリエイトリンク生成ツール
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="section-heading">楽天アフィリエイトリンク生成ツール</div>
+  <div class="section-sub">アフィリエイトIDを入力するだけで、すぐにリンクを生成できます（API不要・無料）</div>
+
+  <div class="card">
+    <div class="card-title">
+      ⚙️ アフィリエイトID設定
+      <span class="save-badge" id="saveBadge">自動保存済み</span>
+    </div>
+    <div class="form-group">
+      <label for="affiliateId">楽天アフィリエイトID（a_id）</label>
+      <input type="text" id="affiliateId" placeholder="例: 1234567.abcdef12" autocomplete="off" spellcheck="false">
+      <div class="hint">
+        楽天アフィリエイト管理画面 →「リンク作成」→「テキストリンク」で確認できます。<br>
+        入力した内容はこのブラウザに自動保存されます（外部には送信されません）。
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('single', this)">単体生成</button>
+    <button class="tab-btn" onclick="switchTab('bulk', this)">一括生成</button>
+    <button class="tab-btn" onclick="switchTab('help', this)">使い方</button>
+  </div>
+
+  <!-- 単体生成 -->
+  <div id="tab-single" class="tab-content active">
+    <div class="card">
+      <div class="card-title">🔗 リンクを生成する</div>
+      <div class="form-group">
+        <label for="productUrl">楽天商品ページURL</label>
+        <input type="text" id="productUrl" placeholder="https://item.rakuten.co.jp/..." autocomplete="off" spellcheck="false">
+        <div class="hint">楽天市場の商品ページURLをそのまま貼り付けてください</div>
+      </div>
+      <div class="form-group">
+        <label for="linkText">リンクテキスト（任意）</label>
+        <input type="text" id="linkText" placeholder="例: 商品名を見る" autocomplete="off">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="generateSingle()">リンクを生成する</button>
+    </div>
+    <div id="singleOutput" style="display:none">
+      <div class="output-block">
+        <div class="output-header">アフィリエイトURL <button class="btn btn-sm btn-copy" onclick="copyText('outUrl',this)">コピー</button></div>
+        <div class="output-body" id="outUrl"></div>
+      </div>
+      <div class="output-block">
+        <div class="output-header">HTMLリンク <button class="btn btn-sm btn-copy" onclick="copyText('outHtml',this)">コピー</button></div>
+        <div class="output-body" id="outHtml"></div>
+      </div>
+      <div class="output-block">
+        <div class="output-header">Markdownリンク <button class="btn btn-sm btn-copy" onclick="copyText('outMd',this)">コピー</button></div>
+        <div class="output-body" id="outMd"></div>
+      </div>
+      <div class="output-block">
+        <div class="output-header">SNS投稿用URL <button class="btn btn-sm btn-copy" onclick="copyText('outSns',this)">コピー</button></div>
+        <div class="output-body" id="outSns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 一括生成 -->
+  <div id="tab-bulk" class="tab-content">
+    <div class="card">
+      <div class="card-title">📋 URLを一括変換</div>
+      <div class="form-group">
+        <label for="bulkUrls">楽天商品URLを1行に1つずつ入力（最大100件）</label>
+        <textarea id="bulkUrls" rows="8" placeholder="https://item.rakuten.co.jp/shop/item1/&#10;https://item.rakuten.co.jp/shop/item2/&#10;https://item.rakuten.co.jp/shop/item3/"></textarea>
+      </div>
+      <div class="format-select-row">
+        <label for="bulkFormat">出力形式:</label>
+        <select id="bulkFormat">
+          <option value="url">アフィリエイトURLのみ</option>
+          <option value="html">HTMLリンク</option>
+          <option value="md">Markdownリンク</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="generateBulk()">一括変換する</button>
+    </div>
+    <div id="bulkOutput" style="display:none">
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between">
+          変換結果
+          <button class="btn btn-sm btn-copy" onclick="copyAllBulk(this)">全てコピー</button>
+        </div>
+        <div class="output-block">
+          <div class="output-body" id="bulkAllText" style="max-height:300px;overflow-y:auto"></div>
+        </div>
+      </div>
+      <div id="bulkItems"></div>
+    </div>
+  </div>
+
+  <!-- 使い方 -->
+  <div id="tab-help" class="tab-content">
+    <div class="card">
+      <div class="card-title">📖 使い方</div>
+      <div style="font-size:14px;line-height:1.9;color:var(--gray-600)">
+        <p><strong>① アフィリエイトIDを取得する</strong></p>
+        <ol style="padding-left:20px;margin:8px 0 16px">
+          <li><a href="https://affiliate.rakuten.co.jp/" target="_blank" rel="noopener">楽天アフィリエイト</a>に登録・ログイン</li>
+          <li>「リンク作成」→「テキストリンク」を開く</li>
+          <li>生成されたURLの <code>a_id=</code> の後ろの値をコピー</li>
+        </ol>
+        <p><strong>② リンクを生成する</strong></p>
+        <ol style="padding-left:20px;margin:8px 0 16px">
+          <li>「アフィリエイトID設定」にIDを貼り付ける（自動保存）</li>
+          <li>楽天商品ページのURLを貼り付けて「リンクを生成する」</li>
+          <li>生成されたリンクをコピーして使用する</li>
+        </ol>
+        <p><strong>生成されるリンク形式</strong></p>
+        <ul style="padding-left:20px;margin:8px 0 16px">
+          <li><strong>アフィリエイトURL</strong> — どこでも使える基本URL</li>
+          <li><strong>HTMLリンク</strong> — ブログ・Webサイト向け</li>
+          <li><strong>Markdownリンク</strong> — note・はてなブログ向け</li>
+          <li><strong>SNS投稿用</strong> — Twitter・Blueskyなど</li>
+        </ul>
+        <p style="color:var(--gray-400)">※ アフィリエイトIDはブラウザのローカルストレージにのみ保存。外部に送信されません。</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const AFF_ID_KEY = 'rakuten_affiliate_id';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem(AFF_ID_KEY);
+    if (saved) { document.getElementById('affiliateId').value = saved; showSaveBadge(); }
+    document.getElementById('affiliateId').addEventListener('input', () => {
+      const val = document.getElementById('affiliateId').value.trim();
+      if (val) { localStorage.setItem(AFF_ID_KEY, val); showSaveBadge(); }
+    });
+  });
+
+  function showSaveBadge() { document.getElementById('saveBadge').style.display = 'inline-block'; }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function buildAffUrl(productUrl, affiliateId) {
+    const ut = btoa(JSON.stringify({page:'item',type:'text'}));
+    return `https://hb.afl.rakuten.co.jp/hgc/${encodeURIComponent(affiliateId)}//?pc=${encodeURIComponent(productUrl)}&m=${encodeURIComponent(affiliateId)}&link_type=text&ut=${ut}`;
+  }
+
+  function getAffId() { return document.getElementById('affiliateId').value.trim(); }
+
+  function generateSingle() {
+    const affId = getAffId();
+    const url   = document.getElementById('productUrl').value.trim();
+    const text  = document.getElementById('linkText').value.trim() || '商品を見る';
+    if (!affId) { alert('アフィリエイトIDを入力してください。'); return; }
+    if (!url || !url.startsWith('http')) { alert('楽天商品URLを正しく入力してください。'); return; }
+    const affUrl = buildAffUrl(url, affId);
+    document.getElementById('outUrl').textContent  = affUrl;
+    document.getElementById('outHtml').textContent = `<a href="${affUrl}" target="_blank" rel="noopener">${escHtml(text)}</a>`;
+    document.getElementById('outMd').textContent   = `[${text}](${affUrl})`;
+    document.getElementById('outSns').textContent  = affUrl;
+    document.getElementById('singleOutput').style.display = 'block';
+    document.getElementById('singleOutput').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function generateBulk() {
+    const affId  = getAffId();
+    const format = document.getElementById('bulkFormat').value;
+    if (!affId) { alert('アフィリエイトIDを入力してください。'); return; }
+    const urls = document.getElementById('bulkUrls').value.split('\n')
+      .map(l => l.trim()).filter(l => l.startsWith('http')).slice(0, 100);
+    if (!urls.length) { alert('有効なURLが見つかりませんでした。'); return; }
+    const results = urls.map(u => {
+      const a = buildAffUrl(u, affId);
+      if (format === 'html') return `<a href="${a}" target="_blank" rel="noopener">商品を見る</a>`;
+      if (format === 'md')   return `[商品を見る](${a})`;
+      return a;
+    });
+    document.getElementById('bulkAllText').textContent = results.join('\n');
+    const container = document.getElementById('bulkItems');
+    container.innerHTML = '';
+    urls.forEach((u, i) => {
+      const div = document.createElement('div');
+      div.className = 'bulk-result-item';
+      div.innerHTML = `<div class="bulk-result-url">${escHtml(u)}</div>
+        <div class="bulk-result-body" id="bk${i}">${escHtml(results[i])}</div>
+        <div class="bulk-result-actions"><button class="btn btn-sm btn-copy" onclick="copyText('bk${i}',this)">コピー</button></div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('bulkOutput').style.display = 'block';
+    document.getElementById('bulkOutput').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function copyAllBulk(btn) { copyToClipboard(document.getElementById('bulkAllText').textContent, btn); }
+  function copyText(id, btn) { copyToClipboard(document.getElementById(id).textContent, btn); }
+
+  function copyToClipboard(text, btn) {
+    const orig = btn.textContent;
+    const done = () => { btn.textContent = 'コピーしました!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000); };
+    navigator.clipboard ? navigator.clipboard.writeText(text).then(done) : (() => {
+      const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+    })();
+  }
+
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'productUrl') generateSingle(); });
+</script>
+</body>
+</html>
