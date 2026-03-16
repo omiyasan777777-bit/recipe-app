@@ -155,6 +155,11 @@
     }
     .benefit-row input { margin-bottom: 0; }
 
+    /* Claude prompt area scrollbar */
+    #claude-prompt-box::-webkit-scrollbar { width: 4px; }
+    #claude-prompt-box::-webkit-scrollbar-track { background: transparent; }
+    #claude-prompt-box::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 4px; }
+
     /* Platform tabs */
     .platform-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0; }
     .platform-tab {
@@ -173,13 +178,55 @@
 </header>
 <main>
 
-  <!-- ① 記事から抽出 -->
-  <div class="card">
-    <div class="card-title">📄 記事から自動入力</div>
-    <div class="article-area">
-      <textarea id="article-input" placeholder="記事・ブログ本文をここに貼り付けてください。&#10;タイトル・サブタイトル・ベネフィットを自動で抽出します。"></textarea>
+  <!-- ① AIコピー生成（Claude用プロンプト） -->
+  <div class="card" style="border:2px solid #7c3aed;">
+    <div class="card-title" style="color:#7c3aed;">🤖 AI SEOコピー生成（Claude用）</div>
+    <p style="font-size:13px; color:var(--gray-600); margin-bottom:14px; line-height:1.6;">
+      記事を貼り付けてキーワードを入力 → プロンプトを生成 → Claude.aiに貼り付けるだけで、
+      SEOタイトル・サブタイトル・ベネフィット3つが得られます。
+    </p>
+
+    <div class="form-group">
+      <label>記事本文 <span style="color:var(--red)">*</span></label>
+      <textarea id="article-input" placeholder="記事・ブログ本文をここに貼り付けてください。" style="min-height:110px;"></textarea>
     </div>
-    <button class="btn btn-secondary" onclick="extractFromArticle()">🔍 タイトル・ベネフィットを抽出</button>
+
+    <div class="form-group">
+      <label>ターゲットキーワード <span style="color:var(--red)">*</span></label>
+      <input type="text" id="seo-keyword" placeholder="例: ダイエット レシピ 簡単、副業 在宅 初心者">
+    </div>
+
+    <div class="form-group">
+      <label>読者の悩み（ペイン）<span style="font-size:12px; font-weight:400; color:var(--gray-400)"> 任意・入れると精度UP</span></label>
+      <input type="text" id="seo-pain" placeholder="例: 忙しくて料理する時間がない、何から始めればいいかわからない">
+    </div>
+
+    <button class="btn" style="background:#7c3aed; color:#fff; width:100%; margin-bottom:10px;" onclick="generateClaudePrompt()">
+      ✨ Claude用プロンプトを生成
+    </button>
+
+    <div id="claude-prompt-area" style="display:none;">
+      <div style="background:#f5f3ff; border:1.5px solid #ddd6fe; border-radius:10px; padding:14px; margin-bottom:10px;">
+        <div style="font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span>生成されたプロンプト（コピーしてClaude.aiへ）</span>
+          <button class="btn btn-outline" id="claude-copy-btn" onclick="copyClaudePrompt()" style="font-size:12px; padding:4px 10px;">📋 コピー</button>
+        </div>
+        <div id="claude-prompt-box" style="font-size:12px; line-height:1.7; white-space:pre-wrap; word-break:break-word; color:var(--gray-800); max-height:220px; overflow-y:auto; user-select:all;"></div>
+      </div>
+      <a href="https://claude.ai" target="_blank" class="btn" style="background:#fff; color:#7c3aed; border:1.5px solid #7c3aed; width:100%; font-size:14px;">
+        🦋 Claude.ai を開く
+      </a>
+      <p style="font-size:12px; color:var(--gray-400); margin-top:8px; text-align:center;">
+        プロンプトをコピー → Claude.aiに貼り付け → 得られた結果を下の各フィールドに入力
+      </p>
+    </div>
+  </div>
+
+  <!-- ② 手動で抽出（簡易） -->
+  <div class="card">
+    <div class="card-title">📄 記事から簡易自動入力</div>
+    <p style="font-size:12px; color:var(--gray-400); margin-bottom:10px;">AIを使わず、記事本文からタイトル等をざっくり抽出します。</p>
+    <button class="btn btn-secondary" onclick="extractFromArticle()" style="font-size:14px;">🔍 タイトル・ベネフィットを自動抽出</button>
   </div>
 
   <!-- ② メイン情報 -->
@@ -612,6 +659,76 @@
     const ar = MJ_AR[currentPlatform] || '191:100';
     const p = '/imagine prompt: ' + lastPrompt + ` --ar ${ar} --v 6`;
     navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！\n--ar ' + ar));
+  }
+
+  // ---- Claude SEO prompt generation ----
+  function generateClaudePrompt() {
+    const article = document.getElementById('article-input').value.trim();
+    const keyword = document.getElementById('seo-keyword').value.trim();
+    const pain = document.getElementById('seo-pain').value.trim();
+
+    if (!article) { alert('記事本文を貼り付けてください'); return; }
+    if (!keyword) { alert('ターゲットキーワードを入力してください'); return; }
+
+    const prompt = `# 指令
+あなたは月間1000万PVを誇るメディアの編集長兼、成約率トップクラスのダイレクトレスポンスコピーライターです。
+提供された【記事本文】から、検索エンジンのアルゴリズムと人間の心理的トリガーの両方をハックした最高品質の「SEOタイトル」「サブタイトル（H2）」「3つのベネフィット」を抽出・生成してください。
+
+# 前提条件
+- ターゲットキーワード: ${keyword}
+- ターゲットの悩み(ペイン): ${pain || '（記事内容から推測してください）'}
+- 記事本文:
+${article}
+
+# 出力要件と厳守ルール
+
+## 1. メインタイトル (H1)
+- 【文字数制限】: 厳密に28文字〜32文字以内。
+- 【キーワード配置】: ターゲットキーワードを左から15文字以内に必ず配置すること。
+- 【クリック率（CTR）向上施策】: 以下の要素を最低1つ含めること。
+  - 権威性・数字（例: 3つの理由、99%、最新版）
+  - 希少性・限定性・価格差（例: 知らないと損、プロだけがやってる）
+  - ギャップ・好奇心（例: なぜ〇〇は××なのか？）
+- 記号（【】、｜、！など）を視認性向上のために効果的に使用すること。
+
+## 2. サブタイトル (H2 / リードコピー)
+- 【文字数制限】: 40〜60文字以内。
+- 【役割】: メインタイトルで惹きつけた読者に「この記事は自分のために書かれたものだ」と確信させること。
+- 【構成要素】: 読者の「ペイン（痛み・悩み）」を提示し、この記事がその解決策を提示していることを明示すること。
+
+## 3. 記事を読む3つのベネフィット
+- 記事の単なる「特徴」ではなく、読者の「未来の変化・利益（ベネフィット）」に変換して抽出すること。
+- 各ベネフィットは以下の論理構造で出力すること。
+  - 「[記事の特徴] だから、[読者の痛みが解消] し、[理想の未来（ベネフィット）] になる」
+- 抽象的な表現を避け、価格差、希少性、時間短縮、精神的安心など、具体的なメリットが伝わる言葉を優先して抽出すること。
+
+# 出力フォーマット
+（※以下のフォーマット以外の余計な挨拶や思考プロセスは一切出力しないこと）
+
+■メインタイトル（〇文字）:
+[生成したタイトル]
+
+■サブタイトル（〇文字）:
+[生成したサブタイトル]
+
+■この記事を読む3つのベネフィット:
+1. 【〇〇の解消】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。
+2. 【〇〇の獲得】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。
+3. 【〇〇の回避】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。`;
+
+    document.getElementById('claude-prompt-box').textContent = prompt;
+    document.getElementById('claude-prompt-area').style.display = '';
+    document.getElementById('claude-copy-btn').textContent = '📋 コピー';
+    document.getElementById('claude-prompt-area').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function copyClaudePrompt() {
+    const text = document.getElementById('claude-prompt-box').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('claude-copy-btn');
+      btn.textContent = '✅ コピー済み';
+      setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
+    });
   }
 
   function copyDalle() {
