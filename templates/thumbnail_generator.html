@@ -78,6 +78,28 @@
   </div>
 </div>
 
+<div class="card">
+  <label>🔥 トレンド設定</label>
+  <div class="trend-section-title" style="margin-top:6px">コンテンツ傾向</div>
+  <div style="display:flex; flex-wrap:wrap; gap:8px;">
+    <label class="trend-tag"><input type="checkbox" data-en="quick and easy, time-saving" data-ja="時短・簡単" onchange="generate()"> <span>⏱ 時短・簡単</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="photogenic, Instagram-worthy" data-ja="映え・フォトジェニック" onchange="generate()"> <span>📸 映え</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="healthy, nutritious, diet-friendly" data-ja="健康・ヘルシー" onchange="generate()"> <span>🥗 ヘルシー</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="budget-friendly, cost-effective" data-ja="節約・コスパ" onchange="generate()"> <span>💰 節約</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="authentic, restaurant-quality" data-ja="本格・プロの味" onchange="generate()"> <span>👨‍🍳 本格派</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="viral, trending" data-ja="バズり・話題" onchange="generate()"> <span>🔥 バズり</span></label>
+  </div>
+  <div class="trend-section-title" style="margin-top:14px">季節・シーン</div>
+  <div style="display:flex; flex-wrap:wrap; gap:8px;">
+    <label class="trend-tag"><input type="checkbox" data-en="spring seasonal ingredients" data-ja="春食材" onchange="generate()"> <span>🌸 春</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="summer refreshing cool dish" data-ja="夏・冷たい" onchange="generate()"> <span>☀️ 夏</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="autumn harvest ingredients" data-ja="秋の味覚" onchange="generate()"> <span>🍂 秋</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="winter warming comfort food" data-ja="冬・温かい" onchange="generate()"> <span>❄️ 冬</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="holiday party food" data-ja="パーティー・ホリデー" onchange="generate()"> <span>🎉 パーティー</span></label>
+    <label class="trend-tag"><input type="checkbox" data-en="everyday home cooking" data-ja="日常・おうちごはん" onchange="generate()"> <span>🏠 おうちごはん</span></label>
+  </div>
+</div>
+
 <!-- 生成結果 -->
 <div id="result-section" style="display:none;">
   <div class="card" style="border: 2px solid var(--blue);">
@@ -177,6 +199,27 @@
     margin-bottom: 6px;
     font-family: inherit;
   }
+
+  .trend-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: border-color .15s, background .15s;
+    background: #fff;
+  }
+  .trend-tag:has(input:checked) {
+    border-color: #f97316;
+    background: #fff7ed;
+    color: #ea580c;
+  }
+  .trend-tag input { display: none; }
+  .trend-section-title { font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; }
 </style>
 
 <script>
@@ -211,6 +254,11 @@
                 .map(el => el.value);
   }
 
+  function getSelectedTrends() {
+    return Array.from(document.querySelectorAll('.trend-tag input:checked'))
+                .map(el => ({ en: el.dataset.en, ja: el.dataset.ja }));
+  }
+
   function generate() {
     const title = document.getElementById('title').value.trim();
     const platform = document.getElementById('platform').value;
@@ -219,6 +267,7 @@
     const colors = document.getElementById('colors').value.trim();
     const keywords = document.getElementById('keywords').value.trim();
     const lang = document.getElementById('lang').value;
+    const trends = getSelectedTrends();
 
     const resultSection = document.getElementById('result-section');
     const emptyState = document.getElementById('empty-state');
@@ -232,14 +281,14 @@
     emptyState.style.display = 'none';
     resultSection.style.display = '';
 
-    const prompt = buildPrompt(title, platform, style, moods, colors, keywords, lang);
+    const prompt = buildPrompt(title, platform, style, moods, colors, keywords, lang, trends);
     lastPrompt = prompt;
     document.getElementById('prompt-box').textContent = prompt;
 
-    buildVariations(title, platform, style, lang);
+    buildVariations(title, platform, style, lang, trends);
   }
 
-  function buildPrompt(title, platform, style, moods, colors, keywords, lang) {
+  function buildPrompt(title, platform, style, moods, colors, keywords, lang, trends = []) {
     const parts = [];
 
     if (lang === 'en') {
@@ -251,6 +300,8 @@
       parts.push(STYLE_MAP[style].en);
       // Moods
       if (moods.length) parts.push(moods.join(', '));
+      // Trends
+      if (trends.length) parts.push(trends.map(t => t.en).join(', '));
       // Colors
       if (colors) parts.push(`color scheme: ${colors}`);
       // Keywords
@@ -265,6 +316,7 @@
         const moodJa = moods.map(m => m.split(',')[0].trim());
         parts.push(moodJa.join('、'));
       }
+      if (trends.length) parts.push(trends.map(t => t.ja).join('、'));
       if (colors) parts.push(`カラースキーム: ${colors}`);
       if (keywords) parts.push(keywords);
       parts.push(QUALITY_SUFFIX.ja);
@@ -273,7 +325,7 @@
     return parts.join(', ');
   }
 
-  function buildVariations(title, platform, style, lang) {
+  function buildVariations(title, platform, style, lang, trends = []) {
     const styles = ['photorealistic', 'illustration', 'flat', 'cinematic']
       .filter(s => s !== style)
       .slice(0, 3);
@@ -289,7 +341,7 @@
     variationsBox.innerHTML = '';
 
     styles.forEach(s => {
-      const vPrompt = buildPrompt(title, platform, s, [], '', '', lang);
+      const vPrompt = buildPrompt(title, platform, s, [], '', '', lang, trends);
       const div = document.createElement('div');
       div.className = 'variation-item';
       div.innerHTML = `<div class="variation-label">${labelMap[s]}</div><div>${vPrompt}</div>`;
