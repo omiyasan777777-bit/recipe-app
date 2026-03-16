@@ -198,7 +198,12 @@
     </div>
 
     <div class="form-group">
-      <label>ベネフィット3つ <span id="benefit-badge" class="ext-badge" style="display:none">抽出済</span></label>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <label style="margin-bottom:0;">ベネフィット3つ <span id="benefit-badge" class="ext-badge" style="display:none">抽出済</span></label>
+        <button class="btn btn-outline" id="benefit-claude-btn" onclick="copyBenefitPrompt()" style="font-size:11px; padding:4px 10px; color:#7c3aed; border-color:#ddd6fe;">
+          🤖 Claudeで磨く
+        </button>
+      </div>
       <div class="benefits-grid">
         <div class="benefit-row">
           <div class="benefit-num">1</div>
@@ -212,6 +217,9 @@
           <div class="benefit-num">3</div>
           <input type="text" id="benefit3" placeholder="例: 冷蔵庫の残り野菜をフル活用できる">
         </div>
+      </div>
+      <div id="benefit-prompt-copied" style="display:none; font-size:12px; color:#7c3aed; margin-top:8px; text-align:center;">
+        ✅ コピーしました — <a href="https://claude.ai" target="_blank" style="color:#7c3aed;">Claude.ai</a> に貼り付けてください
       </div>
     </div>
 
@@ -805,6 +813,43 @@
     const ar = MJ_AR[currentPlatform] || '191:100';
     const p = '/imagine prompt: ' + lastPrompt + ` --ar ${ar} --v 6`;
     navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！\n--ar ' + ar));
+  }
+
+  // ---- 「Claudeで磨く」ベネフィット専用プロンプト ----
+  function copyBenefitPrompt() {
+    const article = document.getElementById('article-input').value.trim();
+    if (!article) { alert('先に記事本文を貼り付けてください'); return; }
+
+    const prompt = `# 指示
+提供する記事を読み、ターゲットが得られる「ベネフィット」を3つ抽出してください。
+
+# 定義
+・メリット：商品やサービスの「特徴・機能」
+・ベネフィット：その特徴によって、ターゲットの「人生や生活がどう良くなるか」という変化
+
+# 条件
+1. 薬機法に抵触する表現は避け、効果的でポジティブな印象に言い換えること
+2. 読者の「不平・不満（ペイン）」がどう解消されるかを明確にすること
+3. クリック率を高める要素（希少性、価格差、利便性など）を優先的に反映すること
+
+# 出力形式
+1. 【ベネフィット1】内容
+2. 【ベネフィット2】内容
+3. 【ベネフィット3】内容
+
+# 記事内容
+${article}`;
+
+    navigator.clipboard.writeText(prompt).then(() => {
+      const btn = document.getElementById('benefit-claude-btn');
+      const msg = document.getElementById('benefit-prompt-copied');
+      btn.textContent = '✅ コピー済み';
+      msg.style.display = '';
+      setTimeout(() => {
+        btn.textContent = '🤖 Claudeで磨く';
+        msg.style.display = 'none';
+      }, 4000);
+    });
   }
 
   function copyDalle() {
