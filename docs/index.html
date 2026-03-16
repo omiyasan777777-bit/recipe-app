@@ -467,108 +467,249 @@
 
   // ---- Full auto-extraction from article ----
   function extractAll() {
-    const text = document.getElementById('article-input').value.trim();
-    if (!text) { alert('記事本文を貼り付けてください'); return; }
+    const rawText = document.getElementById('article-input').value.trim();
+    if (!rawText) { alert('記事本文を貼り付けてください'); return; }
 
-    const clean = t => t.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/[*_#`]/g, '').trim();
-    const lines = text.split('\n').map(l => clean(l)).filter(l => l.length > 1);
-    const fullText = lines.join('。');
+    // ---- Parsers ----
+    const cleanMarkup = t => t.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/[*_#`~]/g, '').trim();
+    const rawLines  = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const lines     = rawLines.map(cleanMarkup).filter(l => l.length > 0);
+    const isListLine = l => /^[\d①②③④⑤１２３][.．、\s:：]|^[-・•✓✔▶→＞★◆●○]\s|^【[^】]+】/.test(l);
+    const stripList  = l => l.replace(/^[\d①②③④⑤１２３][.．、\s:：]+/, '')
+                             .replace(/^[-・•✓✔▶→＞★◆●○]\s+/, '')
+                             .replace(/^【[^】]*】[\s:：]*/, '').trim();
 
-    // --- メインタイトル ---
-    let titleLine = '';
-    for (const l of lines) {
-      if (l.length >= 8 && l.length <= 50) { titleLine = l; break; }
-    }
-    if (!titleLine) titleLine = lines[0]?.slice(0, 50) || '';
-
-    // --- サブタイトル ---
-    let subtitleLine = '';
-    for (let i = 1; i < lines.length; i++) {
-      const l = lines[i];
-      if (l !== titleLine && l.length >= 8 && l.length <= 60 && !/^[\-\*\d•①②③１２３]/.test(l)) {
-        subtitleLine = l; break;
-      }
-    }
-
-    // --- ベネフィット ---
-    const bPatterns = [/^[\d①②③④⑤１２３][.．、\s:：]/, /^[-・•✓✔▶→＞★◆]\s/, /^【.*?】/];
-    const benefits = [];
-    for (const l of lines) {
-      if (benefits.length >= 3) break;
-      if (bPatterns.some(p => p.test(l))) {
-        const c = l.replace(/^[\d①②③④⑤１２３\-・•✓✔▶→＞★◆【】.．、\s:：]+/, '').trim();
-        if (c.length >= 5) benefits.push(c.slice(0, 60));
-      }
-    }
-    // fallback: meaningful sentences
-    if (benefits.length < 2) {
-      const sents = lines.filter(l => l.length >= 15 && l.length <= 55 && l !== titleLine && l !== subtitleLine);
-      for (const s of sents) { if (benefits.length >= 3) break; if (!benefits.includes(s)) benefits.push(s.slice(0, 60)); }
-    }
-
-    // --- キーワード抽出（頻出2〜4文字の名詞的表現） ---
+    // ================================================================
+    // 1. キーワード抽出（bigram/trigram 頻度 × 長さスコア）
+    // ================================================================
     const kwMap = {};
-    // bigram/trigram from lines
     for (const l of lines) {
-      for (let len = 2; len <= 4; len++) {
+      for (let len = 2; len <= 5; len++) {
         for (let i = 0; i <= l.length - len; i++) {
           const chunk = l.slice(i, i + len);
-          // skip if contains only hiragana/punctuation/numbers
-          if (/^[ぁ-ん\s\d！？。、「」『』（）【】…・]+$/.test(chunk)) continue;
+          if (/^[ぁ-ん\s\d！？。、「」『』（）【】…・\-]+$/.test(chunk)) continue;
           if (STOPWORDS.has(chunk)) continue;
-          if (/[\s。、！？]/.test(chunk)) continue;
+          if (/[\s。、！？\-]/.test(chunk)) continue;
           kwMap[chunk] = (kwMap[chunk] || 0) + 1;
         }
       }
     }
-    // pick top by frequency × length preference
     const kwSorted = Object.entries(kwMap)
-      .filter(([k, v]) => v >= 2 && k.length >= 2)
+      .filter(([k, v]) => v >= 2)
       .sort(([ka, va], [kb, vb]) => (vb * kb.length) - (va * ka.length))
       .map(([k]) => k);
-    // deduplicate (remove substrings already covered)
     const kwFinal = [];
     for (const k of kwSorted) {
       if (kwFinal.length >= 4) break;
-      if (!kwFinal.some(existing => existing.includes(k) || k.includes(existing))) {
-        kwFinal.push(k);
-      }
+      if (!kwFinal.some(e => e.includes(k) || k.includes(e))) kwFinal.push(k);
     }
     const keyword = kwFinal.slice(0, 3).join(' ');
 
-    // --- ペイン抽出 ---
+    // ================================================================
+    // 2. ペイン抽出（冒頭〜全文のネガティブ表現・疑問文）
+    // ================================================================
+    const painSignals = [
+      /できない|わからない|難しい|困っ|悩んで|不安|心配|苦手|苦労|つらい|めんどう|面倒|うまくいかない|失敗/,
+      /どうすれば|どうやって|どうしたら|なぜ.*ない|どのように/,
+      /ていない|ておらず|できず|知らず|わからず/,
+      /損して|もったいない|無駄に|見落とし|ミス/,
+    ];
     let pain = '';
-    // check sentences in first 300 chars for problem patterns
-    const intro = fullText.slice(0, 600);
-    const introSents = intro.split(/。|！|？/).filter(s => s.length >= 10);
-    for (const s of introSents) {
-      if (PAIN_PATTERNS.some(p => p.test(s))) {
-        pain = s.replace(/^[^\w\u3040-\u9fff]+/, '').trim().slice(0, 50);
+    const allSentences = lines.join('。').split(/[。！？]/).map(s => s.trim()).filter(s => s.length >= 10);
+    // Prefer early sentences (intro tends to state the problem)
+    for (const s of allSentences.slice(0, 20)) {
+      if (painSignals.some(p => p.test(s)) && s.length <= 55) {
+        pain = s.replace(/^[^\u3040-\u9FFF\w]+/, '').trim().slice(0, 52);
         break;
       }
     }
-    // fallback: second paragraph often states the reader's problem
-    if (!pain && introSents.length >= 2) {
-      pain = introSents[1].trim().slice(0, 50);
+    if (!pain && allSentences.length >= 2) pain = allSentences[1].trim().slice(0, 50);
+
+    // ================================================================
+    // 3. メインタイトル（SEO最適化）
+    // ================================================================
+    // Step A: raw title candidate
+    let rawTitle = '';
+    // Priority 1: explicit H1 markdown
+    for (let i = 0; i < rawLines.length; i++) {
+      if (/^#\s+/.test(rawLines[i])) { rawTitle = cleanMarkup(rawLines[i]); break; }
+    }
+    // Priority 2: first short substantial line
+    if (!rawTitle) {
+      for (const l of lines) {
+        if (l.length >= 8 && l.length <= 45 && !isListLine(l)) { rawTitle = l; break; }
+      }
+    }
+    if (!rawTitle) rawTitle = lines[0]?.slice(0, 40) || '';
+
+    // Step B: count numbered sections (H2s) to detect "N選" potential
+    const h2s = rawLines.filter(l => /^#{2}\s+/.test(l));
+    const listSectionCount = h2s.length;
+
+    // Step C: SEO transforms
+    let seoTitle = rawTitle;
+    const hasNumber  = /\d|[一二三四五六七八九十百千万]/.test(seoTitle);
+    const hasBracket = /【|】|「|」/.test(seoTitle);
+
+    // Add count phrase if article has clear sections and title lacks numbers
+    if (!hasNumber && listSectionCount >= 3) {
+      seoTitle = `${listSectionCount}つの` + seoTitle;
+    }
+    // Add SEO bracket decoration if plain title
+    if (!hasBracket) {
+      // Pick a power word based on content signals
+      const isHowto   = /方法|やり方|手順|ステップ|仕方/.test(rawText);
+      const isGuide   = /ガイド|解説|入門|初心者|基礎/.test(rawText);
+      const isBeginner= /初心者|はじめて|はじめの/.test(rawText);
+      const isRanking = /おすすめ|ランキング|比較|選び方/.test(rawText);
+      let badge = '完全版';
+      if (isBeginner) badge = '初心者向け';
+      else if (isRanking) badge = 'おすすめ';
+      else if (isHowto)  badge = '徹底解説';
+      else if (isGuide)  badge = '完全ガイド';
+      seoTitle = `【${badge}】` + seoTitle;
+    }
+    // Soft limit ~32 chars (UI shows actual length)
+    if (seoTitle.length > 35) seoTitle = seoTitle.slice(0, 33);
+
+    // ================================================================
+    // 4. サブタイトル（ペイン→解決の構造）
+    // ================================================================
+    let subtitleLine = '';
+
+    // Priority 1: "この記事では〜できます/わかります" type sentence
+    const articleDescPattern = /この記事では?|本記事では?|今回は/;
+    for (const s of allSentences) {
+      if (articleDescPattern.test(s) && s.length >= 20 && s.length <= 65) {
+        subtitleLine = s.slice(0, 62); break;
+      }
+    }
+    // Priority 2: outcome sentence in intro (first 15 sentences)
+    if (!subtitleLine) {
+      const outcomeEnd = /できます|わかります|解決します|解説します|紹介します|身につきます|なれます/;
+      for (const s of allSentences.slice(0, 15)) {
+        if (outcomeEnd.test(s) && s.length >= 20 && s.length <= 65) {
+          subtitleLine = s.slice(0, 62); break;
+        }
+      }
+    }
+    // Priority 3: compose from pain + top keyword
+    if (!subtitleLine && pain) {
+      const kw = kwFinal[0] || '';
+      subtitleLine = `${pain}を解消し、${kw}について正しく理解できます`.slice(0, 60);
+    }
+    // Fallback: second non-list line
+    if (!subtitleLine) {
+      for (let i = 1; i < lines.length; i++) {
+        const l = lines[i];
+        if (l !== rawTitle && l !== seoTitle && l.length >= 15 && l.length <= 62 && !isListLine(l)) {
+          subtitleLine = l.slice(0, 62); break;
+        }
+      }
     }
 
-    // --- Fill fields ---
+    // ================================================================
+    // 5. ベネフィット3つ（多段階スキャン・スコアリング）
+    // ================================================================
+    // Outcome endings
+    const outcomeRe = /できます?。?$|なります?。?$|わかります?。?$|得られます?。?$|解決できます?。?$|解消できます?。?$|実現します?。?$|身につきます?。?$|アップします?。?$|上がります?。?$|省けます?。?$|不要です?。?$|ありません?。?$/;
+    // Concrete value signals (boost score)
+    const valueSignals = /\d+分|\d+秒|\d+円|\d+%|\d+倍|\d+個|\d+ステップ|無料|節約|時短|効率|コスパ|安心|自信|プロ|最速|簡単|手軽/;
+
+    const candidates = []; // { text, score }
+
+    // Pass 1: Items inside benefit-related section headings (highest priority)
+    const benefitHeadRe = /メリット|ベネフィット|できること|得られること|効果|ポイント|特徴|魅力|うれしい|おすすめ|理由|コツ/;
+    let inBenefitSection = false;
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      const raw = rawLines[i] || l;
+      // Detect heading
+      if (/^#{1,3}\s+/.test(raw) || (l.length < 25 && benefitHeadRe.test(l))) {
+        inBenefitSection = benefitHeadRe.test(l);
+        continue;
+      }
+      if (inBenefitSection && isListLine(l)) {
+        const c = stripList(l);
+        if (c.length >= 6 && c.length <= 65) {
+          const score = 15 + (valueSignals.test(c) ? 5 : 0);
+          candidates.push({ text: c.slice(0, 62), score });
+        }
+      }
+    }
+
+    // Pass 2: Any numbered/bulleted list items in full article
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      if (isListLine(l)) {
+        const c = stripList(l);
+        if (c.length >= 6 && c.length <= 65 && !candidates.some(x => x.text === c.slice(0,62))) {
+          const score = 8 + (valueSignals.test(c) ? 4 : 0) + (outcomeRe.test(c) ? 3 : 0);
+          candidates.push({ text: c.slice(0, 62), score });
+        }
+      }
+    }
+
+    // Pass 3: Outcome-ending sentences
+    for (const s of allSentences) {
+      if (s.length < 12 || s.length > 65) continue;
+      if (isListLine(s)) continue;
+      if (outcomeRe.test(s)) {
+        if (!candidates.some(x => x.text === s.slice(0, 62))) {
+          const score = 5 + (valueSignals.test(s) ? 4 : 0);
+          candidates.push({ text: s.slice(0, 62), score });
+        }
+      }
+    }
+
+    // Pass 4: Conditional benefit patterns 〜ことで、〜すれば〜になる
+    const condRe = /(?:ことで|によって|おかげで|れば|たら|なら).{3,}(?:できます|なります|わかります|得られます)/;
+    for (const s of allSentences) {
+      if (s.length < 15 || s.length > 65) continue;
+      if (condRe.test(s) && !candidates.some(x => x.text === s.slice(0,62))) {
+        candidates.push({ text: s.slice(0, 62), score: 4 + (valueSignals.test(s) ? 3 : 0) });
+      }
+    }
+
+    // Sort by score, deduplicate (no overlapping substrings), pick top 3
+    candidates.sort((a, b) => b.score - a.score);
+    const benefits = [];
+    for (const c of candidates) {
+      if (benefits.length >= 3) break;
+      const isDup = benefits.some(b => {
+        const a = b.length <= c.text.length ? b : c.text;
+        const bb = b.length > c.text.length ? b : c.text;
+        return bb.includes(a.slice(0, Math.min(12, a.length)));
+      });
+      if (!isDup) benefits.push(c.text);
+    }
+    // Fallback: any body sentence if not enough found
+    if (benefits.length < 3) {
+      for (const s of allSentences) {
+        if (benefits.length >= 3) break;
+        if (s.length >= 15 && s.length <= 55 && !benefits.some(b => b.includes(s.slice(0,10)))) {
+          benefits.push(s.slice(0, 60));
+        }
+      }
+    }
+
+    // ================================================================
+    // Fill fields
+    // ================================================================
     const fill = (id, val, badgeId) => {
       if (val) {
         document.getElementById(id).value = val;
         if (badgeId) document.getElementById(badgeId).style.display = '';
       }
     };
-    fill('seo-keyword', keyword, 'kw-badge');
-    fill('seo-pain', pain, 'pain-badge');
-    fill('title', titleLine, 'title-badge');
-    fill('subtitle', subtitleLine, 'subtitle-badge');
-    if (benefits.length > 0) {
-      fill('benefit1', benefits[0] || '', null);
-      fill('benefit2', benefits[1] || '', null);
-      fill('benefit3', benefits[2] || '', null);
-      if (benefits.some(Boolean)) document.getElementById('benefit-badge').style.display = '';
-    }
+    fill('seo-keyword', keyword,     'kw-badge');
+    fill('seo-pain',    pain,         'pain-badge');
+    fill('title',       seoTitle,     'title-badge');
+    fill('subtitle',    subtitleLine, 'subtitle-badge');
+    fill('benefit1',    benefits[0] || '', null);
+    fill('benefit2',    benefits[1] || '', null);
+    fill('benefit3',    benefits[2] || '', null);
+    if (benefits.some(Boolean)) document.getElementById('benefit-badge').style.display = '';
 
     document.getElementById('seo-keyword').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
