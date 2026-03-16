@@ -60,7 +60,6 @@
       background: transparent; color: var(--gray-600);
       border: 1.5px solid var(--gray-200); font-size: 13px; padding: 7px 13px;
     }
-    .btn-sm { font-size: 13px; padding: 7px 13px; }
 
     /* Style chips */
     .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -97,17 +96,6 @@
     .color-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
     .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,.1); }
 
-    /* Article paste area */
-    .article-area {
-      background: var(--gray-50); border: 1.5px dashed var(--gray-200);
-      border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
-    }
-    .article-area textarea {
-      background: transparent; border: none; padding: 0; font-size: 14px;
-      color: var(--gray-600); min-height: 80px;
-    }
-    .article-area textarea:focus { border: none; outline: none; }
-
     /* Result */
     .result-card { border: 2px solid var(--blue); }
     .prompt-box {
@@ -133,13 +121,11 @@
     .variations-list { display: flex; flex-direction: column; gap: 10px; }
     .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-600); }
 
-    #empty {
-      text-align: center; padding: 48px 16px; color: var(--gray-400);
-    }
+    #empty { text-align: center; padding: 48px 16px; color: var(--gray-400); }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
     /* Extracted badge */
-    .extracted-badge {
+    .ext-badge {
       display: inline-block; font-size: 10px; font-weight: 700; color: var(--green);
       background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px;
       padding: 1px 6px; margin-left: 6px; vertical-align: middle;
@@ -155,19 +141,18 @@
     }
     .benefit-row input { margin-bottom: 0; }
 
-    /* Claude prompt area scrollbar */
-    #claude-prompt-box::-webkit-scrollbar { width: 4px; }
-    #claude-prompt-box::-webkit-scrollbar-track { background: transparent; }
-    #claude-prompt-box::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 4px; }
-
     /* Platform tabs */
-    .platform-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0; }
+    .platform-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .platform-tab {
       padding: 7px 13px; border: 1.5px solid var(--gray-200); border-radius: 999px;
       cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
       transition: border-color .15s, background .15s; user-select: none;
     }
     .platform-tab.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+
+    /* Article extract card */
+    .extract-card { border: 2px solid var(--blue); }
+    .extract-tip { font-size: 12px; color: var(--gray-400); margin-bottom: 12px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -178,73 +163,42 @@
 </header>
 <main>
 
-  <!-- ① AIコピー生成（Claude用プロンプト） -->
-  <div class="card" style="border:2px solid #7c3aed;">
-    <div class="card-title" style="color:#7c3aed;">🤖 AI SEOコピー生成（Claude用）</div>
-    <p style="font-size:13px; color:var(--gray-600); margin-bottom:14px; line-height:1.6;">
-      記事を貼り付けてキーワードを入力 → プロンプトを生成 → Claude.aiに貼り付けるだけで、
-      SEOタイトル・サブタイトル・ベネフィット3つが得られます。
-    </p>
-
+  <!-- ① 記事貼り付け → 全自動抽出 -->
+  <div class="card extract-card">
+    <div class="card-title" style="color:var(--blue);">📄 記事を貼り付けて全自動入力</div>
+    <p class="extract-tip">記事本文をそのまま貼り付けるだけ。<br>キーワード・ペイン・タイトル・サブ・ベネフィットをまとめて抽出します。</p>
     <div class="form-group">
-      <label>記事本文 <span style="color:var(--red)">*</span></label>
-      <textarea id="article-input" placeholder="記事・ブログ本文をここに貼り付けてください。" style="min-height:110px;"></textarea>
+      <textarea id="article-input" placeholder="記事・ブログ本文をここに貼り付けてください。" style="min-height:120px;"></textarea>
     </div>
-
-    <div class="form-group">
-      <label>ターゲットキーワード <span style="color:var(--red)">*</span></label>
-      <input type="text" id="seo-keyword" placeholder="例: ダイエット レシピ 簡単、副業 在宅 初心者">
-    </div>
-
-    <div class="form-group">
-      <label>読者の悩み（ペイン）<span style="font-size:12px; font-weight:400; color:var(--gray-400)"> 任意・入れると精度UP</span></label>
-      <input type="text" id="seo-pain" placeholder="例: 忙しくて料理する時間がない、何から始めればいいかわからない">
-    </div>
-
-    <button class="btn" style="background:#7c3aed; color:#fff; width:100%; margin-bottom:10px;" onclick="generateClaudePrompt()">
-      ✨ Claude用プロンプトを生成
-    </button>
-
-    <div id="claude-prompt-area" style="display:none;">
-      <div style="background:#f5f3ff; border:1.5px solid #ddd6fe; border-radius:10px; padding:14px; margin-bottom:10px;">
-        <div style="font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-          <span>生成されたプロンプト（コピーしてClaude.aiへ）</span>
-          <button class="btn btn-outline" id="claude-copy-btn" onclick="copyClaudePrompt()" style="font-size:12px; padding:4px 10px;">📋 コピー</button>
-        </div>
-        <div id="claude-prompt-box" style="font-size:12px; line-height:1.7; white-space:pre-wrap; word-break:break-word; color:var(--gray-800); max-height:220px; overflow-y:auto; user-select:all;"></div>
-      </div>
-      <a href="https://claude.ai" target="_blank" class="btn" style="background:#fff; color:#7c3aed; border:1.5px solid #7c3aed; width:100%; font-size:14px;">
-        🦋 Claude.ai を開く
-      </a>
-      <p style="font-size:12px; color:var(--gray-400); margin-top:8px; text-align:center;">
-        プロンプトをコピー → Claude.aiに貼り付け → 得られた結果を下の各フィールドに入力
-      </p>
-    </div>
+    <button class="btn btn-primary" onclick="extractAll()">✨ 全フィールドを自動入力</button>
   </div>
 
-  <!-- ② 手動で抽出（簡易） -->
-  <div class="card">
-    <div class="card-title">📄 記事から簡易自動入力</div>
-    <p style="font-size:12px; color:var(--gray-400); margin-bottom:10px;">AIを使わず、記事本文からタイトル等をざっくり抽出します。</p>
-    <button class="btn btn-secondary" onclick="extractFromArticle()" style="font-size:14px;">🔍 タイトル・ベネフィットを自動抽出</button>
-  </div>
-
-  <!-- ② メイン情報 -->
+  <!-- ② コンテンツ情報 -->
   <div class="card">
     <div class="card-title">📝 コンテンツ情報</div>
 
     <div class="form-group">
-      <label>メインタイトル <span style="color:var(--red)">*</span> <span id="title-badge" class="extracted-badge" style="display:none">抽出済</span></label>
+      <label>ターゲットキーワード <span id="kw-badge" class="ext-badge" style="display:none">抽出済</span></label>
+      <input type="text" id="seo-keyword" placeholder="例: ダイエット レシピ 簡単、副業 在宅 初心者">
+    </div>
+
+    <div class="form-group">
+      <label>読者の悩み（ペイン） <span id="pain-badge" class="ext-badge" style="display:none">抽出済</span></label>
+      <input type="text" id="seo-pain" placeholder="例: 忙しくて料理する時間がない、何から始めればいいかわからない">
+    </div>
+
+    <div class="form-group">
+      <label>メインタイトル <span style="color:var(--red)">*</span> <span id="title-badge" class="ext-badge" style="display:none">抽出済</span></label>
       <input type="text" id="title" placeholder="例: 10分で作れる！絶品チキンカレーの作り方" maxlength="100">
     </div>
 
     <div class="form-group">
-      <label>サブタイトル <span id="subtitle-badge" class="extracted-badge" style="display:none">抽出済</span></label>
+      <label>サブタイトル <span id="subtitle-badge" class="ext-badge" style="display:none">抽出済</span></label>
       <input type="text" id="subtitle" placeholder="例: 忙しい日でも本格的な味を実現">
     </div>
 
     <div class="form-group">
-      <label>ベネフィット（読者へのメリット） <span id="benefit-badge" class="extracted-badge" style="display:none">抽出済</span></label>
+      <label>ベネフィット3つ <span id="benefit-badge" class="ext-badge" style="display:none">抽出済</span></label>
       <div class="benefits-grid">
         <div class="benefit-row">
           <div class="benefit-num">1</div>
@@ -275,13 +229,11 @@
   <!-- ③ プラットフォーム -->
   <div class="card">
     <div class="card-title">📐 プラットフォーム・サイズ</div>
-    <div class="form-group">
-      <div class="platform-tabs" id="platform-tabs">
-        <div class="platform-tab active" data-platform="blog">📰 ブログ (1.91:1)</div>
-        <div class="platform-tab" data-platform="youtube">▶️ YouTube (16:9)</div>
-        <div class="platform-tab" data-platform="sns">📱 SNS (1:1)</div>
-        <div class="platform-tab" data-platform="general">🌐 汎用</div>
-      </div>
+    <div class="platform-tabs" id="platform-tabs">
+      <div class="platform-tab active" data-platform="blog">📰 ブログ (1.91:1)</div>
+      <div class="platform-tab" data-platform="youtube">▶️ YouTube (16:9)</div>
+      <div class="platform-tab" data-platform="sns">📱 SNS (1:1)</div>
+      <div class="platform-tab" data-platform="general">🌐 汎用</div>
     </div>
   </div>
 
@@ -387,7 +339,7 @@
     </div>
   </div>
 
-  <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">✨ プロンプトを生成</button>
+  <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">🖼️ 画像プロンプトを生成</button>
 
   <div id="empty">
     <div class="empty-icon">🖼️</div>
@@ -438,7 +390,27 @@
   let activeColor = null;
   let lastPrompt = "";
 
-  // Platform tabs
+  // Japanese stopwords to exclude from keyword extraction
+  const STOPWORDS = new Set([
+    'これ','それ','あれ','この','その','あの','こと','もの','ため','よう','ので',
+    'から','まで','より','など','また','そして','しかし','でも','ただ','または',
+    'さらに','まず','次に','最後に','ここ','そこ','あそこ','いつ','なぜ','どう',
+    'どの','どれ','どこ','誰','何','いる','ある','する','なる','れる','られる',
+    'です','ます','した','して','いた','いて','おり','おる','あり','でき','でし',
+    'ない','なく','なっ','なり','なる','でき','でし','でも','では','には','には',
+    'という','として','について','によって','において','に対して','のため','ため',
+    'こんな','そんな','あんな','どんな','ようにな','ように','ことが','ことを',
+    'ものの','ものと','もので','ので','のに','のは','のが','のも','のを',
+  ]);
+
+  // Pain indicator patterns
+  const PAIN_PATTERNS = [
+    /[^\。\n]{5,}(?:できない|わからない|難しい|困っ|悩んで|不安|心配|苦労|つらい|しんどい|迷っ|失敗)/,
+    /[^\。\n]{5,}(?:どうすれば|どうやって|どうしたら|なぜ|どのように)[^\。\n]{3,}/,
+    /[^\。\n]{5,}(?:ていない|ておらず|できず|知らず|理解できず)[^\。\n]{0,30}/,
+  ];
+
+  // ---- Platform tabs ----
   document.querySelectorAll('.platform-tab').forEach(el => {
     el.addEventListener('click', () => {
       document.querySelectorAll('.platform-tab').forEach(c => c.classList.remove('active'));
@@ -447,7 +419,7 @@
     });
   });
 
-  // Style chips
+  // ---- Style chips ----
   document.querySelectorAll('.style-chip').forEach(el => {
     el.addEventListener('click', () => {
       document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
@@ -456,7 +428,7 @@
     });
   });
 
-  // Mood tags
+  // ---- Mood tags ----
   document.querySelectorAll('.mood-tag').forEach(el => {
     el.addEventListener('click', () => {
       el.classList.toggle('active');
@@ -465,7 +437,7 @@
     });
   });
 
-  // Trend tags
+  // ---- Trend tags ----
   document.querySelectorAll('.trend-tag').forEach(el => {
     el.addEventListener('click', () => {
       el.classList.toggle('active');
@@ -475,12 +447,11 @@
     });
   });
 
-  // Color chips (single select)
+  // ---- Color chips ----
   document.querySelectorAll('.color-chip').forEach(el => {
     el.addEventListener('click', () => {
       if (el.classList.contains('active')) {
-        el.classList.remove('active');
-        activeColor = null;
+        el.classList.remove('active'); activeColor = null;
       } else {
         document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
@@ -489,95 +460,129 @@
       }
     });
   });
-
-  // Custom color input clears chip selection
   document.getElementById('colors-custom').addEventListener('input', () => {
     document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
     activeColor = null;
   });
 
-  // ---- Article extraction ----
-  function extractFromArticle() {
+  // ---- Full auto-extraction from article ----
+  function extractAll() {
     const text = document.getElementById('article-input').value.trim();
     if (!text) { alert('記事本文を貼り付けてください'); return; }
 
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const clean = t => t.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/[*_#`]/g, '').trim();
+    const lines = text.split('\n').map(l => clean(l)).filter(l => l.length > 1);
+    const fullText = lines.join('。');
 
-    // Extract main title: first long-ish line (or line with 【】「」)
+    // --- メインタイトル ---
     let titleLine = '';
     for (const l of lines) {
-      if (l.length >= 10 && l.length <= 80) { titleLine = l; break; }
+      if (l.length >= 8 && l.length <= 50) { titleLine = l; break; }
     }
-    if (!titleLine && lines.length > 0) titleLine = lines[0].slice(0, 80);
-    // Clean up markdown/html
-    titleLine = titleLine.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/[*_#]/g, '').trim();
+    if (!titleLine) titleLine = lines[0]?.slice(0, 50) || '';
 
-    // Extract subtitle: second heading or line with ！？
+    // --- サブタイトル ---
     let subtitleLine = '';
     for (let i = 1; i < lines.length; i++) {
       const l = lines[i];
-      if (l !== titleLine && l.length >= 8 && l.length <= 60 && !/^[\-\*\d•①②③]/.test(l)) {
-        subtitleLine = l.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/[*_#]/g, '').trim();
-        break;
+      if (l !== titleLine && l.length >= 8 && l.length <= 60 && !/^[\-\*\d•①②③１２３]/.test(l)) {
+        subtitleLine = l; break;
       }
     }
 
-    // Extract benefits: lines starting with numbers/bullets/①②③
-    const benefitPatterns = [
-      /^[\d①②③④⑤1-9][.．、\s:：]/,
-      /^[-・•✓✔▶→＞]\s/,
-      /^【.*?】/,
-    ];
+    // --- ベネフィット ---
+    const bPatterns = [/^[\d①②③④⑤１２３][.．、\s:：]/, /^[-・•✓✔▶→＞★◆]\s/, /^【.*?】/];
     const benefits = [];
     for (const l of lines) {
       if (benefits.length >= 3) break;
-      const isBenefit = benefitPatterns.some(p => p.test(l));
-      if (isBenefit) {
-        const cleaned = l.replace(/^[\d①②③④⑤\-・•✓✔▶→＞【】.．、\s:：]+/, '').replace(/<[^>]+>/g, '').trim();
-        if (cleaned.length >= 5) benefits.push(cleaned.slice(0, 60));
+      if (bPatterns.some(p => p.test(l))) {
+        const c = l.replace(/^[\d①②③④⑤１２３\-・•✓✔▶→＞★◆【】.．、\s:：]+/, '').trim();
+        if (c.length >= 5) benefits.push(c.slice(0, 60));
       }
     }
-    // Fallback: pick 3 sentences if no bullet found
+    // fallback: meaningful sentences
     if (benefits.length < 2) {
-      const sentences = lines.filter(l => l.length >= 15 && l.length <= 60 && l !== titleLine && l !== subtitleLine);
-      for (const s of sentences) {
-        if (benefits.length >= 3) break;
-        benefits.push(s.slice(0, 60));
+      const sents = lines.filter(l => l.length >= 15 && l.length <= 55 && l !== titleLine && l !== subtitleLine);
+      for (const s of sents) { if (benefits.length >= 3) break; if (!benefits.includes(s)) benefits.push(s.slice(0, 60)); }
+    }
+
+    // --- キーワード抽出（頻出2〜4文字の名詞的表現） ---
+    const kwMap = {};
+    // bigram/trigram from lines
+    for (const l of lines) {
+      for (let len = 2; len <= 4; len++) {
+        for (let i = 0; i <= l.length - len; i++) {
+          const chunk = l.slice(i, i + len);
+          // skip if contains only hiragana/punctuation/numbers
+          if (/^[ぁ-ん\s\d！？。、「」『』（）【】…・]+$/.test(chunk)) continue;
+          if (STOPWORDS.has(chunk)) continue;
+          if (/[\s。、！？]/.test(chunk)) continue;
+          kwMap[chunk] = (kwMap[chunk] || 0) + 1;
+        }
       }
     }
+    // pick top by frequency × length preference
+    const kwSorted = Object.entries(kwMap)
+      .filter(([k, v]) => v >= 2 && k.length >= 2)
+      .sort(([ka, va], [kb, vb]) => (vb * kb.length) - (va * ka.length))
+      .map(([k]) => k);
+    // deduplicate (remove substrings already covered)
+    const kwFinal = [];
+    for (const k of kwSorted) {
+      if (kwFinal.length >= 4) break;
+      if (!kwFinal.some(existing => existing.includes(k) || k.includes(existing))) {
+        kwFinal.push(k);
+      }
+    }
+    const keyword = kwFinal.slice(0, 3).join(' ');
 
-    // Fill fields
-    if (titleLine) {
-      document.getElementById('title').value = titleLine;
-      document.getElementById('title-badge').style.display = '';
+    // --- ペイン抽出 ---
+    let pain = '';
+    // check sentences in first 300 chars for problem patterns
+    const intro = fullText.slice(0, 600);
+    const introSents = intro.split(/。|！|？/).filter(s => s.length >= 10);
+    for (const s of introSents) {
+      if (PAIN_PATTERNS.some(p => p.test(s))) {
+        pain = s.replace(/^[^\w\u3040-\u9fff]+/, '').trim().slice(0, 50);
+        break;
+      }
     }
-    if (subtitleLine) {
-      document.getElementById('subtitle').value = subtitleLine;
-      document.getElementById('subtitle-badge').style.display = '';
+    // fallback: second paragraph often states the reader's problem
+    if (!pain && introSents.length >= 2) {
+      pain = introSents[1].trim().slice(0, 50);
     }
+
+    // --- Fill fields ---
+    const fill = (id, val, badgeId) => {
+      if (val) {
+        document.getElementById(id).value = val;
+        if (badgeId) document.getElementById(badgeId).style.display = '';
+      }
+    };
+    fill('seo-keyword', keyword, 'kw-badge');
+    fill('seo-pain', pain, 'pain-badge');
+    fill('title', titleLine, 'title-badge');
+    fill('subtitle', subtitleLine, 'subtitle-badge');
     if (benefits.length > 0) {
-      document.getElementById('benefit1').value = benefits[0] || '';
-      document.getElementById('benefit2').value = benefits[1] || '';
-      document.getElementById('benefit3').value = benefits[2] || '';
-      document.getElementById('benefit-badge').style.display = '';
+      fill('benefit1', benefits[0] || '', null);
+      fill('benefit2', benefits[1] || '', null);
+      fill('benefit3', benefits[2] || '', null);
+      if (benefits.some(Boolean)) document.getElementById('benefit-badge').style.display = '';
     }
 
-    // Scroll to content section
-    document.getElementById('title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('seo-keyword').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // ---- Prompt generation ----
+  // ---- Image prompt generation ----
   function buildPrompt(title, subtitle, benefits, bonus, platform, style, moods, colorInfo, keywords, lang, trends) {
     const parts = [];
     if (lang === 'en') {
-      // Build subject line
       let subject = `Eyecatch image for blog article: "${title}"`;
       if (subtitle) subject += ` — subtitle: "${subtitle}"`;
       parts.push(subject);
-      // Benefits as text callouts
       const bens = benefits.filter(Boolean);
-      if (bens.length) parts.push(`key benefits shown: ${bens.join(' / ')}`);
-      if (bonus) parts.push(`special offer label: "${bonus}"`);
+      if (bens.length) parts.push(`key benefits: ${bens.join(' / ')}`);
+      if (bonus) parts.push(`special offer: "${bonus}"`);
       parts.push(PLATFORMS[platform].en);
       parts.push(STYLES[style].en);
       if (moods.size) parts.push(Array.from(moods).join(', '));
@@ -590,7 +595,7 @@
       if (subtitle) subject += `、サブタイトル「${subtitle}」`;
       parts.push(subject);
       const bens = benefits.filter(Boolean);
-      if (bens.length) parts.push(`ベネフィット表示: ${bens.join('、')}`);
+      if (bens.length) parts.push(`ベネフィット: ${bens.join('、')}`);
       if (bonus) parts.push(`特典ラベル: 「${bonus}」`);
       parts.push(PLATFORMS[platform].ja);
       parts.push(STYLES[style].ja);
@@ -614,13 +619,13 @@
     const title = document.getElementById('title').value.trim();
     if (!title) { alert('メインタイトルを入力してください'); return; }
 
-    const subtitle = document.getElementById('subtitle').value.trim();
-    const benefit1 = document.getElementById('benefit1').value.trim();
-    const benefit2 = document.getElementById('benefit2').value.trim();
-    const benefit3 = document.getElementById('benefit3').value.trim();
-    const bonus = document.getElementById('bonus').value.trim();
-    const keywords = document.getElementById('keywords').value.trim();
-    const lang = document.getElementById('lang').value;
+    const subtitle  = document.getElementById('subtitle').value.trim();
+    const benefit1  = document.getElementById('benefit1').value.trim();
+    const benefit2  = document.getElementById('benefit2').value.trim();
+    const benefit3  = document.getElementById('benefit3').value.trim();
+    const bonus     = document.getElementById('bonus').value.trim();
+    const keywords  = document.getElementById('keywords').value.trim();
+    const lang      = document.getElementById('lang').value;
     const colorInfo = getColorInfo();
 
     lastPrompt = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], bonus, currentPlatform, currentStyle, activeMoods, colorInfo, keywords, lang, activeTrends);
@@ -659,76 +664,6 @@
     const ar = MJ_AR[currentPlatform] || '191:100';
     const p = '/imagine prompt: ' + lastPrompt + ` --ar ${ar} --v 6`;
     navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！\n--ar ' + ar));
-  }
-
-  // ---- Claude SEO prompt generation ----
-  function generateClaudePrompt() {
-    const article = document.getElementById('article-input').value.trim();
-    const keyword = document.getElementById('seo-keyword').value.trim();
-    const pain = document.getElementById('seo-pain').value.trim();
-
-    if (!article) { alert('記事本文を貼り付けてください'); return; }
-    if (!keyword) { alert('ターゲットキーワードを入力してください'); return; }
-
-    const prompt = `# 指令
-あなたは月間1000万PVを誇るメディアの編集長兼、成約率トップクラスのダイレクトレスポンスコピーライターです。
-提供された【記事本文】から、検索エンジンのアルゴリズムと人間の心理的トリガーの両方をハックした最高品質の「SEOタイトル」「サブタイトル（H2）」「3つのベネフィット」を抽出・生成してください。
-
-# 前提条件
-- ターゲットキーワード: ${keyword}
-- ターゲットの悩み(ペイン): ${pain || '（記事内容から推測してください）'}
-- 記事本文:
-${article}
-
-# 出力要件と厳守ルール
-
-## 1. メインタイトル (H1)
-- 【文字数制限】: 厳密に28文字〜32文字以内。
-- 【キーワード配置】: ターゲットキーワードを左から15文字以内に必ず配置すること。
-- 【クリック率（CTR）向上施策】: 以下の要素を最低1つ含めること。
-  - 権威性・数字（例: 3つの理由、99%、最新版）
-  - 希少性・限定性・価格差（例: 知らないと損、プロだけがやってる）
-  - ギャップ・好奇心（例: なぜ〇〇は××なのか？）
-- 記号（【】、｜、！など）を視認性向上のために効果的に使用すること。
-
-## 2. サブタイトル (H2 / リードコピー)
-- 【文字数制限】: 40〜60文字以内。
-- 【役割】: メインタイトルで惹きつけた読者に「この記事は自分のために書かれたものだ」と確信させること。
-- 【構成要素】: 読者の「ペイン（痛み・悩み）」を提示し、この記事がその解決策を提示していることを明示すること。
-
-## 3. 記事を読む3つのベネフィット
-- 記事の単なる「特徴」ではなく、読者の「未来の変化・利益（ベネフィット）」に変換して抽出すること。
-- 各ベネフィットは以下の論理構造で出力すること。
-  - 「[記事の特徴] だから、[読者の痛みが解消] し、[理想の未来（ベネフィット）] になる」
-- 抽象的な表現を避け、価格差、希少性、時間短縮、精神的安心など、具体的なメリットが伝わる言葉を優先して抽出すること。
-
-# 出力フォーマット
-（※以下のフォーマット以外の余計な挨拶や思考プロセスは一切出力しないこと）
-
-■メインタイトル（〇文字）:
-[生成したタイトル]
-
-■サブタイトル（〇文字）:
-[生成したサブタイトル]
-
-■この記事を読む3つのベネフィット:
-1. 【〇〇の解消】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。
-2. 【〇〇の獲得】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。
-3. 【〇〇の回避】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。`;
-
-    document.getElementById('claude-prompt-box').textContent = prompt;
-    document.getElementById('claude-prompt-area').style.display = '';
-    document.getElementById('claude-copy-btn').textContent = '📋 コピー';
-    document.getElementById('claude-prompt-area').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function copyClaudePrompt() {
-    const text = document.getElementById('claude-prompt-box').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('claude-copy-btn');
-      btn.textContent = '✅ コピー済み';
-      setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
-    });
   }
 
   function copyDalle() {
