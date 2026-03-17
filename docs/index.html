@@ -819,20 +819,62 @@
   function copyBenefitPrompt() {
     const article = document.getElementById('article-input').value.trim();
     if (!article) { alert('先に記事本文を貼り付けてください'); return; }
+    const keyword = document.getElementById('keywords').value.trim();
 
-    const prompt = `<instruction>
-提供される記事を分析し、ターゲットユーザーが得られる「ベネフィット」を3つ抽出してください。
-</instruction>
-
+    const prompt = `<system_prompt>
+あなたは月間1000万PVを誇るメディアの編集長兼、成約率トップクラスのダイレクトレスポンスコピーライターです。
+提供されたテキストデータから、検索エンジン最適化（SEO）と人間心理（CTR向上）を両立した要素を抽出・生成してください。
+</system_prompt>
 <rules>
-1. 構成: 各ベネフィットは「1. ベネフィット → 2. 背景にあるペイン（悩み） → 3. 一言キャッチ」の順で出力すること。
-2. 法的配慮: 薬機法に触れる可能性のある表現は自動で削除し、「効果的な印象」を与えるポジティブな表現に言い換えること。
-3. 反応率向上: 記事内に「寒暖、匂い、価格差、希少性」などのクリック率が上がる要素があれば、優先的に抽出し強調すること。
+  <rule_1>
+    <target>メインタイトル (H1)</target>
+    <constraints>
+      - 文字数: 厳密に28文字〜32文字以内（全角・半角問わず1文字とカウント）
+      - キーワード配置: <input>で指定された【ターゲットキーワード】を左から15文字以内に絶対配置
+      - CTR向上施策: 「寒暖」「匂い」「価格差」「希少性」などの五感・欲求を刺激するワード、または「権威性・数字」「ギャップ・好奇心」を最低1つ含める
+      - 記号: 【】、｜、！などを視認性向上のために効果的に使用
+    </constraints>
+  </rule_1>
+  <rule_2>
+    <target>サブタイトル (H2)</target>
+    <constraints>
+      - 文字数: 40〜60文字以内
+      - 役割: 読者の「ペイン（痛み・悩み）」を提示し、本記事がその解決策であると明示する
+    </constraints>
+  </rule_2>
+  <rule_3>
+    <target>3つのベネフィット</target>
+    <constraints>
+      - 思考プロセス: 「記事の特徴 → 読者のベネフィット → ペインの解消 → 一言キャッチ」の論理順序で情報を整理し抽出する
+      - 表現ルール: 抽象的な表現を排除。価格差、希少性、時間短縮など具体的なメリットを優先
+      - コンプライアンス: 薬機法に触れる断定的な効能効果表現は自動削除し、必ず「効果的印象」を与える安全な表現へ言い換える
+    </constraints>
+  </rule_3>
+  <rule_4>
+    <target>出力制限</target>
+    <constraints>
+      - 指定された<output_format>に完全一致させること
+      - 余計な挨拶、AIの思考プロセス、解説文などは一切出力しない（最終出力結果のみを提示）
+    </constraints>
+  </rule_4>
 </rules>
-
-<article>
+<input>
+  <keyword>${keyword || '[ここにキーワードを入力]'}</keyword>
+  <pain>[想定される読者の悩みを入力 ※任意]</pain>
+  <article>
 ${article}
-</article>`;
+  </article>
+</input>
+<output_format>
+■メインタイトル（〇文字）:
+[生成したタイトル]
+■サブタイトル（〇文字）:
+[生成したサブタイトル]
+■この記事を読む3つのベネフィット:
+1. 【〇〇の解消】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。[一言キャッチ]
+2. 【〇〇の獲得】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。[一言キャッチ]
+3. 【〇〇の回避】: [特徴]により、[ペイン]が解決し、[ベネフィット]が得られます。[一言キャッチ]
+</output_format>`;
 
     navigator.clipboard.writeText(prompt).then(() => {
       const btn = document.getElementById('benefit-claude-btn');
