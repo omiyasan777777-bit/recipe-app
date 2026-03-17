@@ -275,6 +275,11 @@ def template_use(template_id: int):
     )
 
 
+@app.route("/thumbnail-generator")
+def thumbnail_generator():
+    return render_template("thumbnail_generator.html")
+
+
 # ── バックグラウンドスケジューラー ────────────────────────────────
 
 def _scheduler_loop():
