@@ -315,17 +315,6 @@
     </div>
   </div>
 
-  <!-- ⑧ 出力言語 -->
-  <div class="card">
-    <div class="form-group">
-      <label>出力言語</label>
-      <select id="lang">
-        <option value="en">English（英語）</option>
-        <option value="ja">日本語</option>
-      </select>
-    </div>
-  </div>
-
   <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">🖼️ 画像プロンプトを生成</button>
 
   <div id="empty">
@@ -355,19 +344,19 @@
 </main>
 <script>
   const STYLES = {
-    photorealistic: { en: "photorealistic, high quality photography, DSLR, sharp focus, professional lighting", ja: "フォトリアル、高品質写真、シャープなフォーカス、プロ照明" },
-    illustration:   { en: "digital illustration, vibrant colors, detailed artwork, concept art style", ja: "デジタルイラスト、鮮やかな色彩、詳細なアートワーク" },
-    flat:           { en: "flat design, vector art, clean lines, bold colors, minimal shadows", ja: "フラットデザイン、ベクターアート、クリーンなライン、ボールドカラー" },
-    cinematic:      { en: "cinematic, dramatic lighting, depth of field, film grain, movie poster style", ja: "シネマティック、ドラマチックな照明、被写界深度、映画ポスタースタイル" },
+    photorealistic: "フォトリアル、高品質写真、シャープなフォーカス、プロ照明",
+    illustration:   "デジタルイラスト、鮮やかな色彩、詳細なアートワーク",
+    flat:           "フラットデザイン、ベクターアート、クリーンなライン、ボールドカラー",
+    cinematic:      "シネマティック、ドラマチックな照明、被写界深度、映画ポスタースタイル",
   };
   const PLATFORMS = {
-    blog:    { en: "blog eyecatch header image, 1.91:1 aspect ratio, OGP image, editorial layout, text space on left", ja: "ブログアイキャッチ、1.91:1アスペクト比、OGP画像、エディトリアルレイアウト" },
-    youtube: { en: "YouTube thumbnail, 16:9 aspect ratio, eye-catching, bold composition", ja: "YouTubeサムネイル、16:9、目を引くデザイン" },
-    sns:     { en: "social media post, square 1:1 format, visually striking", ja: "SNS投稿画像、正方形1:1、インパクトのある" },
-    general: { en: "digital artwork, versatile composition, high resolution", ja: "デジタルアートワーク、汎用構図、高解像度" },
+    blog:    "ブログアイキャッチ、1.91:1アスペクト比、OGP画像、エディトリアルレイアウト",
+    youtube: "YouTubeサムネイル、16:9、目を引くデザイン",
+    sns:     "SNS投稿画像、正方形1:1、インパクトのある",
+    general: "デジタルアートワーク、汎用構図、高解像度",
   };
   const MJ_AR = { blog: '191:100', youtube: '16:9', sns: '1:1', general: '4:3' };
-  const QUALITY = { en: "8K resolution, masterpiece, best quality, highly detailed", ja: "8K解像度、マスターピース、最高品質、高精細" };
+  const QUALITY = "8K解像度、マスターピース、最高品質、高精細";
   const STYLE_LABELS = { photorealistic:"フォトリアル風", illustration:"イラスト風", flat:"フラットデザイン風", cinematic:"シネマティック風" };
 
   let currentStyle = "photorealistic";
@@ -433,38 +422,22 @@
   });
 
   // ---- Image prompt generation ----
-  function buildPrompt(title, subtitle, benefits, bonus, platform, style, moods, colorInfo, keywords, lang, trends) {
+  function buildPrompt(title, subtitle, benefits, bonus, platform, style, moods, colorInfo, keywords, trends) {
     const bens = benefits.filter(Boolean);
     const parts = [];
 
-    if (lang === 'en') {
-      // Visual scene
-      parts.push(`${PLATFORMS[platform].en}, ${STYLES[style].en}`);
-      if (moods.size) parts.push(Array.from(moods).join(', '));
-      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[0]).join(', '));
-      if (colorInfo) parts.push(`color scheme: ${colorInfo.en}`);
-      if (keywords) parts.push(keywords);
-      parts.push(QUALITY.en);
-      // Text overlays
-      parts.push(`Include bold text overlay: main headline "${title}"`);
-      if (subtitle) parts.push(`subtitle text: "${subtitle}"`);
-      if (bens.length) parts.push(`benefit points on image: ${bens.map((b, i) => `"${i+1}. ${b}"`).join(', ')}`);
-      if (bonus) parts.push(`promotional badge text: "${bonus}"`);
-    } else {
-      // Visual scene
-      parts.push(`${PLATFORMS[platform].ja}、${STYLES[style].ja}`);
-      if (moods.size) parts.push(Array.from(moods).map(m => m.split(',')[0].trim()).join('、'));
-      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[1]).join('、'));
-      if (colorInfo) parts.push(`カラースキーム: ${colorInfo.ja}`);
-      if (keywords) parts.push(keywords);
-      parts.push(QUALITY.ja);
-      // Text overlays
-      parts.push(`画像内テキスト — メインタイトル:「${title}」`);
-      if (subtitle) parts.push(`サブタイトル:「${subtitle}」`);
-      if (bens.length) parts.push(`ベネフィット表示: ${bens.map((b, i) => `「${i+1}. ${b}」`).join('、')}`);
-      if (bonus) parts.push(`特典バッジ:「${bonus}」`);
-    }
-    return parts.join(', ');
+    parts.push(`${PLATFORMS[platform]}、${STYLES[style]}`);
+    if (moods.size) parts.push(Array.from(moods).map(m => m.split(',')[0].trim()).join('、'));
+    if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[1]).join('、'));
+    if (colorInfo) parts.push(`カラースキーム: ${colorInfo.ja}`);
+    if (keywords) parts.push(keywords);
+    parts.push(QUALITY);
+    parts.push(`画像内テキスト — メインタイトル:「${title}」`);
+    if (subtitle) parts.push(`サブタイトル:「${subtitle}」`);
+    if (bens.length) parts.push(`ベネフィット表示: ${bens.map((b, i) => `「${i+1}. ${b}」`).join('、')}`);
+    if (bonus) parts.push(`特典バッジ:「${bonus}」`);
+
+    return parts.join('、');
   }
 
   function getColorInfo() {
@@ -484,10 +457,9 @@
     const benefit3  = document.getElementById('benefit3').value.trim();
     const bonus     = document.getElementById('bonus').value.trim();
     const keywords  = document.getElementById('keywords').value.trim();
-    const lang      = document.getElementById('lang').value;
     const colorInfo = getColorInfo();
 
-    lastPrompt = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], bonus, currentPlatform, currentStyle, activeMoods, colorInfo, keywords, lang, activeTrends);
+    lastPrompt = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], bonus, currentPlatform, currentStyle, activeMoods, colorInfo, keywords, activeTrends);
     document.getElementById('prompt-box').textContent = lastPrompt;
     document.getElementById('result').style.display = '';
     document.getElementById('empty').style.display = 'none';
@@ -497,7 +469,7 @@
     const varBox = document.getElementById('variations');
     varBox.innerHTML = '';
     Object.keys(STYLES).filter(s => s !== currentStyle).forEach(s => {
-      const vp = buildPrompt(title, subtitle, [], '', currentPlatform, s, new Set(), colorInfo, '', lang, new Set());
+      const vp = buildPrompt(title, subtitle, [], '', currentPlatform, s, new Set(), colorInfo, '', new Set());
       const div = document.createElement('div');
       div.className = 'variation-item';
       div.innerHTML = `<div class="variation-label">${STYLE_LABELS[s]}</div><div>${vp}</div>`;
@@ -526,8 +498,7 @@
   }
 
   function copyDalle() {
-    let p = lastPrompt.replace(/^Eyecatch image for blog article: ".*?", /, '').replace(/^「.*?」のブログ記事アイキャッチ画像, /, '');
-    navigator.clipboard.writeText(p).then(() => alert('DALL-E用プロンプトをコピーしました！'));
+    navigator.clipboard.writeText(lastPrompt).then(() => alert('DALL-E用プロンプトをコピーしました！'));
   }
 </script>
 </body>
