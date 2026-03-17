@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>🖼️ ブログアイキャッチ・サムネイル プロンプト生成</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #0085ff; --blue-dk: #006dcc;
+      --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+      --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+      --red: #ef4444; --green: #22c55e;
+      --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--gray-50); color: var(--gray-800); min-height: 100vh;
+    }
+    header {
+      background: #fff; border-bottom: 1px solid var(--gray-200);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 600px; margin: 0 auto; padding: 0 16px;
+      height: 56px; display: flex; align-items: center;
+    }
+    .header-title { font-size: 17px; font-weight: 700; color: var(--blue); }
+    main { max-width: 600px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--gray-400);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+    }
+    label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+    input[type="text"], textarea, select {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); font-size: 15px; font-family: inherit;
+      color: var(--gray-800); background: #fff; appearance: none;
+      -webkit-appearance: none; outline: none; transition: border-color .15s;
+    }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    input:focus, textarea:focus, select:focus { border-color: var(--blue); }
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 11px 18px; border-radius: var(--radius); border: none;
+      font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: opacity .15s, transform .1s; -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--blue); color: #fff; width: 100%; }
+    .btn-secondary { background: var(--gray-100); color: var(--gray-600); width: 100%; border: 1.5px solid var(--gray-200); }
+    .btn-outline {
+      background: transparent; color: var(--gray-600);
+      border: 1.5px solid var(--gray-200); font-size: 13px; padding: 7px 13px;
+    }
+
+    /* Style chips */
+    .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .style-chip {
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+      user-select: none;
+    }
+    .style-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+
+    /* Mood/trend tags */
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mood-tag, .trend-tag {
+      padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+      user-select: none;
+    }
+    .mood-tag.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .trend-tag.active { border-color: #f97316; background: #fff7ed; color: #ea580c; }
+    .trend-section-title { font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 8px; margin-top: 12px; text-transform: uppercase; letter-spacing:.05em; }
+
+    /* Color scheme chips */
+    .color-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .color-chip {
+      display: flex; align-items: center; gap: 7px; padding: 6px 12px;
+      border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 12px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+      user-select: none;
+    }
+    .color-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,.1); }
+
+    /* Result */
+    .result-card { border: 2px solid var(--blue); }
+    .prompt-box {
+      background: var(--gray-100); border-radius: 10px; padding: 14px;
+      font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+      font-family: 'Courier New', monospace; color: var(--gray-800); user-select: all;
+    }
+    .result-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .result-label { font-size: 14px; font-weight: 700; color: var(--blue); }
+    .action-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .variation-item {
+      background: var(--gray-100); border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; font-family: 'Courier New', monospace; line-height: 1.6;
+      cursor: pointer; transition: background .15s;
+    }
+    .variation-item:hover { background: var(--gray-200); }
+    .variation-label {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: .05em; margin-bottom: 6px; font-family: inherit;
+    }
+    .variations-list { display: flex; flex-direction: column; gap: 10px; }
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-600); }
+
+    #empty { text-align: center; padding: 48px 16px; color: var(--gray-400); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* Extracted badge */
+    .ext-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; color: var(--green);
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px;
+      padding: 1px 6px; margin-left: 6px; vertical-align: middle;
+    }
+
+    /* Benefits row */
+    .benefits-grid { display: flex; flex-direction: column; gap: 8px; }
+    .benefit-row { display: flex; align-items: center; gap: 8px; }
+    .benefit-num {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--blue);
+      color: #fff; font-size: 12px; font-weight: 700; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .benefit-row input { margin-bottom: 0; }
+
+    /* Platform tabs */
+    .platform-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .platform-tab {
+      padding: 7px 13px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .platform-tab.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <span class="header-title">🖼️ ブログアイキャッチ・サムネイル生成</span>
+  </div>
+</header>
+<main>
+
+  <!-- ② コンテンツ情報 -->
+  <div class="card">
+    <div class="card-title">📝 コンテンツ情報</div>
+
+    <div class="form-group">
+      <label>ターゲットキーワード</label>
+      <input type="text" id="seo-keyword" placeholder="例: ダイエット レシピ 簡単、副業 在宅 初心者">
+    </div>
+
+    <div class="form-group">
+      <label>読者の悩み（ペイン）</label>
+      <input type="text" id="seo-pain" placeholder="例: 忙しくて料理する時間がない、何から始めればいいかわからない">
+    </div>
+
+    <div class="form-group">
+      <label>メインタイトル <span style="color:var(--red)">*</span></label>
+      <input type="text" id="title" placeholder="例: 10分で作れる！絶品チキンカレーの作り方" maxlength="100">
+    </div>
+
+    <div class="form-group">
+      <label>サブタイトル</label>
+      <input type="text" id="subtitle" placeholder="例: 忙しい日でも本格的な味を実現">
+    </div>
+
+    <div class="form-group">
+      <label>ベネフィット3つ</label>
+      <div class="benefits-grid">
+        <div class="benefit-row">
+          <div class="benefit-num">1</div>
+          <input type="text" id="benefit1" placeholder="例: 材料費300円以下でコスパ最強">
+        </div>
+        <div class="benefit-row">
+          <div class="benefit-num">2</div>
+          <input type="text" id="benefit2" placeholder="例: 包丁いらず・フライパン1つで完結">
+        </div>
+        <div class="benefit-row">
+          <div class="benefit-num">3</div>
+          <input type="text" id="benefit3" placeholder="例: 冷蔵庫の残り野菜をフル活用できる">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>特典・オファー（任意）</label>
+      <input type="text" id="bonus" placeholder="例: 無料PDF付き、限定レシピ10選プレゼント、期間限定50%OFF">
+    </div>
+
+    <div class="form-group">
+      <label>追加キーワード（任意）</label>
+      <input type="text" id="keywords" placeholder="例: 俯瞰、食材、木のテーブル、スタジオ照明">
+    </div>
+  </div>
+
+  <!-- ③ プラットフォーム -->
+  <div class="card">
+    <div class="card-title">📐 プラットフォーム・サイズ</div>
+    <div class="platform-tabs" id="platform-tabs">
+      <div class="platform-tab active" data-platform="blog">📰 ブログ (1.91:1)</div>
+      <div class="platform-tab" data-platform="youtube">▶️ YouTube (16:9)</div>
+      <div class="platform-tab" data-platform="sns">📱 SNS (1:1)</div>
+      <div class="platform-tab" data-platform="general">🌐 汎用</div>
+    </div>
+  </div>
+
+  <!-- ④ スタイル -->
+  <div class="card">
+    <div class="card-title">🎨 スタイル</div>
+    <div class="style-grid">
+      <div class="style-chip active" data-style="photorealistic">📷 フォトリアル</div>
+      <div class="style-chip" data-style="illustration">🎨 イラスト</div>
+      <div class="style-chip" data-style="flat">🟦 フラットデザイン</div>
+      <div class="style-chip" data-style="cinematic">🎬 シネマティック</div>
+    </div>
+  </div>
+
+  <!-- ⑤ 雰囲気 -->
+  <div class="card">
+    <div class="card-title">✨ 雰囲気・ムード</div>
+    <div class="tag-wrap">
+      <div class="mood-tag" data-mood="bright, cheerful">明るい・元気</div>
+      <div class="mood-tag" data-mood="calm, minimalist">落ち着いた</div>
+      <div class="mood-tag" data-mood="luxurious, premium">高級感</div>
+      <div class="mood-tag" data-mood="cozy, warm">温かみ</div>
+      <div class="mood-tag" data-mood="energetic, dynamic">エネルギッシュ</div>
+      <div class="mood-tag" data-mood="dark, moody">ダーク</div>
+      <div class="mood-tag" data-mood="playful, fun">ポップ・楽しい</div>
+      <div class="mood-tag" data-mood="professional, clean">プロフェッショナル</div>
+    </div>
+  </div>
+
+  <!-- ⑥ カラースキーム -->
+  <div class="card">
+    <div class="card-title">🎨 カラースキーム</div>
+    <div class="color-chips" id="color-chips">
+      <div class="color-chip" data-color-en="white and blue, clean modern" data-color-ja="ブルー＆ホワイト">
+        <span class="color-dot" style="background:linear-gradient(135deg,#0085ff 50%,#fff 50%)"></span>ブルー＆ホワイト
+      </div>
+      <div class="color-chip" data-color-en="black and gold, luxurious metallic" data-color-ja="ブラック＆ゴールド">
+        <span class="color-dot" style="background:linear-gradient(135deg,#111 50%,#d4a017 50%)"></span>ブラック＆ゴールド
+      </div>
+      <div class="color-chip" data-color-en="soft pink and cream, feminine elegant" data-color-ja="ピンク＆クリーム">
+        <span class="color-dot" style="background:linear-gradient(135deg,#f9a8d4 50%,#fef9ee 50%)"></span>ピンク＆クリーム
+      </div>
+      <div class="color-chip" data-color-en="forest green and natural brown, organic" data-color-ja="グリーン＆ナチュラル">
+        <span class="color-dot" style="background:linear-gradient(135deg,#22c55e 50%,#a3714a 50%)"></span>グリーン＆ナチュラル
+      </div>
+      <div class="color-chip" data-color-en="vivid red and white, bold energetic" data-color-ja="レッド＆ホワイト">
+        <span class="color-dot" style="background:linear-gradient(135deg,#ef4444 50%,#fff 50%)"></span>レッド＆ホワイト
+      </div>
+      <div class="color-chip" data-color-en="deep purple and gold, royal luxury" data-color-ja="パープル＆ゴールド">
+        <span class="color-dot" style="background:linear-gradient(135deg,#7c3aed 50%,#d4a017 50%)"></span>パープル＆ゴールド
+      </div>
+      <div class="color-chip" data-color-en="warm orange and sunny yellow, vibrant" data-color-ja="オレンジ＆イエロー">
+        <span class="color-dot" style="background:linear-gradient(135deg,#f97316 50%,#fde047 50%)"></span>オレンジ＆イエロー
+      </div>
+      <div class="color-chip" data-color-en="monochrome, black white gray, minimal" data-color-ja="モノクロ">
+        <span class="color-dot" style="background:linear-gradient(135deg,#111 50%,#e5e7eb 50%)"></span>モノクロ
+      </div>
+      <div class="color-chip" data-color-en="soft pastel colors, lavender mint peach" data-color-ja="パステル">
+        <span class="color-dot" style="background:linear-gradient(135deg,#c4b5fd 33%,#6ee7b7 66%,#fca5a5 100%)"></span>パステル
+      </div>
+      <div class="color-chip" data-color-en="navy blue and silver, professional sophisticated" data-color-ja="ネイビー＆シルバー">
+        <span class="color-dot" style="background:linear-gradient(135deg,#1e3a5f 50%,#94a3b8 50%)"></span>ネイビー＆シルバー
+      </div>
+    </div>
+    <div>
+      <label style="margin-bottom:4px; font-size:12px; color:var(--gray-400)">カスタム入力（任意）</label>
+      <input type="text" id="colors-custom" placeholder="例: 深緑と金色、テラコッタとベージュ">
+    </div>
+  </div>
+
+  <!-- ⑦ トレンド -->
+  <div class="card">
+    <div class="card-title">🔥 トレンド</div>
+    <div class="trend-section-title">コンテンツ傾向</div>
+    <div class="tag-wrap">
+      <div class="trend-tag" data-trend-en="quick and easy, time-saving" data-trend-ja="時短・簡単">⏱ 時短・簡単</div>
+      <div class="trend-tag" data-trend-en="photogenic, Instagram-worthy" data-trend-ja="映え・フォトジェニック">📸 映え</div>
+      <div class="trend-tag" data-trend-en="healthy, nutritious, diet-friendly" data-trend-ja="健康・ヘルシー">🥗 ヘルシー</div>
+      <div class="trend-tag" data-trend-en="budget-friendly, cost-effective" data-trend-ja="節約・コスパ">💰 節約</div>
+      <div class="trend-tag" data-trend-en="authentic, restaurant-quality" data-trend-ja="本格・プロの味">👨‍🍳 本格派</div>
+      <div class="trend-tag" data-trend-en="viral, trending" data-trend-ja="バズり・話題">🔥 バズり</div>
+      <div class="trend-tag" data-trend-en="beginner-friendly, step-by-step" data-trend-ja="初心者向け">🌱 初心者向け</div>
+    </div>
+    <div class="trend-section-title">季節・シーン</div>
+    <div class="tag-wrap">
+      <div class="trend-tag" data-trend-en="spring seasonal" data-trend-ja="春">🌸 春</div>
+      <div class="trend-tag" data-trend-en="summer refreshing cool" data-trend-ja="夏・涼しい">☀️ 夏</div>
+      <div class="trend-tag" data-trend-en="autumn harvest" data-trend-ja="秋の味覚">🍂 秋</div>
+      <div class="trend-tag" data-trend-en="winter warming comfort" data-trend-ja="冬・温かい">❄️ 冬</div>
+      <div class="trend-tag" data-trend-en="holiday party celebration" data-trend-ja="パーティー">🎉 パーティー</div>
+      <div class="trend-tag" data-trend-en="everyday home life" data-trend-ja="日常・おうち">🏠 おうち</div>
+    </div>
+  </div>
+
+  <!-- ⑧ 出力言語 -->
+  <div class="card">
+    <div class="form-group">
+      <label>出力言語</label>
+      <select id="lang">
+        <option value="en">English（英語）</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">🖼️ 画像プロンプトを生成</button>
+
+  <div id="empty">
+    <div class="empty-icon">🖼️</div>
+    <div>メインタイトルを入力して生成ボタンを押してください</div>
+  </div>
+
+  <div id="result" style="display:none">
+    <div class="card result-card">
+      <div class="result-header">
+        <span class="result-label">✨ Gemini nano banana 2 用プロンプト</span>
+        <button class="btn btn-outline" id="copy-btn" onclick="copyPrompt()">📋 コピー</button>
+      </div>
+      <div class="prompt-box" id="prompt-box"></div>
+      <div class="action-row">
+        <button class="btn btn-outline" onclick="copyMidjourney()">🎨 Midjourney 用</button>
+        <button class="btn btn-outline" onclick="copyDalle()">🤖 DALL-E 用</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">他のスタイルで試す</div>
+      <div class="variations-list" id="variations"></div>
+    </div>
+  </div>
+
+</main>
+<script>
+  const STYLES = {
+    photorealistic: { en: "photorealistic, high quality photography, DSLR, sharp focus, professional lighting", ja: "フォトリアル、高品質写真、シャープなフォーカス、プロ照明" },
+    illustration:   { en: "digital illustration, vibrant colors, detailed artwork, concept art style", ja: "デジタルイラスト、鮮やかな色彩、詳細なアートワーク" },
+    flat:           { en: "flat design, vector art, clean lines, bold colors, minimal shadows", ja: "フラットデザイン、ベクターアート、クリーンなライン、ボールドカラー" },
+    cinematic:      { en: "cinematic, dramatic lighting, depth of field, film grain, movie poster style", ja: "シネマティック、ドラマチックな照明、被写界深度、映画ポスタースタイル" },
+  };
+  const PLATFORMS = {
+    blog:    { en: "blog eyecatch header image, 1.91:1 aspect ratio, OGP image, editorial layout, text space on left", ja: "ブログアイキャッチ、1.91:1アスペクト比、OGP画像、エディトリアルレイアウト" },
+    youtube: { en: "YouTube thumbnail, 16:9 aspect ratio, eye-catching, bold composition", ja: "YouTubeサムネイル、16:9、目を引くデザイン" },
+    sns:     { en: "social media post, square 1:1 format, visually striking", ja: "SNS投稿画像、正方形1:1、インパクトのある" },
+    general: { en: "digital artwork, versatile composition, high resolution", ja: "デジタルアートワーク、汎用構図、高解像度" },
+  };
+  const MJ_AR = { blog: '191:100', youtube: '16:9', sns: '1:1', general: '4:3' };
+  const QUALITY = { en: "8K resolution, masterpiece, best quality, highly detailed", ja: "8K解像度、マスターピース、最高品質、高精細" };
+  const STYLE_LABELS = { photorealistic:"フォトリアル風", illustration:"イラスト風", flat:"フラットデザイン風", cinematic:"シネマティック風" };
+
+  let currentStyle = "photorealistic";
+  let currentPlatform = "blog";
+  let activeMoods = new Set();
+  let activeTrends = new Set();
+  let activeColor = null;
+  let lastPrompt = "";
+
+  // ---- Platform tabs ----
+  document.querySelectorAll('.platform-tab').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.platform-tab').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentPlatform = el.dataset.platform;
+    });
+  });
+
+  // ---- Style chips ----
+  document.querySelectorAll('.style-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentStyle = el.dataset.style;
+    });
+  });
+
+  // ---- Mood tags ----
+  document.querySelectorAll('.mood-tag').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('active');
+      if (el.classList.contains('active')) activeMoods.add(el.dataset.mood);
+      else activeMoods.delete(el.dataset.mood);
+    });
+  });
+
+  // ---- Trend tags ----
+  document.querySelectorAll('.trend-tag').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('active');
+      const key = el.dataset.trendEn + '|' + el.dataset.trendJa;
+      if (el.classList.contains('active')) activeTrends.add(key);
+      else activeTrends.delete(key);
+    });
+  });
+
+  // ---- Color chips ----
+  document.querySelectorAll('.color-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      if (el.classList.contains('active')) {
+        el.classList.remove('active'); activeColor = null;
+      } else {
+        document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        activeColor = { en: el.dataset.colorEn, ja: el.dataset.colorJa };
+        document.getElementById('colors-custom').value = '';
+      }
+    });
+  });
+  document.getElementById('colors-custom').addEventListener('input', () => {
+    document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+    activeColor = null;
+  });
+
+  // ---- Image prompt generation ----
+  function buildPrompt(title, subtitle, benefits, bonus, platform, style, moods, colorInfo, keywords, lang, trends) {
+    const bens = benefits.filter(Boolean);
+    const parts = [];
+
+    if (lang === 'en') {
+      // Visual scene
+      parts.push(`${PLATFORMS[platform].en}, ${STYLES[style].en}`);
+      if (moods.size) parts.push(Array.from(moods).join(', '));
+      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[0]).join(', '));
+      if (colorInfo) parts.push(`color scheme: ${colorInfo.en}`);
+      if (keywords) parts.push(keywords);
+      parts.push(QUALITY.en);
+      // Text overlays
+      parts.push(`Include bold text overlay: main headline "${title}"`);
+      if (subtitle) parts.push(`subtitle text: "${subtitle}"`);
+      if (bens.length) parts.push(`benefit points on image: ${bens.map((b, i) => `"${i+1}. ${b}"`).join(', ')}`);
+      if (bonus) parts.push(`promotional badge text: "${bonus}"`);
+    } else {
+      // Visual scene
+      parts.push(`${PLATFORMS[platform].ja}、${STYLES[style].ja}`);
+      if (moods.size) parts.push(Array.from(moods).map(m => m.split(',')[0].trim()).join('、'));
+      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[1]).join('、'));
+      if (colorInfo) parts.push(`カラースキーム: ${colorInfo.ja}`);
+      if (keywords) parts.push(keywords);
+      parts.push(QUALITY.ja);
+      // Text overlays
+      parts.push(`画像内テキスト — メインタイトル:「${title}」`);
+      if (subtitle) parts.push(`サブタイトル:「${subtitle}」`);
+      if (bens.length) parts.push(`ベネフィット表示: ${bens.map((b, i) => `「${i+1}. ${b}」`).join('、')}`);
+      if (bonus) parts.push(`特典バッジ:「${bonus}」`);
+    }
+    return parts.join(', ');
+  }
+
+  function getColorInfo() {
+    if (activeColor) return activeColor;
+    const custom = document.getElementById('colors-custom').value.trim();
+    if (custom) return { en: custom, ja: custom };
+    return null;
+  }
+
+  function generate() {
+    const title = document.getElementById('title').value.trim();
+    if (!title) { alert('メインタイトルを入力してください'); return; }
+
+    const subtitle  = document.getElementById('subtitle').value.trim();
+    const benefit1  = document.getElementById('benefit1').value.trim();
+    const benefit2  = document.getElementById('benefit2').value.trim();
+    const benefit3  = document.getElementById('benefit3').value.trim();
+    const bonus     = document.getElementById('bonus').value.trim();
+    const keywords  = document.getElementById('keywords').value.trim();
+    const lang      = document.getElementById('lang').value;
+    const colorInfo = getColorInfo();
+
+    lastPrompt = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], bonus, currentPlatform, currentStyle, activeMoods, colorInfo, keywords, lang, activeTrends);
+    document.getElementById('prompt-box').textContent = lastPrompt;
+    document.getElementById('result').style.display = '';
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('copy-btn').textContent = '📋 コピー';
+
+    // Variations
+    const varBox = document.getElementById('variations');
+    varBox.innerHTML = '';
+    Object.keys(STYLES).filter(s => s !== currentStyle).forEach(s => {
+      const vp = buildPrompt(title, subtitle, [], '', currentPlatform, s, new Set(), colorInfo, '', lang, new Set());
+      const div = document.createElement('div');
+      div.className = 'variation-item';
+      div.innerHTML = `<div class="variation-label">${STYLE_LABELS[s]}</div><div>${vp}</div>`;
+      div.onclick = () => {
+        lastPrompt = vp;
+        document.getElementById('prompt-box').textContent = vp;
+        document.getElementById('copy-btn').textContent = '📋 コピー';
+      };
+      varBox.appendChild(div);
+    });
+
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyPrompt() {
+    navigator.clipboard.writeText(lastPrompt).then(() => {
+      document.getElementById('copy-btn').textContent = '✅ コピー済み';
+      setTimeout(() => { document.getElementById('copy-btn').textContent = '📋 コピー'; }, 2000);
+    });
+  }
+
+  function copyMidjourney() {
+    const ar = MJ_AR[currentPlatform] || '191:100';
+    const p = '/imagine prompt: ' + lastPrompt + ` --ar ${ar} --v 6`;
+    navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！\n--ar ' + ar));
+  }
+
+  function copyDalle() {
+    let p = lastPrompt.replace(/^Eyecatch image for blog article: ".*?", /, '').replace(/^「.*?」のブログ記事アイキャッチ画像, /, '');
+    navigator.clipboard.writeText(p).then(() => alert('DALL-E用プロンプトをコピーしました！'));
+  }
+</script>
+</body>
+</html>
