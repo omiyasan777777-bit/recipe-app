@@ -30,15 +30,21 @@
       background: #fff; border-radius: var(--radius);
       box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
     }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px;
+    }
     label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
-    input[type="text"], select {
+    input[type="text"], textarea, select {
       width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
       border-radius: var(--radius); font-size: 16px; font-family: inherit;
       color: var(--gray-800); background: #fff; appearance: none;
       -webkit-appearance: none; outline: none; transition: border-color .15s;
     }
-    input:focus, select:focus { border-color: var(--blue); }
-    .form-group { margin-bottom: 20px; }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    input:focus, textarea:focus, select:focus { border-color: var(--blue); }
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       padding: 12px 20px; border-radius: var(--radius); border: none;
@@ -51,6 +57,14 @@
       background: transparent; color: var(--gray-600);
       border: 1.5px solid var(--gray-200); font-size: 14px; padding: 8px 14px;
     }
+    .benefit-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .benefit-row:last-child { margin-bottom: 0; }
+    .benefit-num {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--blue);
+      color: #fff; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .benefit-row input { margin-bottom: 0; }
     .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .style-chip {
       display: flex; align-items: center; gap: 8px; padding: 10px 12px;
@@ -59,18 +73,38 @@
       transition: border-color .15s, background .15s; background: #fff;
     }
     .style-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
-    .mood-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-    .mood-tag {
+    .color-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .color-chip {
+      display: flex; align-items: center; gap: 6px;
       padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
-      cursor: pointer; font-size: 13px; font-weight: 600;
-      transition: border-color .15s, background .15s; background: #fff;
-      user-select: none;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .color-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .color-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.1); flex-shrink: 0;
+    }
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mood-tag, .trend-tag {
+      padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
     }
     .mood-tag.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+    .trend-tag.active { border-color: #f97316; background: #fff7ed; color: #ea580c; }
+    .section-sub { font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 8px; margin-top: 12px; letter-spacing: .04em; text-transform: uppercase; }
+    .platform-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .platform-tab {
+      padding: 7px 13px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .platform-tab.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
     .result-card { border: 2px solid var(--blue); }
     .prompt-box {
       background: var(--gray-100); border-radius: 10px; padding: 14px;
-      font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+      font-size: 13px; line-height: 1.75; white-space: pre-wrap; word-break: break-word;
       font-family: 'Courier New', monospace; color: var(--gray-800); user-select: all;
     }
     .result-header {
@@ -90,17 +124,7 @@
     }
     .variations-list { display: flex; flex-direction: column; gap: 10px; }
     .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-600); }
-    .trend-tag {
-      padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
-      cursor: pointer; font-size: 13px; font-weight: 600;
-      transition: border-color .15s, background .15s; background: #fff;
-      user-select: none;
-    }
-    .trend-tag.active { border-color: #f97316; background: #fff7ed; color: #ea580c; }
-    .trend-section-title { font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; margin-top: 12px; }
-    #empty {
-      text-align: center; padding: 48px 16px; color: var(--gray-400);
-    }
+    #empty { text-align: center; padding: 48px 16px; color: var(--gray-400); }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
   </style>
 </head>
@@ -112,79 +136,146 @@
 </header>
 <main>
 
+  <!-- コンテンツ情報 -->
+  <div class="card">
+    <div class="card-title">📝 コンテンツ情報</div>
+
+    <div class="form-group">
+      <label>メインタイトル <span style="color:var(--red)">*</span></label>
+      <input type="text" id="title" placeholder="例: 10分で作れる！絶品チキンカレーの作り方" maxlength="100">
+    </div>
+
+    <div class="form-group">
+      <label>サブタイトル</label>
+      <input type="text" id="subtitle" placeholder="例: 忙しい日でも本格的な味を実現" maxlength="80">
+    </div>
+
+    <div class="form-group">
+      <label>ベネフィット3つ</label>
+      <div class="benefit-row">
+        <div class="benefit-num">1</div>
+        <input type="text" id="benefit1" placeholder="例: 材料費300円以下でコスパ最強">
+      </div>
+      <div class="benefit-row">
+        <div class="benefit-num">2</div>
+        <input type="text" id="benefit2" placeholder="例: 包丁いらず・フライパン1つで完結">
+      </div>
+      <div class="benefit-row">
+        <div class="benefit-num">3</div>
+        <input type="text" id="benefit3" placeholder="例: 冷蔵庫の残り野菜をフル活用できる">
+      </div>
+    </div>
+  </div>
+
+  <!-- プラットフォーム -->
+  <div class="card">
+    <div class="card-title">📐 プラットフォーム</div>
+    <div class="platform-tabs">
+      <div class="platform-tab active" data-platform="blog">📰 ブログ</div>
+      <div class="platform-tab" data-platform="youtube">▶️ YouTube</div>
+      <div class="platform-tab" data-platform="sns">📱 SNS</div>
+      <div class="platform-tab" data-platform="general">🌐 汎用</div>
+    </div>
+  </div>
+
+  <!-- スタイル -->
+  <div class="card">
+    <div class="card-title">🎨 スタイル</div>
+    <div class="style-grid">
+      <div class="style-chip active" data-style="photorealistic">📷 フォトリアル</div>
+      <div class="style-chip" data-style="illustration">🎨 イラスト</div>
+      <div class="style-chip" data-style="flat">🟦 フラットデザイン</div>
+      <div class="style-chip" data-style="cinematic">🎬 シネマティック</div>
+    </div>
+  </div>
+
+  <!-- カラースキーム -->
+  <div class="card">
+    <div class="card-title">🎨 カラースキーム</div>
+    <div class="color-chips">
+      <div class="color-chip" data-en="white and blue, clean modern" data-ja="ブルー＆ホワイト">
+        <span class="color-dot" style="background:linear-gradient(135deg,#0085ff 50%,#fff 50%)"></span>ブルー＆ホワイト
+      </div>
+      <div class="color-chip" data-en="black and gold, luxurious metallic" data-ja="ブラック＆ゴールド">
+        <span class="color-dot" style="background:linear-gradient(135deg,#111 50%,#d4a017 50%)"></span>ブラック＆ゴールド
+      </div>
+      <div class="color-chip" data-en="soft pink and cream, feminine elegant" data-ja="ピンク＆クリーム">
+        <span class="color-dot" style="background:linear-gradient(135deg,#f9a8d4 50%,#fef9ee 50%)"></span>ピンク＆クリーム
+      </div>
+      <div class="color-chip" data-en="forest green and natural brown, organic" data-ja="グリーン＆ナチュラル">
+        <span class="color-dot" style="background:linear-gradient(135deg,#22c55e 50%,#a3714a 50%)"></span>グリーン＆ナチュラル
+      </div>
+      <div class="color-chip" data-en="vivid red and white, bold energetic" data-ja="レッド＆ホワイト">
+        <span class="color-dot" style="background:linear-gradient(135deg,#ef4444 50%,#fff 50%)"></span>レッド＆ホワイト
+      </div>
+      <div class="color-chip" data-en="deep purple and gold, royal luxury" data-ja="パープル＆ゴールド">
+        <span class="color-dot" style="background:linear-gradient(135deg,#7c3aed 50%,#d4a017 50%)"></span>パープル＆ゴールド
+      </div>
+      <div class="color-chip" data-en="warm orange and sunny yellow, vibrant" data-ja="オレンジ＆イエロー">
+        <span class="color-dot" style="background:linear-gradient(135deg,#f97316 50%,#fde047 50%)"></span>オレンジ＆イエロー
+      </div>
+      <div class="color-chip" data-en="monochrome, black white gray, minimal" data-ja="モノクロ">
+        <span class="color-dot" style="background:linear-gradient(135deg,#111 50%,#e5e7eb 50%)"></span>モノクロ
+      </div>
+      <div class="color-chip" data-en="soft pastel colors, lavender mint peach" data-ja="パステル">
+        <span class="color-dot" style="background:linear-gradient(135deg,#c4b5fd 33%,#6ee7b7 66%,#fca5a5 100%)"></span>パステル
+      </div>
+      <div class="color-chip" data-en="navy blue and silver, professional sophisticated" data-ja="ネイビー＆シルバー">
+        <span class="color-dot" style="background:linear-gradient(135deg,#1e3a5f 50%,#94a3b8 50%)"></span>ネイビー＆シルバー
+      </div>
+    </div>
+    <div>
+      <label style="font-size:12px;color:var(--gray-400);margin-bottom:4px">カスタム入力（任意）</label>
+      <input type="text" id="colors-custom" placeholder="例: 深緑と金色、テラコッタとベージュ">
+    </div>
+  </div>
+
+  <!-- 雰囲気・ムード -->
+  <div class="card">
+    <div class="card-title">✨ 雰囲気・ムード（複数可）</div>
+    <div class="tag-wrap">
+      <div class="mood-tag" data-mood="bright, cheerful">明るい・元気</div>
+      <div class="mood-tag" data-mood="calm, minimalist">落ち着いた</div>
+      <div class="mood-tag" data-mood="luxurious, premium">高級感</div>
+      <div class="mood-tag" data-mood="cozy, warm">温かみ</div>
+      <div class="mood-tag" data-mood="energetic, dynamic">エネルギッシュ</div>
+      <div class="mood-tag" data-mood="dark, moody">ダーク</div>
+    </div>
+  </div>
+
+  <!-- トレンド設定 -->
+  <div class="card">
+    <div class="card-title">🔥 トレンド設定</div>
+    <div class="section-sub">コンテンツ傾向</div>
+    <div class="tag-wrap">
+      <div class="trend-tag" data-en="quick and easy, time-saving" data-ja="時短・簡単">⏱ 時短・簡単</div>
+      <div class="trend-tag" data-en="photogenic, Instagram-worthy" data-ja="映え・フォトジェニック">📸 映え</div>
+      <div class="trend-tag" data-en="healthy, nutritious, diet-friendly" data-ja="健康・ヘルシー">🥗 ヘルシー</div>
+      <div class="trend-tag" data-en="budget-friendly, cost-effective" data-ja="節約・コスパ">💰 節約</div>
+      <div class="trend-tag" data-en="authentic, restaurant-quality" data-ja="本格・プロの味">👨‍🍳 本格派</div>
+      <div class="trend-tag" data-en="viral, trending" data-ja="バズり・話題">🔥 バズり</div>
+      <div class="trend-tag" data-en="beginner-friendly, step-by-step" data-ja="初心者向け">🌱 初心者向け</div>
+    </div>
+    <div class="section-sub" style="margin-top:14px">季節・シーン</div>
+    <div class="tag-wrap">
+      <div class="trend-tag" data-en="spring seasonal ingredients" data-ja="春食材">🌸 春</div>
+      <div class="trend-tag" data-en="summer refreshing cool dish" data-ja="夏・冷たい">☀️ 夏</div>
+      <div class="trend-tag" data-en="autumn harvest ingredients" data-ja="秋の味覚">🍂 秋</div>
+      <div class="trend-tag" data-en="winter warming comfort food" data-ja="冬・温かい">❄️ 冬</div>
+      <div class="trend-tag" data-en="holiday party celebration" data-ja="パーティー">🎉 パーティー</div>
+      <div class="trend-tag" data-en="everyday home cooking" data-ja="日常・おうちごはん">🏠 おうちごはん</div>
+    </div>
+  </div>
+
+  <!-- プラスの要望 -->
+  <div class="card">
+    <div class="card-title">➕ プラスの要望</div>
+    <textarea id="extra" placeholder="例: タイトルは画像左上に大きく配置、ベネフィットは右側に縦並び、人物は不要でフード写真のみ"></textarea>
+  </div>
+
+  <!-- 出力言語 -->
   <div class="card">
     <div class="form-group">
-      <label>タイトル・テーマ</label>
-      <input type="text" id="title" placeholder="例: 簡単10分チキンカレーの作り方" maxlength="100">
-    </div>
-
-    <div class="form-group">
-      <label>プラットフォーム</label>
-      <select id="platform">
-        <option value="youtube">YouTube サムネイル</option>
-        <option value="blog">ブログ・記事アイキャッチ</option>
-        <option value="sns">SNS（正方形）</option>
-        <option value="general">汎用</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>スタイル</label>
-      <div class="style-grid">
-        <div class="style-chip active" data-style="photorealistic">📷 フォトリアル</div>
-        <div class="style-chip" data-style="illustration">🎨 イラスト</div>
-        <div class="style-chip" data-style="flat">🟦 フラットデザイン</div>
-        <div class="style-chip" data-style="cinematic">🎬 シネマティック</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>雰囲気・ムード（複数可）</label>
-      <div class="mood-wrap">
-        <div class="mood-tag" data-mood="bright, cheerful">明るい・元気</div>
-        <div class="mood-tag" data-mood="calm, minimalist">落ち着いた</div>
-        <div class="mood-tag" data-mood="luxurious, premium">高級感</div>
-        <div class="mood-tag" data-mood="cozy, warm">温かみ</div>
-        <div class="mood-tag" data-mood="energetic, dynamic">エネルギッシュ</div>
-        <div class="mood-tag" data-mood="dark, moody">ダーク</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>カラースキーム（任意）</label>
-      <input type="text" id="colors" placeholder="例: 赤と白、パステルカラー、モノクロ">
-    </div>
-
-    <div class="form-group" style="margin-bottom:0">
-      <label>追加キーワード（任意）</label>
-      <input type="text" id="keywords" placeholder="例: 俯瞰、食材、木のテーブル">
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:12px">
-    <label>🔥 トレンド設定</label>
-    <div class="trend-section-title">コンテンツ傾向</div>
-    <div class="mood-wrap" id="trend-content">
-      <div class="trend-tag" data-trend-en="quick and easy, time-saving" data-trend-ja="時短・簡単">⏱ 時短・簡単</div>
-      <div class="trend-tag" data-trend-en="photogenic, Instagram-worthy" data-trend-ja="映え・フォトジェニック">📸 映え</div>
-      <div class="trend-tag" data-trend-en="healthy, nutritious, diet-friendly" data-trend-ja="健康・ヘルシー">🥗 ヘルシー</div>
-      <div class="trend-tag" data-trend-en="budget-friendly, cost-effective" data-trend-ja="節約・コスパ">💰 節約</div>
-      <div class="trend-tag" data-trend-en="authentic, restaurant-quality" data-trend-ja="本格・プロの味">👨‍🍳 本格派</div>
-      <div class="trend-tag" data-trend-en="viral, trending" data-trend-ja="バズり・話題">🔥 バズり</div>
-    </div>
-    <div class="trend-section-title" style="margin-top:14px">季節・シーン</div>
-    <div class="mood-wrap" id="trend-season">
-      <div class="trend-tag" data-trend-en="spring seasonal ingredients" data-trend-ja="春食材">🌸 春</div>
-      <div class="trend-tag" data-trend-en="summer refreshing cool dish" data-trend-ja="夏・冷たい">☀️ 夏</div>
-      <div class="trend-tag" data-trend-en="autumn harvest ingredients" data-trend-ja="秋の味覚">🍂 秋</div>
-      <div class="trend-tag" data-trend-en="winter warming comfort food" data-trend-ja="冬・温かい">❄️ 冬</div>
-      <div class="trend-tag" data-trend-en="holiday party food" data-trend-ja="パーティー・ホリデー">🎉 パーティー</div>
-      <div class="trend-tag" data-trend-en="everyday home cooking" data-trend-ja="日常・おうちごはん">🏠 おうちごはん</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:12px">
-    <div class="form-group" style="margin-bottom:0">
       <label>出力言語</label>
       <select id="lang">
         <option value="en">English（英語）</option>
@@ -197,7 +288,7 @@
 
   <div id="empty">
     <div class="empty-icon">🖼️</div>
-    <div>タイトルを入力して生成ボタンを押してください</div>
+    <div>メインタイトルを入力して生成ボタンを押してください</div>
   </div>
 
   <div id="result" style="display:none">
@@ -222,26 +313,36 @@
 </main>
 <script>
   const STYLES = {
-    photorealistic: { en: "photorealistic, high quality photography, DSLR, sharp focus, professional lighting", ja: "フォトリアル、高品質写真、シャープなフォーカス、プロ照明" },
+    photorealistic: { en: "photorealistic, high quality photography, DSLR, sharp focus, professional studio lighting", ja: "フォトリアル、高品質写真、シャープなフォーカス、プロスタジオ照明" },
     illustration:   { en: "digital illustration, vibrant colors, detailed artwork, concept art style", ja: "デジタルイラスト、鮮やかな色彩、詳細なアートワーク" },
     flat:           { en: "flat design, vector art, clean lines, bold colors, minimal shadows", ja: "フラットデザイン、ベクターアート、クリーンなライン、ボールドカラー" },
     cinematic:      { en: "cinematic, dramatic lighting, depth of field, film grain, movie poster style", ja: "シネマティック、ドラマチックな照明、被写界深度、映画ポスタースタイル" },
   };
   const PLATFORMS = {
-    youtube: { en: "YouTube thumbnail, 16:9 aspect ratio, eye-catching, bold composition", ja: "YouTubeサムネイル、16:9、目を引くデザイン" },
-    blog:    { en: "blog header image, 16:9 wide format, editorial style", ja: "ブログアイキャッチ、16:9、エディトリアルスタイル" },
-    sns:     { en: "social media post, square 1:1 format, visually striking", ja: "SNS投稿画像、正方形1:1、インパクトのある" },
+    blog:    { en: "blog eyecatch image, 1.91:1 wide format, editorial style", ja: "ブログアイキャッチ、1.91:1横長、エディトリアルスタイル" },
+    youtube: { en: "YouTube thumbnail, 16:9 aspect ratio, eye-catching bold composition", ja: "YouTubeサムネイル、16:9、目を引くボールド構図" },
+    sns:     { en: "social media post image, square 1:1 format, visually striking", ja: "SNS投稿画像、正方形1:1、インパクトのある" },
     general: { en: "digital artwork, versatile composition, high resolution", ja: "デジタルアートワーク、汎用構図、高解像度" },
   };
+  const MJ_AR = { blog: '191:100', youtube: '16:9', sns: '1:1', general: '16:9' };
   const QUALITY = { en: "8K resolution, masterpiece, best quality, highly detailed", ja: "8K解像度、マスターピース、最高品質、高精細" };
   const STYLE_LABELS = { photorealistic:"フォトリアル風", illustration:"イラスト風", flat:"フラットデザイン風", cinematic:"シネマティック風" };
 
   let currentStyle = "photorealistic";
-  let activeModels = new Set();
+  let currentPlatform = "blog";
+  let activeMoods = new Set();
   let activeTrends = new Set();
+  let activeColor = null;
   let lastPrompt = "";
 
-  // style chips
+  document.querySelectorAll('.platform-tab').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.platform-tab').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentPlatform = el.dataset.platform;
+    });
+  });
+
   document.querySelectorAll('.style-chip').forEach(el => {
     el.addEventListener('click', () => {
       document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
@@ -250,71 +351,93 @@
     });
   });
 
-  // mood tags
-  document.querySelectorAll('.mood-tag').forEach(el => {
+  document.querySelectorAll('.color-chip').forEach(el => {
     el.addEventListener('click', () => {
-      el.classList.toggle('active');
-      if (el.classList.contains('active')) activeModels.add(el.dataset.mood);
-      else activeModels.delete(el.dataset.mood);
+      if (el.classList.contains('active')) {
+        el.classList.remove('active');
+        activeColor = null;
+      } else {
+        document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        activeColor = { en: el.dataset.en, ja: el.dataset.ja };
+      }
     });
   });
 
-  // trend tags
+  document.querySelectorAll('.mood-tag').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('active');
+      if (el.classList.contains('active')) activeMoods.add(el.dataset.mood);
+      else activeMoods.delete(el.dataset.mood);
+    });
+  });
+
   document.querySelectorAll('.trend-tag').forEach(el => {
     el.addEventListener('click', () => {
       el.classList.toggle('active');
-      const key = el.dataset.trendEn + '|' + el.dataset.trendJa;
+      const key = el.dataset.en + '|' + el.dataset.ja;
       if (el.classList.contains('active')) activeTrends.add(key);
       else activeTrends.delete(key);
     });
   });
 
-  function buildPrompt(title, platform, style, moods, colors, keywords, lang, trends) {
+  function getColor() {
+    if (activeColor) return activeColor;
+    const custom = document.getElementById('colors-custom').value.trim();
+    if (custom) return { en: custom, ja: custom };
+    return null;
+  }
+
+  // nano banana 2 format
+  function buildPrompt(title, subtitle, benefits, extra, platform, style, moods, color, trends, lang) {
+    const bens = benefits.filter(Boolean);
     const parts = [];
     if (lang === 'en') {
-      parts.push(`Thumbnail image for: "${title}"`);
-      parts.push(PLATFORMS[platform].en);
-      parts.push(STYLES[style].en);
-      if (moods.length) parts.push(moods.join(', '));
-      if (trends.length) parts.push(trends.map(t => t.split('|')[0]).join(', '));
-      if (colors) parts.push(`color scheme: ${colors}`);
-      if (keywords) parts.push(keywords);
+      parts.push(`${PLATFORMS[platform].en}, ${STYLES[style].en}`);
+      if (moods.size) parts.push(Array.from(moods).join(', '));
+      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[0]).join(', '));
+      if (color) parts.push(`color scheme: ${color.en}`);
       parts.push(QUALITY.en);
+      parts.push(`Include bold text overlay -- main headline: "${title}"`);
+      if (subtitle) parts.push(`subtitle: "${subtitle}"`);
+      if (bens.length) parts.push(`benefit points: ${bens.map((b, i) => `"${i+1}. ${b}"`).join(', ')}`);
+      if (extra) parts.push(extra);
     } else {
-      parts.push(`「${title}」のサムネイル画像`);
-      parts.push(PLATFORMS[platform].ja);
-      parts.push(STYLES[style].ja);
-      if (moods.length) parts.push(moods.map(m => m.split(',')[0].trim()).join('、'));
-      if (trends.length) parts.push(trends.map(t => t.split('|')[1]).join('、'));
-      if (colors) parts.push(`カラースキーム: ${colors}`);
-      if (keywords) parts.push(keywords);
+      parts.push(`${PLATFORMS[platform].ja}、${STYLES[style].ja}`);
+      if (moods.size) parts.push(Array.from(moods).map(m => m.split(',')[0].trim()).join('、'));
+      if (trends.size) parts.push(Array.from(trends).map(t => t.split('|')[1]).join('、'));
+      if (color) parts.push(`カラースキーム: ${color.ja}`);
       parts.push(QUALITY.ja);
+      parts.push(`画像内テキスト — メインタイトル:「${title}」`);
+      if (subtitle) parts.push(`サブタイトル:「${subtitle}」`);
+      if (bens.length) parts.push(`ベネフィット: ${bens.map((b, i) => `「${i+1}. ${b}」`).join('、')}`);
+      if (extra) parts.push(extra);
     }
     return parts.join(', ');
   }
 
   function generate() {
     const title = document.getElementById('title').value.trim();
-    if (!title) { alert('タイトル・テーマを入力してください'); return; }
+    if (!title) { alert('メインタイトルを入力してください'); return; }
 
-    const platform = document.getElementById('platform').value;
-    const lang = document.getElementById('lang').value;
-    const colors = document.getElementById('colors').value.trim();
-    const keywords = document.getElementById('keywords').value.trim();
-    const moods = Array.from(activeModels);
-    const trends = Array.from(activeTrends);
+    const subtitle = document.getElementById('subtitle').value.trim();
+    const benefit1 = document.getElementById('benefit1').value.trim();
+    const benefit2 = document.getElementById('benefit2').value.trim();
+    const benefit3 = document.getElementById('benefit3').value.trim();
+    const extra    = document.getElementById('extra').value.trim();
+    const lang     = document.getElementById('lang').value;
+    const color    = getColor();
 
-    lastPrompt = buildPrompt(title, platform, currentStyle, moods, colors, keywords, lang, trends);
+    lastPrompt = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], extra, currentPlatform, currentStyle, activeMoods, color, activeTrends, lang);
     document.getElementById('prompt-box').textContent = lastPrompt;
     document.getElementById('result').style.display = '';
     document.getElementById('empty').style.display = 'none';
     document.getElementById('copy-btn').textContent = '📋 コピー';
 
-    // variations
     const varBox = document.getElementById('variations');
     varBox.innerHTML = '';
     Object.keys(STYLES).filter(s => s !== currentStyle).forEach(s => {
-      const vp = buildPrompt(title, platform, s, [], '', '', lang, trends);
+      const vp = buildPrompt(title, subtitle, [benefit1, benefit2, benefit3], extra, currentPlatform, s, new Set(), color, new Set(), lang);
       const div = document.createElement('div');
       div.className = 'variation-item';
       div.innerHTML = `<div class="variation-label">${STYLE_LABELS[s]}</div><div>${vp}</div>`;
@@ -337,12 +460,13 @@
   }
 
   function copyMidjourney() {
-    const p = '/imagine prompt: ' + lastPrompt + ' --ar 16:9 --v 6';
-    navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！'));
+    const ar = MJ_AR[currentPlatform] || '191:100';
+    const p = '/imagine prompt: ' + lastPrompt + ` --ar ${ar} --v 6`;
+    navigator.clipboard.writeText(p).then(() => alert('Midjourneyプロンプトをコピーしました！\n--ar ' + ar));
   }
 
   function copyDalle() {
-    let p = lastPrompt.replace(/^Thumbnail image for: ".*?",\s*/, '').replace(/^「.*?」のサムネイル画像,\s*/, '');
+    let p = lastPrompt.replace(/^blog eyecatch image.*?,\s*/, '').replace(/^ブログアイキャッチ.*?、/, '');
     navigator.clipboard.writeText(p).then(() => alert('DALL-E用プロンプトをコピーしました！'));
   }
 </script>
