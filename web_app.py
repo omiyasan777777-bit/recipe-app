@@ -23,11 +23,13 @@ from dotenv import load_dotenv, set_key
 
 from bluesky_scheduler.config import get_db_path, get_credentials
 from bluesky_scheduler.storage import Storage, Template
+from youtube_live_recorder import youtube_recorder
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.register_blueprint(youtube_recorder)
 
 UPLOAD_DIR = Path.home() / ".bluesky_scheduler" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

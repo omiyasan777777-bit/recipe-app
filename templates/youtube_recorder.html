@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .rec-hero {
+    text-align: center;
+    padding: 24px 0 16px;
+  }
+  .rec-hero-icon { font-size: 52px; line-height: 1; margin-bottom: 8px; }
+  .rec-hero-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .rec-hero-sub { font-size: 14px; color: var(--gray-400); }
+
+  .url-row {
+    display: flex; gap: 8px; align-items: stretch;
+  }
+  .url-row input { flex: 1; }
+  .paste-btn {
+    padding: 0 14px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--gray-200);
+    background: var(--gray-100);
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .paste-btn:active { background: var(--gray-200); }
+
+  .options-toggle {
+    font-size: 14px; color: var(--blue); background: none; border: none;
+    cursor: pointer; padding: 0; margin-bottom: 16px;
+  }
+  .options-panel { display: none; }
+  .options-panel.open { display: block; }
+
+  #start-btn {
+    background: #ef4444; color: #fff;
+    font-size: 18px; padding: 16px;
+  }
+  #start-btn.recording { background: var(--gray-400); }
+  #stop-btn {
+    background: var(--gray-600); color: #fff;
+    font-size: 18px; padding: 16px;
+    display: none;
+  }
+
+  .log-box {
+    background: #0f172a;
+    border-radius: var(--radius);
+    padding: 12px;
+    max-height: 260px;
+    overflow-y: auto;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    display: none;
+  }
+  .log-box.visible { display: block; }
+  .log-info    { color: #94a3b8; }
+  .log-download{ color: #38bdf8; }
+  .log-warn    { color: #fbbf24; }
+  .log-error   { color: #f87171; }
+  .log-success { color: #4ade80; font-weight: bold; }
+
+  .result-card {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    display: none;
+  }
+  .result-card.visible { display: block; }
+  .result-card h3 { color: #166534; font-size: 18px; margin-bottom: 8px; }
+  .result-card p { color: #166534; font-size: 14px; margin-bottom: 12px; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #166534; color: #fff;
+    padding: 12px 24px; border-radius: var(--radius);
+    font-size: 16px; font-weight: 600; text-decoration: none;
+  }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .status-recording { background: #fee2e2; color: #991b1b; }
+  .status-done      { background: #dcfce7; color: #166534; }
+  .status-error     { background: #fee2e2; color: #991b1b; }
+  .pulse {
+    width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: .3; }
+  }
+</style>
+
+<div class="rec-hero">
+  <div class="rec-hero-icon">&#127910;</div>
+  <div class="rec-hero-title">ライブ録画</div>
+  <div class="rec-hero-sub">YouTubeライブ配信を録画・保存</div>
+</div>
+
+<div class="card">
+  <div class="form-group">
+    <label for="url-input">YouTube URL</label>
+    <div class="url-row">
+      <input type="url" id="url-input" placeholder="https://youtube.com/watch?v=..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+      <button class="paste-btn" id="paste-btn" title="ペースト">&#128203;</button>
+    </div>
+    <div class="hint">ライブ配信またはライブアーカイブのURLを入力</div>
+  </div>
+
+  <button class="options-toggle" id="options-toggle">&#9881; 詳細設定</button>
+  <div class="options-panel" id="options-panel">
+    <div class="form-group">
+      <label for="fmt-select">画質</label>
+      <select id="fmt-select">
+        <option value="best">最高画質 (best)</option>
+        <option value="bestvideo[height<=1080]+bestaudio/best">1080p以下</option>
+        <option value="bestvideo[height<=720]+bestaudio/best">720p以下</option>
+        <option value="bestvideo[height<=480]+bestaudio/best">480p以下</option>
+        <option value="worstvideo+worstaudio/worst">最低画質 (省データ)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="duration-input">録画時間 (秒、空欄=配信終了まで)</label>
+      <input type="number" id="duration-input" placeholder="例: 3600 (1時間)" min="1">
+    </div>
+  </div>
+
+  <div id="status-area" style="display:none">
+    <div id="status-badge" class="status-badge status-recording">
+      <div class="pulse"></div>
+      <span id="status-text">録画中...</span>
+    </div>
+  </div>
+
+  <button class="btn btn-full" id="start-btn">&#9210; 録画開始</button>
+  <button class="btn btn-full" id="stop-btn" style="margin-top:8px">&#9209; 録画停止</button>
+</div>
+
+<div class="log-box" id="log-box"></div>
+
+<div class="result-card" id="result-card">
+  <h3>&#9989; 録画完了!</h3>
+  <p id="result-info"></p>
+  <a href="#" id="dl-link" class="dl-btn">&#8681; ダウンロード</a>
+  <p style="font-size:12px;color:#166534;margin-top:10px">※ iPhoneでは「ファイル」アプリに保存されます</p>
+</div>
+
+<script>
+let currentJobId = null;
+let eventSource = null;
+
+const urlInput = document.getElementById('url-input');
+const startBtn = document.getElementById('start-btn');
+const stopBtn  = document.getElementById('stop-btn');
+const logBox   = document.getElementById('log-box');
+const resultCard = document.getElementById('result-card');
+const statusArea = document.getElementById('status-area');
+const statusText = document.getElementById('status-text');
+const statusBadge = document.getElementById('status-badge');
+
+// ペーストボタン
+document.getElementById('paste-btn').addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    urlInput.value = text;
+    urlInput.focus();
+  } catch {
+    urlInput.focus();
+    document.execCommand('paste');
+  }
+});
+
+// 詳細設定トグル
+document.getElementById('options-toggle').addEventListener('click', () => {
+  const panel = document.getElementById('options-panel');
+  panel.classList.toggle('open');
+  document.getElementById('options-toggle').textContent =
+    panel.classList.contains('open') ? '▲ 詳細設定を閉じる' : '⚙ 詳細設定';
+});
+
+function appendLog(entry) {
+  const div = document.createElement('div');
+  div.className = 'log-' + entry.level;
+  div.textContent = entry.msg;
+  logBox.appendChild(div);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function resetUI() {
+  startBtn.disabled = false;
+  startBtn.classList.remove('recording');
+  startBtn.style.display = '';
+  stopBtn.style.display = 'none';
+  statusArea.style.display = 'none';
+}
+
+startBtn.addEventListener('click', async () => {
+  const url = urlInput.value.trim();
+  if (!url) { alert('URLを入力してください'); return; }
+
+  // UIリセット
+  logBox.innerHTML = '';
+  logBox.classList.add('visible');
+  resultCard.classList.remove('visible');
+  statusArea.style.display = '';
+  statusBadge.className = 'status-badge status-recording';
+  statusText.textContent = '録画中...';
+  startBtn.disabled = true;
+  startBtn.classList.add('recording');
+  stopBtn.style.display = '';
+  startBtn.style.display = 'none';
+
+  const body = {
+    url,
+    format: document.getElementById('fmt-select').value,
+    duration: document.getElementById('duration-input').value || null,
+  };
+
+  const res = await fetch('/youtube-recorder/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (data.error) {
+    alert(data.error);
+    resetUI();
+    return;
+  }
+
+  currentJobId = data.job_id;
+
+  // SSE でログ受信
+  eventSource = new EventSource(`/youtube-recorder/events/${currentJobId}`);
+  eventSource.onmessage = (e) => {
+    const entry = JSON.parse(e.data);
+    if (entry.level === 'done') {
+      eventSource.close();
+      checkFinalStatus();
+      return;
+    }
+    appendLog(entry);
+  };
+  eventSource.onerror = () => {
+    eventSource.close();
+    checkFinalStatus();
+  };
+});
+
+async function checkFinalStatus() {
+  if (!currentJobId) return;
+  const res = await fetch(`/youtube-recorder/status/${currentJobId}`);
+  const data = await res.json();
+
+  resetUI();
+
+  if (data.status === 'done') {
+    statusBadge.className = 'status-badge status-done';
+    statusText.textContent = '録画完了';
+    resultCard.classList.add('visible');
+    document.getElementById('result-info').textContent =
+      `${data.title || data.filename}  (${data.size_mb} MB)`;
+    document.getElementById('dl-link').href =
+      `/youtube-recorder/download/${currentJobId}`;
+  } else if (data.status === 'stopped') {
+    statusBadge.className = 'status-badge';
+    statusText.textContent = '停止しました';
+  } else {
+    statusBadge.className = 'status-badge status-error';
+    statusText.textContent = 'エラー';
+  }
+}
+
+stopBtn.addEventListener('click', async () => {
+  if (!currentJobId) return;
+  if (eventSource) { eventSource.close(); eventSource = null; }
+  await fetch(`/youtube-recorder/stop/${currentJobId}`, { method: 'POST' });
+  await checkFinalStatus();
+});
+</script>
+{% endblock %}
