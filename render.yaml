@@ -2,7 +2,7 @@ services:
   - type: web
     name: bluesky-scheduler
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: apt-get install -y ffmpeg && pip install -r requirements.txt
     startCommand: python web_app.py
     envVars:
       - key: PYTHON_VERSION
