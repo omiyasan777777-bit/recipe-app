@@ -6,8 +6,9 @@ import queue
 import re
 import subprocess
 import threading
+import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from flask import (
@@ -36,7 +37,18 @@ def sanitize_filename(name: str) -> str:
     return name[:80] if len(name) > 80 else name
 
 
-def _run_recording(job_id: str, url: str, fmt: str, duration: int | None):
+def _parse_time_today(hhmm: str) -> datetime:
+    """HH:MM を今日(または翌日)の datetime に変換"""
+    h, m = map(int, hhmm.split(":"))
+    now = datetime.now()
+    dt = now.replace(hour=h, minute=m, second=0, microsecond=0)
+    if dt <= now:
+        dt += timedelta(days=1)
+    return dt
+
+
+def _run_recording(job_id: str, url: str, fmt: str, duration: int | None,
+                   scheduled_start: str | None = None):
     """バックグラウンドで録画を実行する"""
     log_q: queue.Queue = _jobs[job_id]["log_q"]
 
@@ -45,6 +57,30 @@ def _run_recording(job_id: str, url: str, fmt: str, duration: int | None):
         log_q.put({"level": level, "msg": msg})
 
     try:
+        # 予約開始時刻まで待機
+        if scheduled_start:
+            start_dt = _parse_time_today(scheduled_start)
+            with _jobs_lock:
+                _jobs[job_id]["status"] = "waiting"
+                _jobs[job_id]["scheduled_start"] = start_dt.strftime("%H:%M")
+            log(f"予約録画: {start_dt.strftime('%H:%M')} に録画を開始します", "info")
+            while True:
+                remaining = (start_dt - datetime.now()).total_seconds()
+                if remaining <= 0:
+                    break
+                # 10秒ごとにカウントダウンログ
+                interval = min(10, remaining)
+                time.sleep(interval)
+                remaining2 = (start_dt - datetime.now()).total_seconds()
+                if remaining2 <= 0:
+                    break
+                mins = int(remaining2 // 60)
+                secs = int(remaining2 % 60)
+                log(f"開始まで {mins}分{secs}秒...", "info")
+                # キャンセルチェック
+                if _jobs[job_id].get("status") == "stopped":
+                    return
+            log("予約時刻になりました。録画を開始します", "info")
         # 情報取得
         log("ストリーム情報を取得中...")
         info_result = subprocess.run(
@@ -143,11 +179,34 @@ def start():
     url = (data.get("url") or "").strip()
     fmt = data.get("format", "best")
     duration = data.get("duration")  # 秒 or None
+    scheduled_start = (data.get("scheduled_start") or "").strip() or None
+    scheduled_end   = (data.get("scheduled_end") or "").strip() or None
 
     if not url:
         return jsonify({"error": "URLを入力してください"}), 400
     if not re.match(r"https?://(www\.)?(youtube\.com|youtu\.be)/", url):
         return jsonify({"error": "YouTube の URL を入力してください"}), 400
+
+    # HH:MM バリデーション
+    time_re = re.compile(r"^\d{2}:\d{2}$")
+    if scheduled_start and not time_re.match(scheduled_start):
+        return jsonify({"error": "開始時刻の形式が正しくありません (HH:MM)"}), 400
+    if scheduled_end and not time_re.match(scheduled_end):
+        return jsonify({"error": "終了時刻の形式が正しくありません (HH:MM)"}), 400
+
+    # 終了時刻から録画秒数を計算
+    if scheduled_end:
+        end_dt = _parse_time_today(scheduled_end)
+        if scheduled_start:
+            start_dt = _parse_time_today(scheduled_start)
+            if end_dt <= start_dt:
+                end_dt += timedelta(days=1)
+            calc_duration = int((end_dt - start_dt).total_seconds())
+        else:
+            calc_duration = int((end_dt - datetime.now()).total_seconds())
+        if calc_duration <= 0:
+            return jsonify({"error": "終了時刻が開始時刻より前です"}), 400
+        duration = calc_duration
 
     job_id = str(uuid.uuid4())
     with _jobs_lock:
@@ -162,11 +221,12 @@ def start():
             "filename": None,
             "size_mb": None,
             "pid": None,
+            "scheduled_start": scheduled_start,
         }
 
     t = threading.Thread(
         target=_run_recording,
-        args=(job_id, url, fmt, int(duration) if duration else None),
+        args=(job_id, url, fmt, int(duration) if duration else None, scheduled_start),
         daemon=True,
     )
     t.start()
@@ -209,6 +269,7 @@ def status(job_id: str):
         "title": job["title"],
         "filename": job["filename"],
         "size_mb": job["size_mb"],
+        "scheduled_start": job.get("scheduled_start"),
     })
 
 

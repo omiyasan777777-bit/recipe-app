@@ -85,15 +85,34 @@
     margin-bottom: 12px;
   }
   .status-recording { background: #fee2e2; color: #991b1b; }
+  .status-waiting   { background: #fef9c3; color: #854d0e; }
   .status-done      { background: #dcfce7; color: #166534; }
   .status-error     { background: #fee2e2; color: #991b1b; }
   .pulse {
     width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
     animation: pulse 1s ease-in-out infinite;
   }
+  .pulse-wait {
+    width: 8px; height: 8px; border-radius: 50%; background: #eab308;
+    animation: pulse 1s ease-in-out infinite;
+  }
   @keyframes pulse {
     0%, 100% { opacity: 1; } 50% { opacity: .3; }
   }
+
+  .time-row {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .time-row input[type="time"] { flex: 1; }
+  .time-sep { color: var(--gray-400); font-size: 18px; flex-shrink: 0; }
+
+  .schedule-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; margin-bottom: 12px; cursor: pointer;
+    user-select: none;
+  }
+  .schedule-panel { display: none; margin-bottom: 12px; }
+  .schedule-panel.open { display: block; }
 </style>
 
 <div class="rec-hero">
@@ -112,6 +131,23 @@
     <div class="hint">ライブ配信またはライブアーカイブのURLを入力</div>
   </div>
 
+  <!-- 予約録画トグル -->
+  <label class="schedule-toggle">
+    <input type="checkbox" id="schedule-check" style="width:16px;height:16px;accent-color:#ef4444">
+    &#128337; 予約録画 (時刻指定)
+  </label>
+  <div class="schedule-panel" id="schedule-panel">
+    <div class="form-group">
+      <label>録画時間帯</label>
+      <div class="time-row">
+        <input type="time" id="start-time" placeholder="開始時刻">
+        <span class="time-sep">〜</span>
+        <input type="time" id="end-time" placeholder="終了時刻">
+      </div>
+      <div class="hint">開始時刻になったら自動で録画を開始します。終了時刻で自動停止します。</div>
+    </div>
+  </div>
+
   <button class="options-toggle" id="options-toggle">&#9881; 詳細設定</button>
   <div class="options-panel" id="options-panel">
     <div class="form-group">
@@ -124,7 +160,7 @@
         <option value="worstvideo+worstaudio/worst">最低画質 (省データ)</option>
       </select>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="duration-group">
       <label for="duration-input">録画時間 (秒、空欄=配信終了まで)</label>
       <input type="number" id="duration-input" placeholder="例: 3600 (1時間)" min="1">
     </div>
@@ -175,6 +211,13 @@ document.getElementById('paste-btn').addEventListener('click', async () => {
   }
 });
 
+// 予約録画チェックボックス
+document.getElementById('schedule-check').addEventListener('change', (e) => {
+  document.getElementById('schedule-panel').classList.toggle('open', e.target.checked);
+  // 予約有効時は秒指定を非表示
+  document.getElementById('duration-group').style.display = e.target.checked ? 'none' : '';
+});
+
 // 詳細設定トグル
 document.getElementById('options-toggle').addEventListener('click', () => {
   const panel = document.getElementById('options-panel');
@@ -203,13 +246,25 @@ startBtn.addEventListener('click', async () => {
   const url = urlInput.value.trim();
   if (!url) { alert('URLを入力してください'); return; }
 
+  const isScheduled = document.getElementById('schedule-check').checked;
+  const scheduledStart = isScheduled ? document.getElementById('start-time').value : null;
+  const scheduledEnd   = isScheduled ? document.getElementById('end-time').value   : null;
+
+  if (isScheduled && !scheduledStart) { alert('開始時刻を入力してください'); return; }
+  if (isScheduled && !scheduledEnd)   { alert('終了時刻を入力してください'); return; }
+
   // UIリセット
   logBox.innerHTML = '';
   logBox.classList.add('visible');
   resultCard.classList.remove('visible');
   statusArea.style.display = '';
-  statusBadge.className = 'status-badge status-recording';
-  statusText.textContent = '録画中...';
+  if (isScheduled) {
+    statusBadge.className = 'status-badge status-waiting';
+    statusBadge.innerHTML = '<div class="pulse-wait"></div><span id="status-text">予約済み (' + scheduledStart + '〜' + scheduledEnd + ')</span>';
+  } else {
+    statusBadge.className = 'status-badge status-recording';
+    statusBadge.innerHTML = '<div class="pulse"></div><span id="status-text">録画中...</span>';
+  }
   startBtn.disabled = true;
   startBtn.classList.add('recording');
   stopBtn.style.display = '';
@@ -218,7 +273,9 @@ startBtn.addEventListener('click', async () => {
   const body = {
     url,
     format: document.getElementById('fmt-select').value,
-    duration: document.getElementById('duration-input').value || null,
+    duration: (!isScheduled && document.getElementById('duration-input').value) || null,
+    scheduled_start: scheduledStart || null,
+    scheduled_end:   scheduledEnd   || null,
   };
 
   const res = await fetch('/youtube-recorder/start', {
@@ -244,6 +301,11 @@ startBtn.addEventListener('click', async () => {
       checkFinalStatus();
       return;
     }
+    // 待機中 → 録画開始のタイミングでバッジ更新
+    if (entry.msg && entry.msg.includes('録画を開始します') && entry.level === 'info') {
+      statusBadge.className = 'status-badge status-recording';
+      statusBadge.innerHTML = '<div class="pulse"></div><span id="status-text">録画中...</span>';
+    }
     appendLog(entry);
   };
   eventSource.onerror = () => {
@@ -261,7 +323,7 @@ async function checkFinalStatus() {
 
   if (data.status === 'done') {
     statusBadge.className = 'status-badge status-done';
-    statusText.textContent = '録画完了';
+    statusBadge.innerHTML = '<span>録画完了</span>';
     resultCard.classList.add('visible');
     document.getElementById('result-info').textContent =
       `${data.title || data.filename}  (${data.size_mb} MB)`;
@@ -269,10 +331,10 @@ async function checkFinalStatus() {
       `/youtube-recorder/download/${currentJobId}`;
   } else if (data.status === 'stopped') {
     statusBadge.className = 'status-badge';
-    statusText.textContent = '停止しました';
+    statusBadge.innerHTML = '<span>停止しました</span>';
   } else {
     statusBadge.className = 'status-badge status-error';
-    statusText.textContent = 'エラー';
+    statusBadge.innerHTML = '<span>エラー</span>';
   }
 }
 
