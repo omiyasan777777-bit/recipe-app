@@ -102,6 +102,7 @@
     /* プロンプト本文表示 */
     .prompt-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
     .prompt-label { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: .05em; margin-bottom: 10px; }
+    .prompt-box-wrap { position: relative; }
     .prompt-box {
       background: var(--gray-100); border-radius: 10px; padding: 14px;
       font-size: 12px; line-height: 1.8; white-space: pre-wrap; word-break: break-word;
@@ -109,6 +110,20 @@
       /* コピーガード */
       user-select: none; -webkit-user-select: none; -moz-user-select: none;
     }
+    .btn-icon-copy {
+      position: absolute; top: 8px; right: 8px;
+      background: #3a3a3a; border: none; border-radius: 6px;
+      width: 32px; height: 32px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: .7; transition: opacity .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-icon-copy:hover { opacity: 1; background: #555; }
+    .btn-icon-copy.done { background: var(--green); opacity: 1; }
+    .btn-icon-copy svg { display: block; }
+    .btn-icon-copy .check { display: none; }
+    .btn-icon-copy.done .copy-icon { display: none; }
+    .btn-icon-copy.done .check { display: block; }
   </style>
 </head>
 <body>
@@ -235,7 +250,20 @@
     <!-- プロンプト本文（プレビュー） -->
     <div class="prompt-card">
       <div class="prompt-label">📄 生成されたプロンプト（プレビュー）</div>
-      <div class="prompt-box" id="prompt-box"></div>
+      <div class="prompt-box-wrap">
+        <div class="prompt-box" id="prompt-box"></div>
+        <button class="btn-icon-copy" id="icon-copy-btn" onclick="doCopy()" title="コピー">
+          <!-- コピーアイコン（2枚の重なった四角） -->
+          <svg class="copy-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="1" width="9" height="10" rx="1.5" stroke="#ccc" stroke-width="1.5"/>
+            <rect x="1" y="5" width="9" height="10" rx="1.5" fill="#3a3a3a" stroke="#ccc" stroke-width="1.5"/>
+          </svg>
+          <!-- チェックマーク -->
+          <svg class="check" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="3,8 6.5,12 13,4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -420,12 +448,15 @@ ${rssBlock}`;
   // ─── コピー ─────────────────────────────────────
   function doCopy() {
     navigator.clipboard.writeText(lastPrompt).then(() => {
-      const btn = document.getElementById('copy-btn');
+      const btn     = document.getElementById('copy-btn');
+      const iconBtn = document.getElementById('icon-copy-btn');
       btn.textContent = '✅ コピー完了！Geminiに貼り付けてください';
       btn.classList.add('done');
+      iconBtn.classList.add('done');
       setTimeout(() => {
         btn.textContent = '📋 コピー';
         btn.classList.remove('done');
+        iconBtn.classList.remove('done');
       }, 3000);
     });
   }
