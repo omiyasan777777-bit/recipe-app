@@ -51,6 +51,11 @@ def credentials_set() -> bool:
 
 # ── ルーティング ────────────────────────────────────────────────
 
+@app.route("/landing")
+def landing():
+    return render_template("landing.html")
+
+
 @app.route("/")
 def index():
     if not credentials_set():
