@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>芸能ゴシップニュース収集ツール</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+      background: #0f0f0f;
+      color: #eee;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #e94560, #f5a623);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      flex: 1;
+    }
+
+    .header-meta {
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .controls {
+      background: #1a1a1a;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 24px;
+      color: #eee;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus { border-color: #e94560; }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e94560, #c7003a);
+      color: #fff;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,69,96,0.4); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: #2a2a2a;
+      color: #ccc;
+      border: 1px solid #3a3a3a;
+    }
+
+    .btn-secondary:hover { background: #3a3a3a; }
+
+    .source-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #151515;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .source-tag {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 1px solid #3a3a3a;
+      background: #2a2a2a;
+      color: #aaa;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .source-tag.active {
+      background: #e94560;
+      border-color: #e94560;
+      color: #fff;
+    }
+
+    .source-tag:hover { border-color: #e94560; color: #e94560; }
+    .source-tag.active:hover { color: #fff; }
+
+    .status-bar {
+      padding: 8px 24px;
+      background: #111;
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #333;
+      border-top-color: #e94560;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .spinner.active { display: block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      padding: 20px 24px;
+    }
+
+    .news-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .news-card:hover {
+      border-color: #e94560;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(233,69,96,0.15);
+    }
+
+    .card-source {
+      padding: 8px 14px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-body { padding: 12px 14px 14px; flex: 1; }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #eee;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: #888;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-date {
+      font-size: 0.72rem;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #444;
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 1rem; }
+
+    .error-msg {
+      background: #2a1010;
+      border: 1px solid #5a2020;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: #ff6b6b;
+      margin: 0 24px 12px;
+    }
+
+    .count-badge {
+      background: #2a2a2a;
+      color: #aaa;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      margin-left: auto;
+    }
+
+    /* Source color themes */
+    .src-oricon    { background: #1a0a2e; color: #a855f7; }
+    .src-bunshun   { background: #0a1a2e; color: #3b82f6; }
+    .src-nikkansports { background: #0a1f0a; color: #22c55e; }
+    .src-sponichi  { background: #1a1a0a; color: #eab308; }
+    .src-girlschannel { background: #2e0a1a; color: #f43f5e; }
+    .src-hochi     { background: #1a0a0a; color: #ef4444; }
+    .src-default   { background: #1a1a1a; color: #94a3b8; }
+
+    @media (max-width: 600px) {
+      .news-grid { grid-template-columns: 1fr; padding: 12px; }
+      header h1 { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎭 芸能ゴシップニュース収集ツール</h1>
+  <span class="header-meta" id="lastUpdated"></span>
+</header>
+
+<div class="controls">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="キーワードで絞り込み（例：結婚、離婚、熱愛）" />
+  </div>
+  <button class="btn btn-primary" id="fetchBtn" onclick="fetchAll()">取得する</button>
+  <button class="btn btn-secondary" onclick="clearAll()">クリア</button>
+  <span class="count-badge" id="countBadge">0 件</span>
+</div>
+
+<div class="source-tags" id="sourceTags">
+  <span style="font-size:0.8rem;color:#555;align-self:center;">ソース絞り込み：</span>
+</div>
+
+<div class="status-bar">
+  <div class="spinner" id="spinner"></div>
+  <span id="statusText">「取得する」ボタンを押してニュースを読み込みます</span>
+</div>
+
+<div id="errorArea"></div>
+<div class="news-grid" id="newsGrid">
+  <div class="empty-state">
+    <div class="icon">📰</div>
+    <p>ボタンを押して芸能ゴシップニュースを取得してください</p>
+  </div>
+</div>
+
+<script>
+// ===== ニュースソース設定 (Bluesky は除外済み) =====
+const SOURCES = [
+  {
+    id: 'oricon',
+    name: 'ORICON NEWS',
+    colorClass: 'src-oricon',
+    feeds: [
+      'https://rss.oricon.co.jp/oricon_entertainment.rdf',
+      'https://rss.oricon.co.jp/oricon_music.rdf',
+    ]
+  },
+  {
+    id: 'bunshun',
+    name: '文春オンライン',
+    colorClass: 'src-bunshun',
+    feeds: [
+      'https://bunshun.jp/rss/list'
+    ]
+  },
+  {
+    id: 'nikkansports',
+    name: '日刊スポーツ芸能',
+    colorClass: 'src-nikkansports',
+    feeds: [
+      'https://www.nikkansports.com/entertainment/rss/entertainment-news-so.rdf'
+    ]
+  },
+  {
+    id: 'sponichi',
+    name: 'スポニチ芸能',
+    colorClass: 'src-sponichi',
+    feeds: [
+      'https://www.sponichi.co.jp/entertainment/rss/entertain.rdf'
+    ]
+  },
+  {
+    id: 'hochi',
+    name: '報知スポーツ',
+    colorClass: 'src-hochi',
+    feeds: [
+      'https://hochi.news/rss/'
+    ]
+  },
+  {
+    id: 'natalie',
+    name: 'ナタリー',
+    colorClass: 'src-default',
+    feeds: [
+      'https://natalie.mu/music/feed/news',
+      'https://natalie.mu/comic/feed/news',
+    ]
+  },
+];
+
+// CORS プロキシ (RSS→JSON変換サービス)
+const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const CORS_PROXIES = [
+  'https://api.rss2json.com/v1/api.json?rss_url=',
+  'https://api.allorigins.win/get?url=',
+];
+
+let allArticles = [];
+let activeFilters = new Set();
+let searchTerm = '';
+
+// ===== フェッチ処理 =====
+async function fetchFeed(url) {
+  try {
+    // まず rss2json を試す
+    const apiUrl = `${RSS2JSON_API}${encodeURIComponent(url)}`;
+    const res = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.status === 'ok' && data.items) {
+      return data.items.map(item => ({
+        title: stripHtml(item.title || ''),
+        description: stripHtml(item.description || item.content || ''),
+        link: item.link || item.guid || '#',
+        pubDate: item.pubDate ? new Date(item.pubDate) : null,
+      }));
+    }
+    throw new Error('rss2json failed');
+  } catch (e) {
+    // フォールバック: allorigins でRXMLをパース
+    try {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return parseRssXml(data.contents || '');
+    } catch (e2) {
+      console.warn(`Feed failed (${url}):`, e2.message);
+      return [];
+    }
+  }
+}
+
+function parseRssXml(xmlText) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item'));
+    return items.map(item => {
+      const get = tag => item.querySelector(tag)?.textContent?.trim() || '';
+      const pubDateStr = get('pubDate');
+      return {
+        title: stripHtml(get('title')),
+        description: stripHtml(get('description')),
+        link: get('link') || get('guid') || '#',
+        pubDate: pubDateStr ? new Date(pubDateStr) : null,
+      };
+    }).filter(a => a.title);
+  } catch {
+    return [];
+  }
+}
+
+function stripHtml(html) {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function fetchAll() {
+  const btn = document.getElementById('fetchBtn');
+  btn.disabled = true;
+  setStatus('ニュースを取得中...', true);
+  clearErrors();
+  allArticles = [];
+
+  const errors = [];
+  let total = 0;
+
+  for (const source of SOURCES) {
+    setStatus(`「${source.name}」を取得中...`, true);
+    for (const feedUrl of source.feeds) {
+      const items = await fetchFeed(feedUrl);
+      if (items.length === 0) {
+        errors.push(`${source.name}: 取得できませんでした`);
+      }
+      items.forEach(item => {
+        allArticles.push({ ...item, sourceId: source.id, sourceName: source.name, colorClass: source.colorClass });
+        total++;
+      });
+    }
+  }
+
+  // 日付降順ソート
+  allArticles.sort((a, b) => {
+    if (!a.pubDate && !b.pubDate) return 0;
+    if (!a.pubDate) return 1;
+    if (!b.pubDate) return -1;
+    return b.pubDate - a.pubDate;
+  });
+
+  buildSourceTags();
+  renderCards();
+  updateCount();
+
+  const now = new Date().toLocaleTimeString('ja-JP');
+  document.getElementById('lastUpdated').textContent = `最終更新: ${now}`;
+  setStatus(`${total} 件取得完了`, false);
+
+  if (errors.length > 0) {
+    showErrors(errors);
+  }
+
+  btn.disabled = false;
+}
+
+// ===== フィルター・検索 =====
+function buildSourceTags() {
+  const container = document.getElementById('sourceTags');
+  // ラベル以外をクリア
+  const label = container.querySelector('span');
+  container.innerHTML = '';
+  container.appendChild(label);
+
+  const usedSources = [...new Set(allArticles.map(a => a.sourceId))];
+  SOURCES.filter(s => usedSources.includes(s.id)).forEach(source => {
+    const tag = document.createElement('span');
+    tag.className = 'source-tag' + (activeFilters.has(source.id) ? ' active' : '');
+    tag.textContent = source.name;
+    tag.onclick = () => toggleFilter(source.id, tag);
+    container.appendChild(tag);
+  });
+}
+
+function toggleFilter(sourceId, el) {
+  if (activeFilters.has(sourceId)) {
+    activeFilters.delete(sourceId);
+    el.classList.remove('active');
+  } else {
+    activeFilters.add(sourceId);
+    el.classList.add('active');
+  }
+  renderCards();
+  updateCount();
+}
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderCards();
+  updateCount();
+});
+
+function getFiltered() {
+  return allArticles.filter(a => {
+    if (activeFilters.size > 0 && !activeFilters.has(a.sourceId)) return false;
+    if (searchTerm) {
+      const haystack = (a.title + ' ' + a.description).toLowerCase();
+      if (!haystack.includes(searchTerm)) return false;
+    }
+    return true;
+  });
+}
+
+// ===== レンダリング =====
+function renderCards() {
+  const grid = document.getElementById('newsGrid');
+  const items = getFiltered();
+  grid.innerHTML = '';
+
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="icon">${allArticles.length === 0 ? '📰' : '🔍'}</div><p>${allArticles.length === 0 ? 'ボタンを押してニュースを取得してください' : '該当するニュースが見つかりませんでした'}</p></div>`;
+    return;
+  }
+
+  items.forEach(article => {
+    const card = document.createElement('div');
+    card.className = 'news-card';
+    card.onclick = () => window.open(article.link, '_blank', 'noopener');
+
+    const dateStr = article.pubDate
+      ? article.pubDate.toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '';
+
+    card.innerHTML = `
+      <div class="card-source ${article.colorClass}">
+        <span>${escHtml(article.sourceName)}</span>
+        ${dateStr ? `<span>${escHtml(dateStr)}</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-title">${escHtml(article.title)}</div>
+        ${article.description ? `<div class="card-desc">${escHtml(article.description)}</div>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function updateCount() {
+  const n = getFiltered().length;
+  document.getElementById('countBadge').textContent = `${n} 件`;
+}
+
+function clearAll() {
+  allArticles = [];
+  activeFilters.clear();
+  searchTerm = '';
+  document.getElementById('searchInput').value = '';
+  buildSourceTags();
+  renderCards();
+  updateCount();
+  setStatus('クリアしました', false);
+  document.getElementById('lastUpdated').textContent = '';
+  clearErrors();
+}
+
+// ===== UI ヘルパー =====
+function setStatus(msg, loading) {
+  document.getElementById('statusText').textContent = msg;
+  document.getElementById('spinner').className = 'spinner' + (loading ? ' active' : '');
+}
+
+function showErrors(errors) {
+  const area = document.getElementById('errorArea');
+  area.innerHTML = errors.map(e =>
+    `<div class="error-msg">⚠️ ${escHtml(e)}</div>`
+  ).join('');
+}
+
+function clearErrors() {
+  document.getElementById('errorArea').innerHTML = '';
+}
+
+function escHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
