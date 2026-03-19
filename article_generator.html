@@ -207,6 +207,27 @@
     </div>
   </div>
 
+  <!-- RSS設定 -->
+  <div class="card">
+    <div class="card-title">📡 RSS設定</div>
+    <div class="form-group">
+      <label>記事URL <span style="color:var(--gray-400);font-weight:400">（RSSのlinkに使用）</span></label>
+      <input type="text" id="rss-link" placeholder="例: https://example.com/blog/my-article">
+    </div>
+    <div class="form-group">
+      <label>サイト名</label>
+      <input type="text" id="rss-site" placeholder="例: 私のレシピブログ" value="">
+    </div>
+    <div class="form-group">
+      <label>著者名</label>
+      <input type="text" id="rss-author" placeholder="例: 山田 花子">
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label>公開日時</label>
+      <input type="text" id="rss-date" placeholder="例: 2026-03-19（空白で今日の日付）">
+    </div>
+  </div>
+
   <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">✨ 記事を生成</button>
 
   <div id="empty">
@@ -245,6 +266,18 @@
       <div class="meta-box" id="sns-box"></div>
     </div>
 
+    <!-- RSS -->
+    <div class="card" style="border:2px solid #f97316">
+      <div class="result-header">
+        <span class="result-label" style="color:#ea580c">📡 RSS &lt;item&gt; XML</span>
+        <button class="btn btn-outline" id="rss-copy-btn" onclick="copyRss()">📋 コピー</button>
+      </div>
+      <div class="article-box" id="rss-box" style="font-family:'Courier New',monospace;font-size:12px;color:#7c3aed"></div>
+      <div class="action-row">
+        <button class="btn btn-outline" onclick="copyRssFull()">📡 フィード全体XML</button>
+      </div>
+    </div>
+
   </div>
 
 </main>
@@ -256,6 +289,8 @@
   let lastArticle = '';
   let lastMeta = '';
   let lastSns = '';
+  let lastRss = '';
+  let lastRssFull = '';
 
   document.querySelectorAll('.style-chip').forEach(el => {
     el.addEventListener('click', () => {
@@ -470,6 +505,16 @@
     lastSns = buildSns(topic, currentPlatform, activeTrends);
     document.getElementById('sns-box').textContent = lastSns;
 
+    // RSS
+    const rssLink   = document.getElementById('rss-link').value.trim();
+    const rssSite   = document.getElementById('rss-site').value.trim();
+    const rssAuthor = document.getElementById('rss-author').value.trim();
+    const rssDate   = document.getElementById('rss-date').value.trim();
+    const rssTitle  = titles[0];
+    lastRss = buildRss(topic, rssTitle, lastMeta, rssLink, rssSite, rssAuthor, rssDate, keywords, activeTrends);
+    lastRssFull = buildRssFull(topic, rssTitle, lastMeta, rssLink, rssSite, rssAuthor, rssDate, keywords, activeTrends);
+    document.getElementById('rss-box').textContent = lastRss;
+
     document.getElementById('result').style.display = '';
     document.getElementById('empty').style.display = 'none';
     document.getElementById('copy-btn').textContent = '📋 コピー';
@@ -486,6 +531,67 @@
   function copySection(which) {
     const text = which === 'meta' ? lastMeta : lastSns;
     navigator.clipboard.writeText(text).then(() => alert(which === 'meta' ? 'SEO説明文をコピーしました！' : 'SNS告知文をコピーしました！'));
+  }
+
+  // ─── XML エスケープ ───────────────────────────
+  function xe(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  }
+
+  // RFC 822 形式の日付生成
+  function toRfc822(dateStr) {
+    const d = dateStr ? new Date(dateStr) : new Date();
+    if (isNaN(d)) return new Date().toUTCString();
+    return d.toUTCString();
+  }
+
+  function buildRss(topic, title, meta, link, site, author, dateStr, keywords, trends) {
+    const pubDate = toRfc822(dateStr);
+    const kw = keywords ? keywords.split(',').map(k => k.trim()).filter(Boolean) : [];
+    const cats = [...trends, ...kw].slice(0, 6);
+    const catXml = cats.map(c => `    <category>${xe(c)}</category>`).join('\n');
+    const guid = link || `https://example.com/article-${Date.now()}`;
+
+    const item = `<item>
+  <title>${xe(title)}</title>
+  <link>${xe(link || guid)}</link>
+  <guid isPermaLink="${link ? 'true' : 'false'}">${xe(guid)}</guid>
+  <pubDate>${pubDate}</pubDate>
+  <description>${xe(meta)}</description>
+  <content:encoded><![CDATA[${meta}]]></content:encoded>
+${author ? `  <author>${xe(author)}</author>\n` : ''}${catXml ? catXml + '\n' : ''}  <source url="${xe(link || guid)}">${xe(site || 'My Blog')}</source>
+</item>`;
+    return item;
+  }
+
+  function buildRssFull(topic, title, meta, link, site, author, dateStr, keywords, trends) {
+    const siteUrl = link ? link.replace(/\/[^/]*$/, '') : 'https://example.com';
+    const itemXml = buildRss(topic, title, meta, link, site, author, dateStr, keywords, trends);
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${xe(site || 'My Blog')}</title>
+    <link>${xe(siteUrl)}</link>
+    <description>${xe(meta)}</description>
+    <language>ja</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link href="${xe(siteUrl)}/feed.xml" rel="self" type="application/rss+xml"/>
+    ${itemXml.split('\n').join('\n    ')}
+  </channel>
+</rss>`;
+  }
+
+  function copyRss() {
+    navigator.clipboard.writeText(lastRss).then(() => {
+      document.getElementById('rss-copy-btn').textContent = '✅ コピー済み';
+      setTimeout(() => { document.getElementById('rss-copy-btn').textContent = '📋 コピー'; }, 2000);
+    });
+  }
+
+  function copyRssFull() {
+    navigator.clipboard.writeText(lastRssFull).then(() => alert('RSSフィード全体XMLをコピーしました！'));
   }
 </script>
 </body>
