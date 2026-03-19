@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理画面</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f13; --bg2: #16161d; --bg3: #1e1e28;
+      --accent: #7c6ff7; --accent2: #a78bfa;
+      --text: #e2e2f0; --muted: #8888aa; --border: #2a2a3a;
+      --radius: 10px; --danger: #ef4444;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; min-height: 100vh; }
+
+    nav {
+      background: rgba(15,15,19,.95); border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .nav-logo { font-weight: 800; color: var(--accent2); font-size: 16px; }
+    .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
+    .nav-link:hover { color: var(--text); }
+
+    .container { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+
+    .section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+    .section-title { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--accent2); text-transform: uppercase; margin-bottom: 20px; }
+
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; margin-top: 14px; }
+    label:first-of-type { margin-top: 0; }
+    input, textarea, select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px; padding: 10px 14px;
+      font-size: 14px; font-family: inherit; outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .card-group { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 12px; position: relative; }
+    .card-group + .card-group { margin-top: 10px; }
+    .card-num { font-size: 11px; color: var(--muted); margin-bottom: 12px; font-weight: 700; letter-spacing: .05em; }
+    .btn-remove {
+      position: absolute; top: 12px; right: 12px;
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-remove:hover { border-color: var(--danger); color: var(--danger); }
+
+    .btn-add {
+      width: 100%; margin-top: 10px; padding: 10px;
+      background: none; border: 1px dashed var(--border);
+      color: var(--muted); border-radius: 8px; font-size: 13px;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent2); }
+
+    .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn-save {
+      flex: 1; padding: 14px; background: var(--accent); color: #fff;
+      border: none; border-radius: 999px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-save:hover { background: var(--accent2); }
+    .btn-preview {
+      padding: 14px 24px; background: none;
+      border: 1px solid var(--border); color: var(--text);
+      border-radius: 999px; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: flex; align-items: center;
+      transition: all .2s;
+    }
+    .btn-preview:hover { border-color: var(--accent); color: var(--accent2); }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      padding: 12px 28px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">管理画面</span>
+  <a href="index.html" class="nav-link">← サイトを見る</a>
+</nav>
+
+<div class="container">
+  <h1>コンテンツ編集</h1>
+  <p class="subtitle">変更後「保存する」を押すとサイトに反映されます。</p>
+
+  <!-- プロフィール -->
+  <div class="section">
+    <div class="section-title">プロフィール</div>
+    <label>名前 / ニックネーム</label>
+    <input type="text" id="name" placeholder="例: omiyasan">
+    <label>ヒーロー見出し（大きなタイトル）</label>
+    <input type="text" id="hero_title" placeholder="例: ブログ＆ツールまとめ">
+    <label>一言説明</label>
+    <textarea id="hero_desc" placeholder="例: 技術記事・自作ツール・ポートフォリオをまとめたサイトです。"></textarea>
+    <label>自己紹介</label>
+    <textarea id="bio" placeholder="例: 趣味でツールを作ったり記事を書いています。"></textarea>
+  </div>
+
+  <!-- SNSリンク -->
+  <div class="section">
+    <div class="section-title">SNS リンク</div>
+    <label>Bluesky URL</label>
+    <input type="url" id="bluesky" placeholder="https://bsky.app/profile/...">
+    <label>GitHub URL</label>
+    <input type="url" id="github" placeholder="https://github.com/...">
+    <label>ブログ URL</label>
+    <input type="url" id="blog_url" placeholder="https://...">
+  </div>
+
+  <!-- ブログ記事 -->
+  <div class="section">
+    <div class="section-title">ブログ記事</div>
+    <div id="blog-list"></div>
+    <button class="btn-add" onclick="addBlog()">＋ 記事を追加</button>
+  </div>
+
+  <!-- ツール -->
+  <div class="section">
+    <div class="section-title">ツール・作ったもの</div>
+    <div id="tool-list"></div>
+    <button class="btn-add" onclick="addTool()">＋ ツールを追加</button>
+  </div>
+
+  <div class="actions">
+    <button class="btn-save" onclick="save()">保存する</button>
+    <a href="index.html" class="btn-preview">プレビュー →</a>
+  </div>
+</div>
+
+<div class="toast" id="toast">保存しました！</div>
+
+<script>
+  const EMOJIS = ['🛠️','✨','📦','🚀','🎨','📝','🔧','💡'];
+
+  function load() {
+    const d = JSON.parse(localStorage.getItem('siteData') || '{}');
+    document.getElementById('name').value = d.name || '';
+    document.getElementById('hero_title').value = d.hero_title || '';
+    document.getElementById('hero_desc').value = d.hero_desc || '';
+    document.getElementById('bio').value = d.bio || '';
+    document.getElementById('bluesky').value = d.bluesky || '';
+    document.getElementById('github').value = d.github || '';
+    document.getElementById('blog_url').value = d.blog_url || '';
+
+    const blogs = d.blogs || [{title:'',desc:'',url:'',tag:'',date:''}];
+    document.getElementById('blog-list').innerHTML = '';
+    blogs.forEach((b, i) => addBlog(b));
+
+    const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
+    document.getElementById('tool-list').innerHTML = '';
+    tools.forEach((t, i) => addTool(t));
+  }
+
+  function addBlog(data = {}) {
+    const list = document.getElementById('blog-list');
+    const idx = list.children.length;
+    const div = document.createElement('div');
+    div.className = 'card-group';
+    div.innerHTML = `
+      <div class="card-num">記事 ${idx + 1}</div>
+      <button class="btn-remove" onclick="this.parentElement.remove()">削除</button>
+      <label>タグ（例：技術、日記）</label>
+      <input type="text" class="blog-tag" value="${data.tag||''}" placeholder="技術">
+      <label>タイトル</label>
+      <input type="text" class="blog-title" value="${data.title||''}" placeholder="記事のタイトル">
+      <label>概要（2〜3行）</label>
+      <textarea class="blog-desc" placeholder="記事の概要">${data.desc||''}</textarea>
+      <label>URL</label>
+      <input type="url" class="blog-url" value="${data.url||''}" placeholder="https://...">
+      <label>日付（例：2026年3月）</label>
+      <input type="text" class="blog-date" value="${data.date||''}" placeholder="2026年3月">
+    `;
+    list.appendChild(div);
+  }
+
+  function addTool(data = {}) {
+    const list = document.getElementById('tool-list');
+    const idx = list.children.length;
+    const div = document.createElement('div');
+    div.className = 'card-group';
+    div.innerHTML = `
+      <div class="card-num">ツール ${idx + 1}</div>
+      <button class="btn-remove" onclick="this.parentElement.remove()">削除</button>
+      <label>アイコン（絵文字）</label>
+      <input type="text" class="tool-icon" value="${data.icon||'🛠️'}" placeholder="🛠️" style="max-width:80px">
+      <label>ツール名</label>
+      <input type="text" class="tool-title" value="${data.title||''}" placeholder="ツール名">
+      <label>説明</label>
+      <textarea class="tool-desc" placeholder="ツールの説明">${data.desc||''}</textarea>
+      <label>URL</label>
+      <input type="url" class="tool-url" value="${data.url||''}" placeholder="https://...">
+    `;
+    list.appendChild(div);
+  }
+
+  function save() {
+    const blogs = [...document.querySelectorAll('#blog-list .card-group')].map(el => ({
+      tag:   el.querySelector('.blog-tag').value,
+      title: el.querySelector('.blog-title').value,
+      desc:  el.querySelector('.blog-desc').value,
+      url:   el.querySelector('.blog-url').value,
+      date:  el.querySelector('.blog-date').value,
+    }));
+    const tools = [...document.querySelectorAll('#tool-list .card-group')].map(el => ({
+      icon:  el.querySelector('.tool-icon').value,
+      title: el.querySelector('.tool-title').value,
+      desc:  el.querySelector('.tool-desc').value,
+      url:   el.querySelector('.tool-url').value,
+    }));
+    const data = {
+      name:       document.getElementById('name').value,
+      hero_title: document.getElementById('hero_title').value,
+      hero_desc:  document.getElementById('hero_desc').value,
+      bio:        document.getElementById('bio').value,
+      bluesky:    document.getElementById('bluesky').value,
+      github:     document.getElementById('github').value,
+      blog_url:   document.getElementById('blog_url').value,
+      blogs, tools,
+    };
+    localStorage.setItem('siteData', JSON.stringify(data));
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  load();
+</script>
+</body>
+</html>
