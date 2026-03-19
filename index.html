@@ -3,180 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Name | Portfolio</title>
+  <title>Portfolio</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f0f13;
-      --bg2: #16161d;
-      --bg3: #1e1e28;
-      --accent: #7c6ff7;
-      --accent2: #a78bfa;
-      --text: #e2e2f0;
-      --muted: #8888aa;
-      --border: #2a2a3a;
+      --bg: #0f0f13; --bg2: #16161d; --bg3: #1e1e28;
+      --accent: #7c6ff7; --accent2: #a78bfa;
+      --text: #e2e2f0; --muted: #8888aa; --border: #2a2a3a;
       --radius: 14px;
     }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
-      line-height: 1.7;
-    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; line-height: 1.7; }
 
-    /* Nav */
     nav {
       position: fixed; top: 0; width: 100%; z-index: 100;
-      background: rgba(15,15,19,.85);
-      backdrop-filter: blur(12px);
+      background: rgba(15,15,19,.85); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
-      max-width: 1000px; margin: 0 auto;
-      padding: 0 24px; height: 60px;
-      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1000px; margin: 0 auto; padding: 0 24px;
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
     }
     .nav-logo { font-weight: 800; font-size: 18px; color: var(--accent2); letter-spacing: .05em; }
-    .nav-links { display: flex; gap: 28px; }
-    .nav-links a {
-      color: var(--muted); text-decoration: none; font-size: 14px;
-      transition: color .2s;
-    }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
     .nav-links a:hover { color: var(--text); }
+    .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
+    .nav-admin:hover { border-color: var(--accent); color: var(--accent2); }
 
-    /* Hero */
     .hero {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 100px 24px 60px;
-      position: relative; overflow: hidden;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 100px 24px 60px; position: relative; overflow: hidden;
     }
     .hero::before {
-      content: '';
-      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
       width: 700px; height: 700px;
       background: radial-gradient(circle, rgba(124,111,247,.15) 0%, transparent 70%);
       pointer-events: none;
     }
     .hero-content { position: relative; z-index: 1; }
     .hero-badge {
-      display: inline-block;
-      background: rgba(124,111,247,.15);
-      border: 1px solid rgba(124,111,247,.3);
-      color: var(--accent2);
+      display: inline-block; background: rgba(124,111,247,.15);
+      border: 1px solid rgba(124,111,247,.3); color: var(--accent2);
       font-size: 12px; font-weight: 600; letter-spacing: .1em;
-      padding: 4px 14px; border-radius: 999px;
-      margin-bottom: 24px;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 24px;
     }
     .hero h1 {
-      font-size: clamp(2.2rem, 6vw, 4rem);
-      font-weight: 900;
-      line-height: 1.15;
-      margin-bottom: 20px;
+      font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 20px;
       background: linear-gradient(135deg, #e2e2f0, var(--accent2));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .hero p {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: var(--muted); max-width: 520px; margin: 0 auto 36px;
-    }
+    .hero p { font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--muted); max-width: 520px; margin: 0 auto 36px; }
     .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .btn {
-      padding: 12px 28px; border-radius: 999px;
-      font-size: 15px; font-weight: 600; text-decoration: none;
-      transition: all .2s; cursor: pointer; border: none;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
+    .btn { padding: 12px 28px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; border: none; }
+    .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); transform: translateY(-2px); }
 
-    /* Section */
     section { padding: 80px 24px; }
     .container { max-width: 1000px; margin: 0 auto; }
     .section-header { text-align: center; margin-bottom: 48px; }
-    .section-label {
-      font-size: 12px; font-weight: 700; letter-spacing: .15em;
-      color: var(--accent); text-transform: uppercase; margin-bottom: 10px;
-    }
-    .section-title {
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 800; margin-bottom: 12px;
-    }
-    .section-desc { color: var(--muted); font-size: 15px; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: .15em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; margin-bottom: 12px; }
+    .divider { width: 48px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; margin: 12px auto 0; }
 
-    /* Blog Cards */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
+    .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .blog-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      text-decoration: none; color: inherit;
-      transition: all .2s;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; text-decoration: none; color: inherit; transition: all .2s;
       display: flex; flex-direction: column; gap: 12px;
     }
-    .blog-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(124,111,247,.15);
-    }
-    .blog-tag {
-      font-size: 11px; font-weight: 700; letter-spacing: .08em;
-      color: var(--accent2);
-      background: rgba(124,111,247,.1);
-      padding: 3px 10px; border-radius: 999px;
-      width: fit-content;
-    }
+    .blog-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,111,247,.15); }
+    .blog-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--accent2); background: rgba(124,111,247,.1); padding: 3px 10px; border-radius: 999px; width: fit-content; }
     .blog-card h3 { font-size: 16px; font-weight: 700; line-height: 1.4; }
     .blog-card p { font-size: 14px; color: var(--muted); flex: 1; }
     .blog-date { font-size: 12px; color: var(--muted); }
 
-    /* Tools */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-    }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     .tool-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      text-decoration: none; color: inherit;
-      transition: all .2s;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; text-decoration: none; color: inherit; transition: all .2s;
     }
-    .tool-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(124,111,247,.15);
-    }
+    .tool-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,111,247,.15); }
     .tool-icon { font-size: 32px; margin-bottom: 14px; }
     .tool-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
     .tool-card p { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
-    .tool-link {
-      font-size: 13px; font-weight: 600; color: var(--accent2);
-      display: flex; align-items: center; gap: 6px;
-    }
+    .tool-link { font-size: 13px; font-weight: 600; color: var(--accent2); }
 
-    /* About */
     #about { background: var(--bg2); }
-    .about-inner {
-      display: flex; gap: 48px; align-items: center; flex-wrap: wrap;
-    }
+    .about-inner { display: flex; gap: 48px; align-items: center; flex-wrap: wrap; }
     .about-avatar {
       width: 120px; height: 120px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -186,141 +102,138 @@
     .about-text h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
     .about-text p { color: var(--muted); font-size: 15px; max-width: 500px; }
     .social-links { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
-    .social-link {
-      padding: 8px 18px; border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
-      transition: all .2s;
-    }
+    .social-link { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; transition: all .2s; }
     .social-link:hover { border-color: var(--accent); color: var(--accent2); }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 24px;
-      text-align: center;
-      color: var(--muted); font-size: 13px;
-    }
-
-    /* Divider */
-    .divider {
-      width: 48px; height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 999px;
-      margin: 12px auto 0;
-    }
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav>
-    <div class="nav-inner">
-      <span class="nav-logo">YourName</span>
-      <div class="nav-links">
-        <a href="#blog">ブログ</a>
-        <a href="#tools">ツール</a>
-        <a href="#about">About</a>
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo" id="nav-name">YourName</span>
+    <div class="nav-links">
+      <a href="#blog">ブログ</a>
+      <a href="#tools">ツール</a>
+      <a href="#about">About</a>
+      <a href="admin.html" class="nav-admin">編集</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Portfolio & Blog</div>
+    <h1 id="hero-title">あなたの名前</h1>
+    <p id="hero-desc">ブログ記事・自作ツール・ポートフォリオをまとめたサイトです。</p>
+    <div class="hero-buttons">
+      <a href="#blog" class="btn btn-primary">記事を読む</a>
+      <a href="#about" class="btn btn-secondary">About me</a>
+    </div>
+  </div>
+</section>
+
+<section id="blog">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Blog</div>
+      <h2 class="section-title">最近の記事</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="blog-grid" id="blog-grid"></div>
+  </div>
+</section>
+
+<section id="tools" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Tools & Works</div>
+      <h2 class="section-title">作ったもの</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="tools-grid" id="tools-grid"></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-avatar">👤</div>
+      <div class="about-text">
+        <h2 id="about-name">あなたの名前</h2>
+        <p id="about-bio">自己紹介をここに書きます。</p>
+        <div class="social-links" id="social-links"></div>
       </div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">Portfolio & Blog</div>
-      <h1>あなたの名前<br>ここに入ります</h1>
-      <p>ブログ記事・自作ツール・ポートフォリオをまとめたサイトです。一言で自分を表す説明をここに書きましょう。</p>
-      <div class="hero-buttons">
-        <a href="#blog" class="btn btn-primary">記事を読む</a>
-        <a href="#about" class="btn btn-secondary">About me</a>
-      </div>
-    </div>
-  </section>
+<footer>
+  <p id="footer-copy">© 2026 YourName. All rights reserved.</p>
+</footer>
 
-  <!-- Blog -->
-  <section id="blog">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label">Blog</div>
-        <h2 class="section-title">最近の記事</h2>
-        <div class="divider"></div>
-      </div>
-      <div class="blog-grid">
-        <a href="#" class="blog-card">
-          <span class="blog-tag">技術</span>
-          <h3>記事タイトルをここに書きます</h3>
-          <p>記事の概要を2〜3行で書きます。読者が興味を持てるような説明を入れましょう。</p>
-          <span class="blog-date">2026年3月</span>
-        </a>
-        <a href="#" class="blog-card">
-          <span class="blog-tag">ツール</span>
-          <h3>記事タイトルをここに書きます</h3>
-          <p>記事の概要を2〜3行で書きます。読者が興味を持てるような説明を入れましょう。</p>
-          <span class="blog-date">2026年2月</span>
-        </a>
-        <a href="#" class="blog-card">
-          <span class="blog-tag">日記</span>
-          <h3>記事タイトルをここに書きます</h3>
-          <p>記事の概要を2〜3行で書きます。読者が興味を持てるような説明を入れましょう。</p>
-          <span class="blog-date">2026年1月</span>
-        </a>
-      </div>
-    </div>
-  </section>
+<script>
+  const DEFAULT = {
+    name: 'YourName',
+    hero_title: 'あなたの名前',
+    hero_desc: 'ブログ記事・自作ツール・ポートフォリオをまとめたサイトです。',
+    bio: '自己紹介をここに書きます。',
+    bluesky: '', github: '', blog_url: '',
+    blogs: [
+      { tag: '技術', title: '記事タイトルをここに書きます', desc: '記事の概要を2〜3行で書きます。', url: '#', date: '2026年3月' },
+      { tag: 'ツール', title: '記事タイトルをここに書きます', desc: '記事の概要を2〜3行で書きます。', url: '#', date: '2026年2月' },
+      { tag: '日記', title: '記事タイトルをここに書きます', desc: '記事の概要を2〜3行で書きます。', url: '#', date: '2026年1月' },
+    ],
+    tools: [
+      { icon: '🖼️', title: 'サムネイルプロンプト生成', desc: 'ブログ・SNS用のサムネイル画像生成プロンプトを自動生成するツール。', url: 'thumbnail_generator.html' },
+      { icon: '🛠️', title: 'ツール名をここに', desc: 'ツールの説明を2〜3行で書きます。', url: '#' },
+    ],
+  };
 
-  <!-- Tools -->
-  <section id="tools" style="background: var(--bg2);">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label">Tools & Works</div>
-        <h2 class="section-title">作ったもの</h2>
-        <div class="divider"></div>
-      </div>
-      <div class="tools-grid">
-        <a href="thumbnail_generator.html" class="tool-card">
-          <div class="tool-icon">🖼️</div>
-          <h3>サムネイルプロンプト生成</h3>
-          <p>ブログ・SNS用のサムネイル画像生成プロンプトを自動生成するツール。</p>
-          <span class="tool-link">使ってみる →</span>
-        </a>
-        <a href="#" class="tool-card">
-          <div class="tool-icon">🛠️</div>
-          <h3>ツール名をここに</h3>
-          <p>ツールの説明を2〜3行で書きます。どんな課題を解決するか書くと良いです。</p>
-          <span class="tool-link">使ってみる →</span>
-        </a>
-        <a href="#" class="tool-card">
-          <div class="tool-icon">✨</div>
-          <h3>ツール名をここに</h3>
-          <p>ツールの説明を2〜3行で書きます。どんな課題を解決するか書くと良いです。</p>
-          <span class="tool-link">使ってみる →</span>
-        </a>
-      </div>
-    </div>
-  </section>
+  function render() {
+    const d = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem('siteData') || '{}'));
 
-  <!-- About -->
-  <section id="about">
-    <div class="container">
-      <div class="about-inner">
-        <div class="about-avatar">👤</div>
-        <div class="about-text">
-          <h2>あなたの名前</h2>
-          <p>自己紹介をここに書きます。何が好きで、何を作っているか、どんなことに興味があるかなど自由に書きましょう。2〜3行程度がちょうど良いです。</p>
-          <div class="social-links">
-            <a href="#" class="social-link">🦋 Bluesky</a>
-            <a href="#" class="social-link">🐙 GitHub</a>
-            <a href="#" class="social-link">✍️ ブログ</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    document.title = d.name + ' | Portfolio';
+    document.getElementById('nav-name').textContent = d.name;
+    document.getElementById('hero-title').textContent = d.hero_title || d.name;
+    document.getElementById('hero-desc').textContent = d.hero_desc;
+    document.getElementById('about-name').textContent = d.name;
+    document.getElementById('about-bio').textContent = d.bio;
+    document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${d.name}. All rights reserved.`;
 
-  <footer>
-    <p>© 2026 YourName. All rights reserved.</p>
-  </footer>
+    // Blog
+    const blogGrid = document.getElementById('blog-grid');
+    blogGrid.innerHTML = (d.blogs || []).map(b => `
+      <a href="${b.url || '#'}" class="blog-card" ${b.url && b.url !== '#' ? 'target="_blank"' : ''}>
+        ${b.tag ? `<span class="blog-tag">${b.tag}</span>` : ''}
+        <h3>${b.title || '記事タイトル'}</h3>
+        <p>${b.desc || ''}</p>
+        ${b.date ? `<span class="blog-date">${b.date}</span>` : ''}
+      </a>
+    `).join('');
 
+    // Tools
+    const toolsGrid = document.getElementById('tools-grid');
+    toolsGrid.innerHTML = (d.tools || []).map(t => `
+      <a href="${t.url || '#'}" class="tool-card" ${t.url && t.url !== '#' && !t.url.endsWith('.html') ? 'target="_blank"' : ''}>
+        <div class="tool-icon">${t.icon || '🛠️'}</div>
+        <h3>${t.title || 'ツール名'}</h3>
+        <p>${t.desc || ''}</p>
+        <span class="tool-link">使ってみる →</span>
+      </a>
+    `).join('');
+
+    // Social
+    const socials = document.getElementById('social-links');
+    socials.innerHTML = [
+      d.bluesky  ? `<a href="${d.bluesky}" class="social-link" target="_blank">🦋 Bluesky</a>` : '',
+      d.github   ? `<a href="${d.github}"  class="social-link" target="_blank">🐙 GitHub</a>`  : '',
+      d.blog_url ? `<a href="${d.blog_url}" class="social-link" target="_blank">✍️ ブログ</a>` : '',
+    ].join('');
+  }
+
+  render();
+</script>
 </body>
 </html>
