@@ -128,21 +128,61 @@
       -moz-user-select: none; -ms-user-select: none;
     }
 
-    /* Gem プロンプトカード */
-    .gem-card { border: 2px solid #10b981; }
-    .gem-label { color: #059669; font-size: 14px; font-weight: 700; }
+    /* ─ Gem プロンプトカード ─ */
+    .gem-hero {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      border-radius: var(--radius); padding: 20px 16px 16px;
+      margin-bottom: 12px; box-shadow: 0 4px 20px rgba(5,150,105,.25);
+    }
+    .gem-hero-step {
+      font-size: 11px; font-weight: 800; letter-spacing: .1em;
+      color: #a7f3d0; margin-bottom: 6px; text-transform: uppercase;
+    }
+    .gem-hero-title {
+      font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;
+    }
+    .gem-hero-sub { font-size: 12px; color: #a7f3d0; margin-bottom: 16px; }
+    .btn-gem-copy {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px; border-radius: var(--radius); border: none;
+      background: #fff; color: #059669; font-size: 17px; font-weight: 800;
+      cursor: pointer; transition: transform .1s, box-shadow .15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15); -webkit-tap-highlight-color: transparent;
+    }
+    .btn-gem-copy:active { transform: scale(.97); }
+    .btn-gem-copy.done { background: #d1fae5; color: #065f46; }
+
+    /* 使い方ステップ */
+    .how-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 16px; margin-bottom: 12px; }
+    .how-row { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+    .how-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .how-num {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--blue);
+      color: #fff; font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .how-text { font-size: 13px; font-weight: 600; color: var(--gray-600); line-height: 1.5; }
+    .how-text b { color: var(--gray-800); }
+
+    /* 折りたたみプレビュー */
+    .preview-toggle {
+      width: 100%; background: #fff; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-size: 14px; font-weight: 700; color: var(--gray-600);
+      margin-bottom: 0; box-shadow: var(--shadow);
+    }
+    .preview-toggle .arrow { transition: transform .2s; font-size: 12px; }
+    .preview-toggle.open .arrow { transform: rotate(180deg); }
+    .preview-inner { display: none; margin-top: 8px; }
+    .preview-inner.open { display: block; }
+
     .gem-box {
       background: #f0fdf4; border-radius: 10px; padding: 16px;
       font-size: 12px; line-height: 1.85; white-space: pre-wrap;
       word-break: break-word; color: var(--gray-800);
       font-family: 'Courier New', monospace; user-select: none;
-      -webkit-user-select: none;
-    }
-    .gem-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #d1fae5; color: #065f46; font-size: 11px;
-      font-weight: 700; padding: 3px 10px; border-radius: 999px;
-      margin-bottom: 10px; letter-spacing: .04em;
+      -webkit-user-select: none; display: none;
     }
   </style>
 </head>
@@ -267,56 +307,93 @@
 
   <div id="result" style="display:none">
 
-    <!-- タイトル候補 -->
-    <div class="card">
-      <div class="section-title">💡 タイトル候補（クリックで選択）</div>
-      <div class="title-list" id="title-list"></div>
+    <!-- ① Gem コピーヒーロー -->
+    <div class="gem-hero">
+      <div class="gem-hero-step">✦ STEP 1 — これだけコピーすればOK</div>
+      <div class="gem-hero-title">Gemini Gem 用プロンプト</div>
+      <div class="gem-hero-sub">↓ ボタンを押してコピー → Gemini › Gem の「指示」欄に貼り付けてください</div>
+      <button class="btn-gem-copy" id="gem-copy-btn" onclick="copyGem()">
+        📋 Gemini Gem にコピー
+      </button>
     </div>
 
-    <!-- 記事本文 -->
-    <div class="card result-card">
-      <div class="result-header">
-        <span class="result-label">📄 記事構成・本文</span>
-        <button class="btn btn-outline" id="copy-btn" onclick="copyArticle()">📋 コピー</button>
+    <!-- 使い方ガイド -->
+    <div class="how-card">
+      <div class="card-title" style="margin-bottom:8px">📌 Gemini Gem への設定手順</div>
+      <div class="how-row">
+        <div class="how-num">1</div>
+        <div class="how-text">上の <b>「Gemini Gem にコピー」</b> ボタンを押す</div>
       </div>
-      <div class="article-box guarded" id="article-box"></div>
-      <div class="action-row">
-        <button class="btn btn-outline" onclick="copySection('meta')">🔍 SEO説明文</button>
-        <button class="btn btn-outline" onclick="copySection('sns')">📣 SNS告知文</button>
+      <div class="how-row">
+        <div class="how-num">2</div>
+        <div class="how-text"><b>Gemini</b> を開き、左メニューの <b>「Gem を探索」→「新しい Gem」</b> をクリック</div>
       </div>
-    </div>
-
-    <!-- SEO・SNS -->
-    <div class="card">
-      <div class="section-title">🔍 SEOメタ説明文</div>
-      <div class="meta-box guarded" id="meta-box"></div>
-    </div>
-    <div class="card">
-      <div class="section-title">📣 SNS告知文</div>
-      <div class="meta-box" id="sns-box"></div>
-    </div>
-
-    <!-- RSS -->
-    <div class="card" style="border:2px solid #f97316">
-      <div class="result-header">
-        <span class="result-label" style="color:#ea580c">📡 RSS &lt;item&gt; XML</span>
-        <button class="btn btn-outline" id="rss-copy-btn" onclick="copyRss()">📋 コピー</button>
+      <div class="how-row">
+        <div class="how-num">3</div>
+        <div class="how-text">「指示」欄にコピーしたテキストを <b>貼り付け → 保存</b></div>
       </div>
-      <div class="article-box guarded" id="rss-box" style="font-family:'Courier New',monospace;font-size:12px;color:#7c3aed"></div>
-      <div class="action-row">
-        <button class="btn btn-outline" onclick="copyRssFull()">📡 フィード全体XML</button>
+      <div class="how-row">
+        <div class="how-num">4</div>
+        <div class="how-text">Gem を開いて <b>記事テーマを伝えるだけ</b> でタイトル・本文・SEO・SNS・RSS が一発生成！</div>
       </div>
     </div>
 
-    <!-- Gemini Gem プロンプト -->
-    <div class="card gem-card">
-      <div class="result-header">
-        <span class="gem-label">✦ Gemini Gem 用プロンプト</span>
-        <button class="btn btn-outline" id="gem-copy-btn" onclick="copyGem()" style="color:#059669;border-color:#6ee7b7">📋 コピー</button>
+    <!-- ② 折りたたみプレビュー -->
+    <button class="preview-toggle" id="preview-toggle" onclick="togglePreview()">
+      <span>📋 各出力プレビュー（参考）</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="preview-inner" id="preview-inner">
+
+      <!-- タイトル候補 -->
+      <div class="card" style="margin-top:8px">
+        <div class="section-title">💡 タイトル候補（クリックでコピー）</div>
+        <div class="title-list" id="title-list"></div>
       </div>
-      <div class="gem-badge">✦ Google Gemini › Gem の「指示」欄に貼り付けてください</div>
-      <div class="gem-box guarded" id="gem-box"></div>
-    </div>
+
+      <!-- 記事本文 -->
+      <div class="card result-card">
+        <div class="result-header">
+          <span class="result-label">📄 記事構成・本文</span>
+          <button class="btn btn-outline" id="copy-btn" onclick="copyArticle()">📋 コピー</button>
+        </div>
+        <div class="article-box guarded" id="article-box"></div>
+      </div>
+
+      <!-- SEO -->
+      <div class="card">
+        <div class="result-header">
+          <span class="section-title" style="margin:0">🔍 SEOメタ説明文</span>
+          <button class="btn btn-outline" onclick="copySection('meta')">📋 コピー</button>
+        </div>
+        <div class="meta-box guarded" id="meta-box"></div>
+      </div>
+
+      <!-- SNS -->
+      <div class="card">
+        <div class="result-header">
+          <span class="section-title" style="margin:0">📣 SNS告知文</span>
+          <button class="btn btn-outline" onclick="copySection('sns')">📋 コピー</button>
+        </div>
+        <div class="meta-box guarded" id="sns-box"></div>
+      </div>
+
+      <!-- RSS -->
+      <div class="card" style="border:2px solid #f97316">
+        <div class="result-header">
+          <span class="result-label" style="color:#ea580c">📡 RSS &lt;item&gt; XML</span>
+          <button class="btn btn-outline" id="rss-copy-btn" onclick="copyRss()">📋 コピー</button>
+        </div>
+        <div class="article-box guarded" id="rss-box" style="font-family:'Courier New',monospace;font-size:12px;color:#7c3aed"></div>
+        <div class="action-row">
+          <button class="btn btn-outline" onclick="copyRssFull()">📡 フィード全体XML</button>
+        </div>
+      </div>
+
+    </div><!-- /preview-inner -->
+
+    <!-- 隠し Gem テキスト -->
+    <div class="gem-box guarded" id="gem-box"></div>
 
   </div>
 
@@ -748,10 +825,22 @@ Gemが起動したら、まず以下を出力してください：
 > テーマを教えてください。キーワードやターゲット読者があれば一緒にどうぞ！`;
   }
 
+  function togglePreview() {
+    const toggle = document.getElementById('preview-toggle');
+    const inner  = document.getElementById('preview-inner');
+    toggle.classList.toggle('open');
+    inner.classList.toggle('open');
+  }
+
   function copyGem() {
     navigator.clipboard.writeText(lastGem).then(() => {
-      document.getElementById('gem-copy-btn').textContent = '✅ コピー済み';
-      setTimeout(() => { document.getElementById('gem-copy-btn').textContent = '📋 コピー'; }, 2000);
+      const btn = document.getElementById('gem-copy-btn');
+      btn.textContent = '✅ コピー完了！Gemini に貼り付けてください';
+      btn.classList.add('done');
+      setTimeout(() => {
+        btn.textContent = '📋 Gemini Gem にコピー';
+        btn.classList.remove('done');
+      }, 3000);
     });
   }
 
