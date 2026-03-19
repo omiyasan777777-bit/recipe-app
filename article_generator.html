@@ -420,16 +420,31 @@ ${rssBlock}`;
   }
 
   // ─── コピー ─────────────────────────────────────
+  function showCopied() {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✅ コピー完了！Geminiに貼り付けてください';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '📋 コピー'; btn.classList.remove('done'); }, 3000);
+  }
+
   function doCopy() {
-    navigator.clipboard.writeText(lastPrompt).then(() => {
-      const btn     = document.getElementById('copy-btn');
-      btn.textContent = '✅ コピー完了！Geminiに貼り付けてください';
-      btn.classList.add('done');
-      setTimeout(() => {
-        btn.textContent = '📋 コピー';
-        btn.classList.remove('done');
-      }, 3000);
-    });
+    // スマホ含む全環境対応フォールバック
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = lastPrompt;
+      ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); showCopied(); }
+      catch(e) { alert('コピーに失敗しました。プレビューを長押しして手動でコピーしてください。'); }
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lastPrompt).then(showCopied).catch(fallback);
+    } else {
+      fallback();
+    }
   }
 </script>
 </body>
