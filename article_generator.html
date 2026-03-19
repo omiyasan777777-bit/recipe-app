@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>✍️ 記事コンテンツ生成</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #6c5ce7; --blue-dk: #5a4bd1;
+      --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+      --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+      --red: #ef4444; --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--gray-50); color: var(--gray-800); min-height: 100vh;
+    }
+    header {
+      background: #fff; border-bottom: 1px solid var(--gray-200);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 600px; margin: 0 auto; padding: 0 16px;
+      height: 56px; display: flex; align-items: center;
+    }
+    .header-title { font-size: 18px; font-weight: 700; color: var(--blue); }
+    main { max-width: 600px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px;
+    }
+    label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+    input[type="text"], textarea, select {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); font-size: 16px; font-family: inherit;
+      color: var(--gray-800); background: #fff; appearance: none;
+      -webkit-appearance: none; outline: none; transition: border-color .15s;
+    }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    input:focus, textarea:focus, select:focus { border-color: var(--blue); }
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 20px; border-radius: var(--radius); border: none;
+      font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: opacity .15s, transform .1s; -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--blue); color: #fff; width: 100%; }
+    .btn-outline {
+      background: transparent; color: var(--gray-600);
+      border: 1.5px solid var(--gray-200); font-size: 14px; padding: 8px 14px;
+    }
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 6px 12px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .chip.active { border-color: var(--blue); background: #ede9fe; color: var(--blue); }
+    .chip-single {
+      padding: 7px 13px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .chip-single.active { border-color: var(--blue); background: #ede9fe; color: var(--blue); }
+    .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .style-chip {
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      transition: border-color .15s, background .15s; background: #fff;
+    }
+    .style-chip.active { border-color: var(--blue); background: #ede9fe; color: var(--blue); }
+    .section-sub { font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 8px; margin-top: 12px; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* Result */
+    .result-card { border: 2px solid var(--blue); }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .result-label { font-size: 14px; font-weight: 700; color: var(--blue); }
+    .article-box {
+      background: var(--gray-100); border-radius: 10px; padding: 16px;
+      font-size: 14px; line-height: 1.85; white-space: pre-wrap; word-break: break-word;
+      color: var(--gray-800); user-select: all;
+    }
+    .action-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-600); }
+    .title-list { display: flex; flex-direction: column; gap: 8px; }
+    .title-item {
+      background: var(--gray-100); border-radius: 10px; padding: 12px 14px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s;
+      line-height: 1.5;
+    }
+    .title-item:hover { background: var(--gray-200); }
+    .title-item-label {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: .05em; margin-bottom: 4px;
+    }
+    .meta-box {
+      background: var(--gray-100); border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; color: var(--gray-600); line-height: 1.6;
+    }
+    #empty { text-align: center; padding: 48px 16px; color: var(--gray-400); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .tab-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tab {
+      padding: 7px 13px; border: 1.5px solid var(--gray-200); border-radius: 999px;
+      cursor: pointer; font-size: 13px; font-weight: 600; background: #fff;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .tab.active { border-color: var(--blue); background: #ede9fe; color: var(--blue); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <span class="header-title">✍️ 記事コンテンツ生成</span>
+  </div>
+</header>
+<main>
+
+  <!-- テーマ・キーワード -->
+  <div class="card">
+    <div class="card-title">📝 テーマ・キーワード</div>
+    <div class="form-group">
+      <label>記事テーマ <span style="color:var(--red)">*</span></label>
+      <input type="text" id="topic" placeholder="例: 10分で作れる簡単チキンカレー" maxlength="100">
+    </div>
+    <div class="form-group">
+      <label>キーワード（任意・カンマ区切り）</label>
+      <input type="text" id="keywords" placeholder="例: 時短, 節約, フライパン, 初心者" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label>ターゲット読者（任意）</label>
+      <input type="text" id="target" placeholder="例: 料理初心者の一人暮らし20代" maxlength="100">
+    </div>
+  </div>
+
+  <!-- 記事タイプ -->
+  <div class="card">
+    <div class="card-title">📐 記事タイプ</div>
+    <div class="style-grid">
+      <div class="style-chip active" data-type="howto">📖 ハウツー記事</div>
+      <div class="style-chip" data-type="list">📋 リスト記事</div>
+      <div class="style-chip" data-type="review">⭐ レビュー記事</div>
+      <div class="style-chip" data-type="column">💬 コラム</div>
+    </div>
+  </div>
+
+  <!-- 発信プラットフォーム -->
+  <div class="card">
+    <div class="card-title">🌐 発信プラットフォーム</div>
+    <div class="tab-row">
+      <div class="tab active" data-platform="note">📒 note</div>
+      <div class="tab" data-platform="blog">📰 ブログ</div>
+      <div class="tab" data-platform="x">𝕏 X（Twitter）</div>
+      <div class="tab" data-platform="instagram">📸 Instagram</div>
+    </div>
+  </div>
+
+  <!-- 文体・トーン -->
+  <div class="card">
+    <div class="card-title">🎙️ 文体・トーン</div>
+    <div class="tab-row">
+      <div class="tab active" data-tone="friendly">😊 親しみやすい</div>
+      <div class="tab" data-tone="professional">💼 プロフェッショナル</div>
+      <div class="tab" data-tone="casual">✌️ カジュアル</div>
+      <div class="tab" data-tone="expert">🎓 専門家</div>
+    </div>
+  </div>
+
+  <!-- トレンドタグ -->
+  <div class="card">
+    <div class="card-title">🔥 トレンドタグ（複数可）</div>
+    <div class="tag-wrap">
+      <div class="chip" data-trend="時短・簡単">⏱ 時短・簡単</div>
+      <div class="chip" data-trend="映え・フォトジェニック">📸 映え</div>
+      <div class="chip" data-trend="ヘルシー・健康">🥗 ヘルシー</div>
+      <div class="chip" data-trend="節約・コスパ最強">💰 節約</div>
+      <div class="chip" data-trend="本格・プロの味">👨‍🍳 本格派</div>
+      <div class="chip" data-trend="初心者でもできる">🌱 初心者向け</div>
+      <div class="chip" data-trend="話題・バズり">🔥 バズり</div>
+      <div class="chip" data-trend="おうちごはん">🏠 おうちごはん</div>
+    </div>
+  </div>
+
+  <!-- 構成オプション -->
+  <div class="card">
+    <div class="card-title">⚙️ 構成オプション</div>
+    <div class="form-group">
+      <label>セクション数</label>
+      <select id="sections">
+        <option value="3">3セクション（短め）</option>
+        <option value="5" selected>5セクション（標準）</option>
+        <option value="7">7セクション（詳しく）</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>追加要望（任意）</label>
+      <textarea id="extra" placeholder="例: 最後にQ&Aを入れたい、材料一覧を冒頭に入れてほしい"></textarea>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="generate()" style="margin-bottom:16px">✨ 記事を生成</button>
+
+  <div id="empty">
+    <div class="empty-icon">✍️</div>
+    <div>記事テーマを入力して生成ボタンを押してください</div>
+  </div>
+
+  <div id="result" style="display:none">
+
+    <!-- タイトル候補 -->
+    <div class="card">
+      <div class="section-title">💡 タイトル候補（クリックで選択）</div>
+      <div class="title-list" id="title-list"></div>
+    </div>
+
+    <!-- 記事本文 -->
+    <div class="card result-card">
+      <div class="result-header">
+        <span class="result-label">📄 記事構成・本文</span>
+        <button class="btn btn-outline" id="copy-btn" onclick="copyArticle()">📋 コピー</button>
+      </div>
+      <div class="article-box" id="article-box"></div>
+      <div class="action-row">
+        <button class="btn btn-outline" onclick="copySection('meta')">🔍 SEO説明文</button>
+        <button class="btn btn-outline" onclick="copySection('sns')">📣 SNS告知文</button>
+      </div>
+    </div>
+
+    <!-- SEO・SNS -->
+    <div class="card">
+      <div class="section-title">🔍 SEOメタ説明文</div>
+      <div class="meta-box" id="meta-box"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">📣 SNS告知文</div>
+      <div class="meta-box" id="sns-box"></div>
+    </div>
+
+  </div>
+
+</main>
+<script>
+  let currentType = 'howto';
+  let currentPlatform = 'note';
+  let currentTone = 'friendly';
+  let activeTrends = new Set();
+  let lastArticle = '';
+  let lastMeta = '';
+  let lastSns = '';
+
+  document.querySelectorAll('.style-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentType = el.dataset.type;
+    });
+  });
+
+  document.querySelectorAll('[data-platform]').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('[data-platform]').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentPlatform = el.dataset.platform;
+    });
+  });
+
+  document.querySelectorAll('[data-tone]').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('[data-tone]').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentTone = el.dataset.tone;
+    });
+  });
+
+  document.querySelectorAll('.chip[data-trend]').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('active');
+      if (el.classList.contains('active')) activeTrends.add(el.dataset.trend);
+      else activeTrends.delete(el.dataset.trend);
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // 生成ロジック
+  // ─────────────────────────────────────────────
+
+  const TONE_MAP = {
+    friendly: { greeting: 'こんにちは！', closing: 'ぜひ試してみてくださいね！', ending: 'いかがでしたか？' },
+    professional: { greeting: 'はじめに、', closing: 'ご参考になれば幸いです。', ending: 'まとめると、' },
+    casual: { greeting: 'ねえ聞いて！', closing: 'ぜひやってみよう！', ending: 'どうだった？' },
+    expert: { greeting: '本稿では、', closing: '以上の知見が皆様のお役に立てば幸いです。', ending: '結論として、' },
+  };
+
+  const PLATFORM_MAP = {
+    note:      { max: 2000, hashtagStyle: 'note', cta: 'フォローよろしくお願いします！' },
+    blog:      { max: 3000, hashtagStyle: 'seo',  cta: 'ブックマーク登録をお忘れなく！' },
+    x:         { max: 280,  hashtagStyle: 'x',    cta: 'RTお願いします！' },
+    instagram: { max: 2200, hashtagStyle: 'insta',cta: 'プロフィールのリンクからどうぞ！' },
+  };
+
+  function makeTitles(topic, type, trends) {
+    const trendStr = [...trends].slice(0, 2).join('・') || '';
+    const prefix = trendStr ? `【${trendStr}】` : '';
+    const templates = {
+      howto: [
+        `${prefix}${topic}｜完全ガイド【初心者でもわかる】`,
+        `${topic}のやり方を徹底解説！失敗しないための5つのポイント`,
+        `誰でも簡単！${topic}の手順をステップごとに紹介`,
+      ],
+      list: [
+        `${prefix}${topic}に役立つ7つの方法まとめ`,
+        `プロが教える！${topic}のベスト5選`,
+        `${topic}を成功させる10のコツ【保存版】`,
+      ],
+      review: [
+        `【実際に試した】${topic}のリアルな感想・評価`,
+        `${topic}をレビュー！メリット・デメリットを正直に語ります`,
+        `${prefix}${topic}｜使ってみてわかった本音レビュー`,
+      ],
+      column: [
+        `${topic}について思うこと──私の体験から`,
+        `なぜ今、${topic}が注目されているのか`,
+        `${prefix}${topic}から学んだ、大切なこと`,
+      ],
+    };
+    return templates[type] || templates.howto;
+  }
+
+  function makeSections(topic, type, n, target, extra) {
+    const sectionSets = {
+      howto: [
+        `## はじめに\n${topic}について、基本からわかりやすく説明します。${target ? `${target}の方にも安心して読んでいただける内容です。` : ''}`,
+        `## ${topic}とは？\nまず基本的な概念を押さえておきましょう。${topic}は…（ここで簡単な定義や背景を説明）`,
+        `## 必要な材料・準備\n- 材料1（分量）\n- 材料2（分量）\n- 材料3（分量）\n\n事前に揃えておくとスムーズです。`,
+        `## 手順：ステップバイステップ\n### ステップ1：下準備\n…\n\n### ステップ2：メインの作業\n…\n\n### ステップ3：仕上げ\n…`,
+        `## よくある失敗とその対策\n**失敗例1：** …\n→ 対策：…\n\n**失敗例2：** …\n→ 対策：…`,
+        `## プロのコツ・アレンジ方法\nここだけの裏ワザをご紹介！少し手を加えるだけでグッとクオリティが上がります。`,
+        `## まとめ\n${topic}のポイントをおさらいしましょう。\n\n1. ポイント1\n2. ポイント2\n3. ポイント3`,
+      ],
+      list: [
+        `## はじめに\n${topic}に関する厳選情報をリスト形式でお届けします。`,
+        `## 第1位：王道の定番\n詳細説明…\n\n**おすすめポイント：** …`,
+        `## 第2位：コスパ最強\n詳細説明…\n\n**おすすめポイント：** …`,
+        `## 第3位：ユニークな選択肢\n詳細説明…\n\n**おすすめポイント：** …`,
+        `## 第4位：初心者向け\n詳細説明…\n\n**おすすめポイント：** …`,
+        `## 第5位：上級者向け\n詳細説明…\n\n**おすすめポイント：** …`,
+        `## まとめ・比較表\n| 項目 | おすすめ度 | 難易度 | コスパ |\n|------|-----------|--------|--------|\n| 第1位 | ⭐⭐⭐⭐⭐ | 低 | 高 |\n| 第2位 | ⭐⭐⭐⭐ | 中 | 中 |`,
+      ],
+      review: [
+        `## はじめに\n今回は実際に${topic}を試してみました。忖度なしの正直なレビューをお届けします。`,
+        `## 概要・基本情報\n- 種類：…\n- 価格帯：…\n- 特徴：…`,
+        `## 良かった点（メリット）\n✅ メリット1：…\n✅ メリット2：…\n✅ メリット3：…`,
+        `## 気になった点（デメリット）\n⚠️ デメリット1：…\n⚠️ デメリット2：…`,
+        `## 実際に使ってみた感想\n使ってみて一番印象に残ったのは…（具体的なエピソードを交えながら）`,
+        `## こんな人におすすめ\n- ○○な人\n- ○○を重視する人\n\n**逆におすすめしない人：**\n- ○○な人`,
+        `## 総合評価\n⭐⭐⭐⭐☆（4/5）\n\n総合的に見て、${topic}は…という方には強くおすすめできます。`,
+      ],
+      column: [
+        `## はじめに\n${topic}について、少し個人的な視点からお話しさせてください。`,
+        `## 最初のきっかけ\n私が${topic}に興味を持ったのは…（具体的なエピソード）`,
+        `## 気づいたこと・学んだこと\n実際に経験してみてわかったのは、…ということでした。`,
+        `## もう一歩深く考えてみると\n表面上は○○に見えますが、よく考えると…`,
+        `## 社会・生活への影響\n${topic}は、私たちの日常生活においても…という形で影響を与えています。`,
+        `## 読者の皆さんへ\nこのことを踏まえて、ぜひ○○を意識してみてください。`,
+        `## おわりに\n${topic}を通じて感じたことを正直に書いてみました。少しでも参考になれば嬉しいです。`,
+      ],
+    };
+    const set = sectionSets[type] || sectionSets.howto;
+    let result = set.slice(0, n);
+    if (extra) {
+      result.push(`\n---\n📌 補足：${extra}`);
+    }
+    return result;
+  }
+
+  function buildArticle(topic, type, platform, tone, sections, target, keywords, trends, extra) {
+    const t = TONE_MAP[tone];
+    const kw = keywords ? keywords.split(',').map(k => k.trim()).filter(Boolean) : [];
+    const trendStr = [...trends].join(' ／ ');
+
+    let lines = [];
+
+    // リード文
+    lines.push(`${t.greeting}今回は「${topic}」について詳しくご紹介します。`);
+    if (trendStr) lines.push(`このテーマは特に「${trendStr}」を求める方に最適です。`);
+    if (target) lines.push(`${target}の方はぜひ最後まで読んでみてください。`);
+    lines.push('');
+
+    // セクション
+    const sectionContents = makeSections(topic, type, parseInt(sections), target, extra);
+    lines.push(sectionContents.join('\n\n'));
+    lines.push('');
+
+    // キーワードまとめ
+    if (kw.length) {
+      lines.push(`---`);
+      lines.push(`🔑 関連キーワード：${kw.join('、')}`);
+    }
+
+    // クロージング
+    lines.push('');
+    lines.push(t.ending + 'この記事が少しでもお役に立てれば嬉しいです。');
+    lines.push(PLATFORM_MAP[platform].cta);
+
+    return lines.join('\n');
+  }
+
+  function buildMeta(topic, type, trends) {
+    const trendStr = [...trends].slice(0, 2).join('・') || '';
+    const typeLabel = { howto: 'やり方・手順', list: 'おすすめ一覧', review: 'レビュー・評判', column: 'コラム・考察' };
+    return `${topic}の${typeLabel[type] || '詳細'}を解説。${trendStr ? trendStr + 'に特化した' : ''}わかりやすく実践的な内容で、初心者から上級者まで役立つ情報をお届けします。（120文字程度）`;
+  }
+
+  function buildSns(topic, platform, trends) {
+    const trendTags = [...trends].map(t => `#${t.replace(/[・／]/g, '_')}`).join(' ');
+    if (platform === 'x') {
+      return `📢 新記事：${topic}\n\n✅ ポイント1\n✅ ポイント2\n✅ ポイント3\n\n${trendTags}\n\n👇 記事リンク`;
+    }
+    if (platform === 'instagram') {
+      return `✨ 【${topic}】\n\n⬇️ 詳しくはプロフィールのリンクから！\n\n${trendTags} #レシピ #暮らし #料理`;
+    }
+    return `📝 新しい記事を投稿しました！\n\n「${topic}」\n\n${[...trends].map(t => `#${t}`).join(' ')}\n\n💬 感想はコメントで教えてください！`;
+  }
+
+  function generate() {
+    const topic = document.getElementById('topic').value.trim();
+    if (!topic) { alert('記事テーマを入力してください'); return; }
+
+    const keywords = document.getElementById('keywords').value.trim();
+    const target   = document.getElementById('target').value.trim();
+    const extra    = document.getElementById('extra').value.trim();
+    const sections = document.getElementById('sections').value;
+
+    // タイトル候補
+    const titles = makeTitles(topic, currentType, activeTrends);
+    const titleList = document.getElementById('title-list');
+    titleList.innerHTML = '';
+    const labels = ['パターンA', 'パターンB', 'パターンC'];
+    titles.forEach((title, i) => {
+      const div = document.createElement('div');
+      div.className = 'title-item';
+      div.innerHTML = `<div class="title-item-label">${labels[i]}</div><div>${title}</div>`;
+      div.onclick = () => {
+        navigator.clipboard.writeText(title).then(() => {
+          div.style.background = '#ede9fe';
+          setTimeout(() => { div.style.background = ''; }, 1500);
+        });
+      };
+      titleList.appendChild(div);
+    });
+
+    // 本文
+    lastArticle = buildArticle(topic, currentType, currentPlatform, currentTone, sections, target, keywords, activeTrends, extra);
+    document.getElementById('article-box').textContent = lastArticle;
+
+    // SEO
+    lastMeta = buildMeta(topic, currentType, activeTrends);
+    document.getElementById('meta-box').textContent = lastMeta;
+
+    // SNS
+    lastSns = buildSns(topic, currentPlatform, activeTrends);
+    document.getElementById('sns-box').textContent = lastSns;
+
+    document.getElementById('result').style.display = '';
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('copy-btn').textContent = '📋 コピー';
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyArticle() {
+    navigator.clipboard.writeText(lastArticle).then(() => {
+      document.getElementById('copy-btn').textContent = '✅ コピー済み';
+      setTimeout(() => { document.getElementById('copy-btn').textContent = '📋 コピー'; }, 2000);
+    });
+  }
+
+  function copySection(which) {
+    const text = which === 'meta' ? lastMeta : lastSns;
+    navigator.clipboard.writeText(text).then(() => alert(which === 'meta' ? 'SEO説明文をコピーしました！' : 'SNS告知文をコピーしました！'));
+  }
+</script>
+</body>
+</html>
