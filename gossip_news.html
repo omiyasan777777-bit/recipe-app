@@ -469,10 +469,6 @@ async function fetchAll() {
   document.getElementById('lastUpdated').textContent = `最終更新: ${now}`;
   setStatus(`${total} 件取得完了`, false);
 
-  if (errors.length > 0) {
-    showErrors(errors);
-  }
-
   btn.disabled = false;
 }
 
