@@ -7,9 +7,9 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f0f13; --bg2: #16161d; --bg3: #1e1e28;
-      --accent: #7c6ff7; --accent2: #a78bfa;
-      --text: #e2e2f0; --muted: #8888aa; --border: #2a2a3a;
+      --bg: #ffffff; --bg2: #f5f5f7; --bg3: #ebebef;
+      --accent: #6c5ce7; --accent2: #8b7cf8;
+      --text: #111111; --muted: #555577; --border: #dddde8;
       --radius: 14px;
     }
     html { scroll-behavior: smooth; }
@@ -17,19 +17,19 @@
 
     nav {
       position: fixed; top: 0; width: 100%; z-index: 100;
-      background: rgba(15,15,19,.85); backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.9); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
       max-width: 1000px; margin: 0 auto; padding: 0 24px;
       height: 60px; display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-logo { font-weight: 800; font-size: 18px; color: var(--accent2); letter-spacing: .05em; }
+    .nav-logo { font-weight: 800; font-size: 18px; color: var(--accent); letter-spacing: .05em; }
     .nav-links { display: flex; gap: 28px; align-items: center; }
     .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
     .nav-links a:hover { color: var(--text); }
     .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
-    .nav-admin:hover { border-color: var(--accent); color: var(--accent2); }
+    .nav-admin:hover { border-color: var(--accent); color: var(--accent); }
 
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -38,19 +38,19 @@
     .hero::before {
       content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
       width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(124,111,247,.15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(108,92,231,.08) 0%, transparent 70%);
       pointer-events: none;
     }
     .hero-content { position: relative; z-index: 1; }
     .hero-badge {
-      display: inline-block; background: rgba(124,111,247,.15);
-      border: 1px solid rgba(124,111,247,.3); color: var(--accent2);
+      display: inline-block; background: rgba(108,92,231,.1);
+      border: 1px solid rgba(108,92,231,.25); color: var(--accent);
       font-size: 12px; font-weight: 600; letter-spacing: .1em;
       padding: 4px 14px; border-radius: 999px; margin-bottom: 24px;
     }
     .hero h1 {
       font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 20px;
-      background: linear-gradient(135deg, #e2e2f0, var(--accent2));
+      background: linear-gradient(135deg, #111111, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .hero p { font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--muted); max-width: 520px; margin: 0 auto 36px; }
@@ -59,7 +59,7 @@
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
     .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
     section { padding: 80px 24px; }
     .container { max-width: 1000px; margin: 0 auto; }
@@ -70,26 +70,26 @@
 
     .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .blog-card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 24px; text-decoration: none; color: inherit; transition: all .2s;
       display: flex; flex-direction: column; gap: 12px;
     }
-    .blog-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,111,247,.15); }
-    .blog-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--accent2); background: rgba(124,111,247,.1); padding: 3px 10px; border-radius: 999px; width: fit-content; }
+    .blog-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(108,92,231,.1); }
+    .blog-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--accent); background: rgba(108,92,231,.08); padding: 3px 10px; border-radius: 999px; width: fit-content; }
     .blog-card h3 { font-size: 16px; font-weight: 700; line-height: 1.4; }
     .blog-card p { font-size: 14px; color: var(--muted); flex: 1; }
     .blog-date { font-size: 12px; color: var(--muted); }
 
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     .tool-card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 28px; text-decoration: none; color: inherit; transition: all .2s;
     }
-    .tool-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,111,247,.15); }
+    .tool-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(108,92,231,.1); }
     .tool-icon { font-size: 32px; margin-bottom: 14px; }
     .tool-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
     .tool-card p { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
-    .tool-link { font-size: 13px; font-weight: 600; color: var(--accent2); }
+    .tool-link { font-size: 13px; font-weight: 600; color: var(--accent); }
 
     #about { background: var(--bg2); }
     .about-inner { display: flex; gap: 48px; align-items: center; flex-wrap: wrap; }
@@ -97,13 +97,14 @@
       width: 120px; height: 120px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: flex; align-items: center; justify-content: center;
-      font-size: 48px; flex-shrink: 0;
+      font-size: 48px; flex-shrink: 0; overflow: hidden;
     }
+    .about-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .about-text h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
     .about-text p { color: var(--muted); font-size: 15px; max-width: 500px; }
     .social-links { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
     .social-link { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; transition: all .2s; }
-    .social-link:hover { border-color: var(--accent); color: var(--accent2); }
+    .social-link:hover { border-color: var(--accent); color: var(--accent); }
 
     footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; color: var(--muted); font-size: 13px; }
   </style>
@@ -159,7 +160,7 @@
 <section id="about">
   <div class="container">
     <div class="about-inner">
-      <div class="about-avatar">👤</div>
+      <div class="about-avatar" id="about-avatar">👤</div>
       <div class="about-text">
         <h2 id="about-name">あなたの名前</h2>
         <p id="about-bio">自己紹介をここに書きます。</p>
@@ -179,7 +180,7 @@
     hero_title: 'あなたの名前',
     hero_desc: 'ブログ記事・自作ツール・ポートフォリオをまとめたサイトです。',
     bio: '自己紹介をここに書きます。',
-    bluesky: '', github: '', blog_url: '',
+    threads: '', x: '', note_url: '', avatar: '',
     blogs: [
       { tag: '技術', title: '記事タイトルをここに書きます', desc: '記事の概要を2〜3行で書きます。', url: '#', date: '2026年3月' },
       { tag: 'ツール', title: '記事タイトルをここに書きます', desc: '記事の概要を2〜3行で書きます。', url: '#', date: '2026年2月' },
@@ -201,6 +202,14 @@
     document.getElementById('about-name').textContent = d.name;
     document.getElementById('about-bio').textContent = d.bio;
     document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${d.name}. All rights reserved.`;
+
+    // Avatar
+    const avatar = document.getElementById('about-avatar');
+    if (d.avatar) {
+      avatar.innerHTML = `<img src="${d.avatar}" alt="プロフィール画像">`;
+    } else {
+      avatar.innerHTML = '👤';
+    }
 
     // Blog
     const blogGrid = document.getElementById('blog-grid');
@@ -227,9 +236,9 @@
     // Social
     const socials = document.getElementById('social-links');
     socials.innerHTML = [
-      d.bluesky  ? `<a href="${d.bluesky}" class="social-link" target="_blank">🦋 Bluesky</a>` : '',
-      d.github   ? `<a href="${d.github}"  class="social-link" target="_blank">🐙 GitHub</a>`  : '',
-      d.blog_url ? `<a href="${d.blog_url}" class="social-link" target="_blank">✍️ ブログ</a>` : '',
+      d.threads  ? `<a href="${d.threads}" class="social-link" target="_blank">🧵 Threads</a>` : '',
+      d.x        ? `<a href="${d.x}"       class="social-link" target="_blank">𝕏 X</a>`        : '',
+      d.note_url ? `<a href="${d.note_url}" class="social-link" target="_blank">📝 note</a>`   : '',
     ].join('');
   }
 

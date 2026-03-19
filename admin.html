@@ -7,20 +7,20 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f0f13; --bg2: #16161d; --bg3: #1e1e28;
-      --accent: #7c6ff7; --accent2: #a78bfa;
-      --text: #e2e2f0; --muted: #8888aa; --border: #2a2a3a;
+      --bg: #ffffff; --bg2: #f5f5f7; --bg3: #ebebef;
+      --accent: #6c5ce7; --accent2: #8b7cf8;
+      --text: #111111; --muted: #555577; --border: #dddde8;
       --radius: 10px; --danger: #ef4444;
     }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; min-height: 100vh; }
+    body { background: var(--bg2); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; min-height: 100vh; }
 
     nav {
-      background: rgba(15,15,19,.95); border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.95); border-bottom: 1px solid var(--border);
       padding: 0 24px; height: 56px;
       display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 10;
     }
-    .nav-logo { font-weight: 800; color: var(--accent2); font-size: 16px; }
+    .nav-logo { font-weight: 800; color: var(--accent); font-size: 16px; }
     .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
     .nav-link:hover { color: var(--text); }
 
@@ -29,13 +29,13 @@
     h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
     .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
 
-    .section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
-    .section-title { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--accent2); text-transform: uppercase; margin-bottom: 20px; }
+    .section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+    .section-title { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
 
     label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; margin-top: 14px; }
     label:first-of-type { margin-top: 0; }
     input, textarea, select {
-      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      width: 100%; background: var(--bg2); border: 1px solid var(--border);
       color: var(--text); border-radius: 8px; padding: 10px 14px;
       font-size: 14px; font-family: inherit; outline: none;
       transition: border-color .2s;
@@ -43,7 +43,30 @@
     input:focus, textarea:focus { border-color: var(--accent); }
     textarea { resize: vertical; min-height: 80px; }
 
-    .card-group { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 12px; position: relative; }
+    /* 画像アップロード */
+    .avatar-wrap { display: flex; align-items: center; gap: 20px; margin-top: 4px; }
+    .avatar-preview {
+      width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border);
+      background: var(--bg2); display: flex; align-items: center; justify-content: center;
+      font-size: 32px; overflow: hidden; flex-shrink: 0;
+    }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .avatar-btns { display: flex; flex-direction: column; gap: 8px; }
+    .btn-upload {
+      padding: 8px 16px; background: var(--accent); color: #fff;
+      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+    .btn-upload:hover { background: var(--accent2); }
+    .btn-remove-avatar {
+      padding: 7px 16px; background: none; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 8px; font-size: 13px; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .btn-remove-avatar:hover { border-color: var(--danger); color: var(--danger); }
+    #avatar-input { display: none; }
+
+    .card-group { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 12px; position: relative; background: var(--bg2); }
     .card-group + .card-group { margin-top: 10px; }
     .card-num { font-size: 11px; color: var(--muted); margin-bottom: 12px; font-weight: 700; letter-spacing: .05em; }
     .btn-remove {
@@ -60,7 +83,7 @@
       color: var(--muted); border-radius: 8px; font-size: 13px;
       cursor: pointer; transition: all .2s;
     }
-    .btn-add:hover { border-color: var(--accent); color: var(--accent2); }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent); }
 
     .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
     .btn-save {
@@ -76,7 +99,7 @@
       cursor: pointer; text-decoration: none; display: flex; align-items: center;
       transition: all .2s;
     }
-    .btn-preview:hover { border-color: var(--accent); color: var(--accent2); }
+    .btn-preview:hover { border-color: var(--accent); color: var(--accent); }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -109,17 +132,26 @@
     <textarea id="hero_desc" placeholder="例: 技術記事・自作ツール・ポートフォリオをまとめたサイトです。"></textarea>
     <label>自己紹介</label>
     <textarea id="bio" placeholder="例: 趣味でツールを作ったり記事を書いています。"></textarea>
+    <label>プロフィール画像</label>
+    <div class="avatar-wrap">
+      <div class="avatar-preview" id="avatar-preview">👤</div>
+      <div class="avatar-btns">
+        <button class="btn-upload" onclick="document.getElementById('avatar-input').click()">画像を選択</button>
+        <button class="btn-remove-avatar" onclick="removeAvatar()">画像を削除</button>
+      </div>
+    </div>
+    <input type="file" id="avatar-input" accept="image/*" onchange="onAvatarChange(event)">
   </div>
 
   <!-- SNSリンク -->
   <div class="section">
     <div class="section-title">SNS リンク</div>
-    <label>Bluesky URL</label>
-    <input type="url" id="bluesky" placeholder="https://bsky.app/profile/...">
-    <label>GitHub URL</label>
-    <input type="url" id="github" placeholder="https://github.com/...">
-    <label>ブログ URL</label>
-    <input type="url" id="blog_url" placeholder="https://...">
+    <label>Threads URL</label>
+    <input type="url" id="threads" placeholder="https://www.threads.net/@...">
+    <label>X URL</label>
+    <input type="url" id="x" placeholder="https://x.com/...">
+    <label>note URL</label>
+    <input type="url" id="note_url" placeholder="https://note.com/...">
   </div>
 
   <!-- ブログ記事 -->
@@ -145,7 +177,33 @@
 <div class="toast" id="toast">保存しました！</div>
 
 <script>
-  const EMOJIS = ['🛠️','✨','📦','🚀','🎨','📝','🔧','💡'];
+  let avatarData = '';
+
+  function onAvatarChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      avatarData = ev.target.result;
+      updateAvatarPreview(avatarData);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeAvatar() {
+    avatarData = '';
+    updateAvatarPreview('');
+    document.getElementById('avatar-input').value = '';
+  }
+
+  function updateAvatarPreview(src) {
+    const preview = document.getElementById('avatar-preview');
+    if (src) {
+      preview.innerHTML = `<img src="${src}" alt="プロフィール画像">`;
+    } else {
+      preview.innerHTML = '👤';
+    }
+  }
 
   function load() {
     const d = JSON.parse(localStorage.getItem('siteData') || '{}');
@@ -153,17 +211,20 @@
     document.getElementById('hero_title').value = d.hero_title || '';
     document.getElementById('hero_desc').value = d.hero_desc || '';
     document.getElementById('bio').value = d.bio || '';
-    document.getElementById('bluesky').value = d.bluesky || '';
-    document.getElementById('github').value = d.github || '';
-    document.getElementById('blog_url').value = d.blog_url || '';
+    document.getElementById('threads').value = d.threads || '';
+    document.getElementById('x').value = d.x || '';
+    document.getElementById('note_url').value = d.note_url || '';
+
+    avatarData = d.avatar || '';
+    updateAvatarPreview(avatarData);
 
     const blogs = d.blogs || [{title:'',desc:'',url:'',tag:'',date:''}];
     document.getElementById('blog-list').innerHTML = '';
-    blogs.forEach((b, i) => addBlog(b));
+    blogs.forEach(b => addBlog(b));
 
     const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
     document.getElementById('tool-list').innerHTML = '';
-    tools.forEach((t, i) => addTool(t));
+    tools.forEach(t => addTool(t));
   }
 
   function addBlog(data = {}) {
@@ -227,9 +288,10 @@
       hero_title: document.getElementById('hero_title').value,
       hero_desc:  document.getElementById('hero_desc').value,
       bio:        document.getElementById('bio').value,
-      bluesky:    document.getElementById('bluesky').value,
-      github:     document.getElementById('github').value,
-      blog_url:   document.getElementById('blog_url').value,
+      threads:    document.getElementById('threads').value,
+      x:          document.getElementById('x').value,
+      note_url:   document.getElementById('note_url').value,
+      avatar:     avatarData,
       blogs, tools,
     };
     localStorage.setItem('siteData', JSON.stringify(data));
