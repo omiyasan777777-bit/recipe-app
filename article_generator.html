@@ -407,7 +407,7 @@ ${rssBlock}`;
     lastPrompt = buildPrompt(topic, keywords, target, currentType, currentPlatform, currentTone, sections, activeTrends, extra, rssLink, rssSite, rssAuthor);
 
     document.getElementById('prompt-box').textContent = lastPrompt;
-    document.getElementById('result').style.display = '';
+    document.getElementById('result').style.display = 'block';
     document.getElementById('empty').style.display = 'none';
 
     const btn = document.getElementById('copy-btn');
