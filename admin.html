@@ -128,6 +128,29 @@
     }
     .gh-section { display: none; margin-top: 12px; }
     .gh-section.open { display: block; }
+
+    /* 画像アップロード（1.91:1） */
+    .img-preview-191 {
+      width: 100%; aspect-ratio: 191 / 100;
+      border: 2px dashed var(--border); border-radius: 8px;
+      background: var(--bg2); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; margin-top: 4px; cursor: pointer;
+    }
+    .img-preview-191 img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-preview-191 .img-placeholder { color: var(--muted); font-size: 13px; text-align: center; }
+    .img-btns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-upload-sm {
+      padding: 6px 12px; background: var(--accent); color: #fff;
+      border: none; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+    .btn-upload-sm:hover { background: var(--accent2); }
+    .btn-remove-sm {
+      padding: 5px 12px; background: none; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 8px; font-size: 12px; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .btn-remove-sm:hover { border-color: var(--danger); color: var(--danger); }
   </style>
 </head>
 <body>
@@ -148,6 +171,15 @@
     <input type="text" id="name" placeholder="例: omiyasan">
     <label>ヒーロー見出し（大きなタイトル）</label>
     <input type="text" id="hero_title" placeholder="例: ブログ＆ツールまとめ">
+    <label>ヒーロー画像（見出しの上・1.91:1）</label>
+    <div class="img-preview-191" id="hero-img-preview" onclick="document.getElementById('hero-img-input').click()">
+      <span class="img-placeholder">📷 クリックして画像を選択</span>
+    </div>
+    <div class="img-btns">
+      <button type="button" class="btn-upload-sm" onclick="document.getElementById('hero-img-input').click()">画像を選択</button>
+      <button type="button" class="btn-remove-sm" onclick="removeHeroImage()">削除</button>
+    </div>
+    <input type="file" id="hero-img-input" accept="image/*" onchange="onHeroImageChange(event)" style="display:none">
     <label>一言説明</label>
     <textarea id="hero_desc" placeholder="例: 技術記事・自作ツール・ポートフォリオをまとめたサイトです。"></textarea>
     <label>自己紹介</label>
@@ -215,6 +247,8 @@
 
 <script>
   let avatarData = '';
+  let heroImageData = '';
+  let blogImgCounter = 0;
 
   function onAvatarChange(e) {
     const file = e.target.files[0];
@@ -225,6 +259,53 @@
       updateAvatarPreview(avatarData);
     };
     reader.readAsDataURL(file);
+  }
+
+  function onHeroImageChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      heroImageData = ev.target.result;
+      updateHeroImagePreview(heroImageData);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeHeroImage() {
+    heroImageData = '';
+    updateHeroImagePreview('');
+    document.getElementById('hero-img-input').value = '';
+  }
+
+  function updateHeroImagePreview(src) {
+    const preview = document.getElementById('hero-img-preview');
+    if (src) {
+      preview.innerHTML = `<img src="${src}" alt="ヒーロー画像">`;
+    } else {
+      preview.innerHTML = '<span class="img-placeholder">📷 クリックして画像を選択</span>';
+    }
+  }
+
+  function onBlogImageChange(e, fileInput) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const card = fileInput.closest('.card-group');
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const src = ev.target.result;
+      card.querySelector('.blog-image').value = src;
+      card.querySelector('.blog-img-preview').innerHTML = `<img src="${src}" alt="">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeBlogImage(btn) {
+    const card = btn.closest('.card-group');
+    card.querySelector('.blog-image').value = '';
+    card.querySelector('.blog-img-preview').innerHTML = '<span class="img-placeholder">📷 クリックして画像を選択</span>';
+    const fileInput = card.querySelector('input[type="file"].blog-img-file');
+    if (fileInput) fileInput.value = '';
   }
 
   function removeAvatar() {
@@ -245,6 +326,7 @@
   function addBlog(data = {}) {
     const list = document.getElementById('blog-list');
     const idx = list.children.length;
+    const imgId = 'blog-img-' + (blogImgCounter++);
     const div = document.createElement('div');
     div.className = 'card-group';
     div.innerHTML = `
@@ -260,6 +342,16 @@
       <input type="url" class="blog-url" value="${data.url||''}" placeholder="https://...">
       <label>日付（例：2026年3月）</label>
       <input type="text" class="blog-date" value="${data.date||''}" placeholder="2026年3月">
+      <label>サムネイル画像（1.91:1）</label>
+      <div class="img-preview-191 blog-img-preview" onclick="document.getElementById('${imgId}').click()">
+        ${data.image ? `<img src="${data.image}" alt="">` : '<span class="img-placeholder">📷 クリックして画像を選択</span>'}
+      </div>
+      <input type="hidden" class="blog-image" value="${data.image||''}">
+      <div class="img-btns">
+        <button type="button" class="btn-upload-sm" onclick="document.getElementById('${imgId}').click()">画像を選択</button>
+        <button type="button" class="btn-remove-sm" onclick="removeBlogImage(this)">削除</button>
+      </div>
+      <input type="file" id="${imgId}" class="blog-img-file" accept="image/*" style="display:none" onchange="onBlogImageChange(event, this)">
     `;
     list.appendChild(div);
   }
@@ -362,6 +454,7 @@
       desc:  el.querySelector('.blog-desc').value,
       url:   el.querySelector('.blog-url').value,
       date:  el.querySelector('.blog-date').value,
+      image: el.querySelector('.blog-image').value,
     }));
     const tools = [...document.querySelectorAll('#tool-list .card-group')].map(el => ({
       icon:  el.querySelector('.tool-icon').value,
@@ -378,6 +471,7 @@
       x:          document.getElementById('x').value,
       note_url:   document.getElementById('note_url').value,
       avatar:     avatarData,
+      hero_image: heroImageData,
       blogs, tools,
     };
     localStorage.setItem('siteData', JSON.stringify(data));
@@ -414,6 +508,9 @@
 
     avatarData = d.avatar || '';
     updateAvatarPreview(avatarData);
+
+    heroImageData = d.hero_image || '';
+    updateHeroImagePreview(heroImageData);
 
     const blogs = d.blogs || [{title:'',desc:'',url:'',tag:'',date:''}];
     document.getElementById('blog-list').innerHTML = '';

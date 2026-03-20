@@ -107,6 +107,10 @@
     .social-link:hover { border-color: var(--accent); color: var(--accent); }
 
     footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    .hero-image-wrap { width: 100%; max-width: 580px; margin: 0 auto 32px; }
+    .hero-image-wrap img { width: 100%; aspect-ratio: 191 / 100; object-fit: cover; border-radius: 14px; display: block; box-shadow: 0 8px 32px rgba(108,92,231,.15); }
+    .blog-card-img { width: 100%; aspect-ratio: 191 / 100; object-fit: cover; border-radius: 8px; display: block; margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -126,6 +130,9 @@
 <section class="hero">
   <div class="hero-content">
     <div class="hero-badge">Portfolio & Blog</div>
+    <div class="hero-image-wrap" id="hero-image-wrap" style="display:none">
+      <img id="hero-image" src="" alt="ヒーロー画像">
+    </div>
     <h1 id="hero-title">あなたの名前</h1>
     <p id="hero-desc">ブログ記事・自作ツール・ポートフォリオをまとめたサイトです。</p>
     <div class="hero-buttons">
@@ -202,6 +209,16 @@
     document.getElementById('about-bio').textContent = d.bio;
     document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${d.name}. All rights reserved.`;
 
+    // Hero image
+    const heroImgWrap = document.getElementById('hero-image-wrap');
+    const heroImg = document.getElementById('hero-image');
+    if (d.hero_image) {
+      heroImg.src = d.hero_image;
+      heroImgWrap.style.display = 'block';
+    } else {
+      heroImgWrap.style.display = 'none';
+    }
+
     // Avatar
     const avatar = document.getElementById('about-avatar');
     if (d.avatar) {
@@ -214,6 +231,7 @@
     const blogGrid = document.getElementById('blog-grid');
     blogGrid.innerHTML = (d.blogs || []).map(b => `
       <a href="${b.url || '#'}" class="blog-card" ${b.url && b.url !== '#' ? 'target="_blank"' : ''}>
+        ${b.image ? `<img class="blog-card-img" src="${b.image}" alt="">` : ''}
         ${b.tag ? `<span class="blog-tag">${b.tag}</span>` : ''}
         <h3>${b.title || '記事タイトル'}</h3>
         <p>${b.desc || ''}</p>
