@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINEスタンプメーカー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+      background: linear-gradient(135deg, #00c300 0%, #00b300 50%, #009900 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    .size-badge {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .size-badge span {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin: 2px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* Controls Panel */
+    .controls {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .controls-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .controls-header h2 {
+      color: #333;
+      font-size: 1rem;
+      border-left: 4px solid #00c300;
+      padding-left: 10px;
+      flex: 1;
+    }
+    .toggle-icon { font-size: 1.2rem; transition: transform 0.2s; }
+    .controls-body { }
+    .global-settings {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .setting-group label {
+      display: block;
+      font-size: 0.78rem;
+      color: #666;
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+    .setting-group input[type="color"] {
+      width: 100%;
+      height: 36px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 2px;
+    }
+    .setting-group input[type="range"] {
+      width: 100%;
+      accent-color: #00c300;
+      margin-top: 4px;
+    }
+    .setting-group select, .setting-group input[type="text"] {
+      width: 100%;
+      padding: 7px 8px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .setting-group select:focus, .setting-group input:focus { border-color: #00c300; }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .btn-green { background: #00c300; color: white; }
+    .btn-green:hover { background: #00a000; transform: translateY(-1px); }
+    .btn-gray { background: #f0f0f0; color: #444; }
+    .btn-gray:hover { background: #e0e0e0; }
+    .btn-blue { background: #0084ff; color: white; }
+    .btn-blue:hover { background: #006acc; transform: translateY(-1px); }
+
+    /* Stamps Grid */
+    .stamps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) { .stamps-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px) { .stamps-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stamp-card {
+      background: white;
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .stamp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stamp-num { font-size: 0.72rem; color: #999; font-weight: 700; }
+    .stamp-size-label { font-size: 0.68rem; color: #bbb; }
+
+    /* Canvas wrapper with drop zone */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 370 / 320;
+      border: 2px dashed #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .canvas-wrap:hover { border-color: #00c300; }
+    .canvas-wrap.drag-over {
+      border-color: #00c300;
+      background: rgba(0,195,0,0.05);
+    }
+    .canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .canvas-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.85);
+      font-size: 0.75rem;
+      color: #888;
+      flex-direction: column;
+      gap: 4px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .canvas-wrap:hover .canvas-overlay { opacity: 1; }
+    .canvas-overlay .icon { font-size: 1.5rem; }
+
+    .file-input-hidden { display: none; }
+
+    /* Text inputs */
+    .stamp-text-input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 7px;
+      font-size: 0.85rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .stamp-text-input:focus { border-color: #00c300; }
+
+    /* Per-stamp style row */
+    .stamp-style-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+    }
+    .stamp-style-row select {
+      padding: 4px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      outline: none;
+      width: 100%;
+    }
+    .stamp-style-row select:focus { border-color: #00c300; }
+
+    .stamp-actions { display: flex; gap: 5px; }
+    .stamp-actions button {
+      flex: 1;
+      padding: 5px;
+      font-size: 0.72rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-dl-s { background: #e8f4ff; color: #0084ff; }
+    .btn-dl-s:hover { background: #cce4ff; }
+    .btn-clear { background: #fff0f0; color: #e53935; }
+    .btn-clear:hover { background: #ffcccc; }
+
+    /* Download section */
+    .download-section {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    .download-section h2 { color: #333; margin-bottom: 8px; }
+    .download-section p { color: #777; font-size: 0.85rem; margin-bottom: 14px; }
+    #progress-container { display: none; margin-top: 12px; }
+    #progress-bar { width: 100%; height: 10px; border-radius: 5px; accent-color: #00c300; }
+    #progress-text { font-size: 0.82rem; color: #666; margin-top: 6px; }
+
+    /* Spec info */
+    .spec-box {
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      color: white;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+    .spec-box strong { font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🟢 LINEスタンプメーカー</h1>
+  <p class="subtitle">画像をアップロードしてテロップを乗せ、12枚を一括ダウンロード</p>
+  <div class="size-badge">
+    <span>📐 メインスタンプ: 370×320px</span>
+    <span>🖼 PNG形式 (透過対応)</span>
+    <span>📦 最大1MB/枚</span>
+    <span>✅ LINE審査対応サイズ</span>
+  </div>
+
+  <div class="spec-box">
+    <strong>💡 使い方</strong><br>
+    ① 各スタンプの枠に画像をドラッグ＆ドロップ（またはクリック）<br>
+    ② テキスト欄にテロップを入力 → 画像に自動合成<br>
+    ③ グローバル設定でフォントや装飾をまとめて変更<br>
+    ④「全12枚 ZIP」でダウンロード → LINE Creators Marketに申請！
+  </div>
+
+  <!-- Global Controls -->
+  <div class="controls">
+    <div class="controls-header" onclick="toggleControls()">
+      <h2>⚙️ グローバルテキスト設定（全スタンプ共通）</h2>
+      <span class="toggle-icon" id="toggleIcon">▼</span>
+    </div>
+    <div class="controls-body" id="controlsBody">
+      <div class="global-settings">
+        <div class="setting-group">
+          <label>文字色</label>
+          <input type="color" id="textColor" value="#ffffff" onchange="renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>縁取り色</label>
+          <input type="color" id="strokeColor" value="#000000" onchange="renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>フォントスタイル</label>
+          <select id="fontStyle" onchange="renderAll()">
+            <option value="900">極太</option>
+            <option value="900 italic">極太＋斜体</option>
+            <option value="bold">太字</option>
+            <option value="normal">ノーマル</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>フォントサイズ: <span id="fontSizeVal">52</span>px</label>
+          <input type="range" id="fontSize" min="16" max="100" value="52"
+            oninput="document.getElementById('fontSizeVal').textContent=this.value;renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>縁取り太さ: <span id="strokeWidthVal">8</span>px</label>
+          <input type="range" id="strokeWidth" min="0" max="24" value="8"
+            oninput="document.getElementById('strokeWidthVal').textContent=this.value;renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>テキスト位置</label>
+          <select id="textPos" onchange="renderAll()">
+            <option value="bottom">下部</option>
+            <option value="top">上部</option>
+            <option value="center">中央</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>テキスト背景</label>
+          <select id="textBg" onchange="renderAll()">
+            <option value="none">なし</option>
+            <option value="semi">半透明黒</option>
+            <option value="semi-white">半透明白</option>
+            <option value="solid">カラー帯</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>テキスト背景色</label>
+          <input type="color" id="textBgColor" value="#000000" onchange="renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>影</label>
+          <select id="shadow" onchange="renderAll()">
+            <option value="none">なし</option>
+            <option value="soft">ソフト</option>
+            <option value="hard">ハード</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>背景色（画像なし時）</label>
+          <input type="color" id="fallbackBg" value="#fffde7" onchange="renderAll()">
+        </div>
+        <div class="setting-group">
+          <label>デコレーション</label>
+          <select id="decoration" onchange="renderAll()">
+            <option value="none">なし</option>
+            <option value="stars">星★</option>
+            <option value="hearts">ハート♥</option>
+            <option value="sparkles">キラキラ</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>絵文字（全共通）</label>
+          <input type="text" id="globalEmoji" placeholder="空=個別設定" onchange="renderAll()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-green" onclick="renderAll()">🔄 再描画</button>
+        <button class="btn btn-gray" onclick="randomTheme()">🎲 ランダムテーマ</button>
+        <button class="btn btn-gray" onclick="resetAll()">↩ リセット</button>
+        <button class="btn btn-gray" onclick="uploadAllImages()">📁 一括画像選択</button>
+        <input type="file" id="allImagesInput" class="file-input-hidden" multiple accept="image/*" onchange="handleAllImages(this)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Stamps Grid -->
+  <div class="stamps-grid" id="stampsGrid"></div>
+
+  <!-- Download -->
+  <div class="download-section">
+    <h2>📦 一括ダウンロード</h2>
+    <p>12枚のスタンプをZIPにまとめてダウンロード（LINE Creators Market申請用）</p>
+    <button class="btn btn-blue" onclick="downloadAll()" style="font-size:1rem;padding:13px 30px;">
+      ⬇ 全12枚 ZIPダウンロード
+    </button>
+    <div id="progress-container">
+      <progress id="progress-bar" max="12" value="0"></progress>
+      <p id="progress-text"></p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script>
+// LINE official stamp size
+const W = 370, H = 320;
+
+const DEFAULTS = [
+  { text: 'おはよう',   emoji: '☀️' },
+  { text: 'おやすみ',   emoji: '🌙' },
+  { text: 'ありがとう', emoji: '🙏' },
+  { text: 'よろしく',   emoji: '😊' },
+  { text: 'がんばれ！', emoji: '💪' },
+  { text: 'わかった！', emoji: '👍' },
+  { text: 'お疲れ様',   emoji: '😌' },
+  { text: 'すごい！',   emoji: '✨' },
+  { text: 'やったー！', emoji: '🎉' },
+  { text: 'ごめんね',   emoji: '🥺' },
+  { text: 'だいじょうぶ', emoji: '💚' },
+  { text: 'いってきます', emoji: '🚀' },
+];
+
+let stamps = DEFAULTS.map(d => ({ ...d, img: null }));
+let canvases = [];
+let controlsOpen = true;
+
+function toggleControls() {
+  controlsOpen = !controlsOpen;
+  document.getElementById('controlsBody').style.display = controlsOpen ? '' : 'none';
+  document.getElementById('toggleIcon').textContent = controlsOpen ? '▼' : '▶';
+}
+
+function getGlobal() {
+  return {
+    textColor:   document.getElementById('textColor').value,
+    strokeColor: document.getElementById('strokeColor').value,
+    fontStyle:   document.getElementById('fontStyle').value,
+    fontSize:    parseInt(document.getElementById('fontSize').value),
+    strokeWidth: parseInt(document.getElementById('strokeWidth').value),
+    textPos:     document.getElementById('textPos').value,
+    textBg:      document.getElementById('textBg').value,
+    textBgColor: document.getElementById('textBgColor').value,
+    shadow:      document.getElementById('shadow').value,
+    fallbackBg:  document.getElementById('fallbackBg').value,
+    decoration:  document.getElementById('decoration').value,
+    globalEmoji: document.getElementById('globalEmoji').value,
+  };
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function drawDecoration(ctx, style) {
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  if (style === 'stars') {
+    ctx.font = '20px serif';
+    ctx.fillStyle = '#ffd700';
+    [[25,25],[W-35,25],[20,H-25],[W-30,H-25],[W/2,18]].forEach(([x,y]) => ctx.fillText('★',x,y));
+  } else if (style === 'hearts') {
+    ctx.font = '20px serif';
+    ctx.fillStyle = '#ff4081';
+    [[25,25],[W-35,25],[20,H-25],[W-30,H-25],[W/2,18]].forEach(([x,y]) => ctx.fillText('♥',x,y));
+  } else if (style === 'sparkles') {
+    ctx.font = '18px serif';
+    ctx.fillStyle = '#ffeb3b';
+    [[20,20],[W-30,20],[15,H-20],[W-25,H-20],[W/2,15],[W/2,H-15]].forEach(([x,y]) => ctx.fillText('✦',x,y));
+  }
+  ctx.restore();
+}
+
+function renderStamp(canvas, idx, g) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const stamp = stamps[idx];
+
+  // Background: image or fallback color
+  if (stamp.img) {
+    // Draw image cover-fit
+    const img = stamp.img;
+    const scale = Math.max(W / img.width, H / img.height);
+    const sw = img.width * scale;
+    const sh = img.height * scale;
+    const sx = (W - sw) / 2;
+    const sy = (H - sh) / 2;
+    ctx.drawImage(img, sx, sy, sw, sh);
+  } else {
+    ctx.fillStyle = g.fallbackBg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Decoration
+  if (g.decoration !== 'none') drawDecoration(ctx, g.decoration);
+
+  // Emoji
+  const emoji = g.globalEmoji || stamp.emoji || '';
+  const text  = stamp.text || '';
+  const fontSize = g.fontSize;
+
+  // Text position Y
+  let textY;
+  const margin = 14;
+  const lineH = fontSize + 8;
+  if (g.textPos === 'top')    textY = margin + fontSize;
+  else if (g.textPos === 'center') textY = H / 2 + fontSize / 3;
+  else                        textY = H - margin;
+
+  // Text background band
+  if (g.textBg !== 'none' && text) {
+    const bandH = lineH + 12;
+    let bandY;
+    if (g.textPos === 'top')    bandY = 0;
+    else if (g.textPos === 'center') bandY = H/2 - bandH/2;
+    else                        bandY = H - bandH;
+    let col;
+    if (g.textBg === 'semi')       col = 'rgba(0,0,0,0.55)';
+    else if (g.textBg === 'semi-white') col = 'rgba(255,255,255,0.6)';
+    else                           col = hexToRgba(g.textBgColor, 0.85);
+    ctx.fillStyle = col;
+    ctx.fillRect(0, bandY, W, bandH);
+  }
+
+  // Emoji (show in opposite side of text or center)
+  if (emoji) {
+    let emojiY;
+    const emojiSize = Math.max(60, Math.min(H * 0.45, 130));
+    if (g.textPos === 'bottom') emojiY = H/2 - 10;
+    else if (g.textPos === 'top') emojiY = H - 30;
+    else emojiY = 40;
+    ctx.font = `${emojiSize}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    // Only draw emoji if no image (image is the visual; emoji would clutter)
+    if (!stamp.img) ctx.fillText(emoji, W/2, emojiY + emojiSize * 0.75);
+  }
+
+  // Text
+  if (text) {
+    ctx.font = `${g.fontStyle} ${fontSize}px 'Hiragino Kaku Gothic ProN','メイリオ','Noto Sans JP',sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+
+    // Shadow
+    if (g.shadow === 'soft') {
+      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+    } else if (g.shadow === 'hard') {
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 3;
+    }
+
+    // Stroke
+    if (g.strokeWidth > 0) {
+      ctx.lineWidth = g.strokeWidth * 2;
+      ctx.strokeStyle = g.strokeColor;
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.strokeText(text, W/2, textY);
+    }
+
+    // Reset shadow for fill
+    if (g.shadow === 'soft') {
+      ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+    } else if (g.shadow === 'hard') {
+      ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 3;
+    }
+    ctx.fillStyle = g.textColor;
+    ctx.fillText(text, W/2, textY);
+
+    // Reset shadow
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+  }
+}
+
+function renderAll() {
+  const g = getGlobal();
+  canvases.forEach((c, i) => renderStamp(c, i, g));
+}
+
+/* -------- Build Grid -------- */
+function buildGrid() {
+  const grid = document.getElementById('stampsGrid');
+  grid.innerHTML = '';
+  canvases = [];
+
+  stamps.forEach((stamp, i) => {
+    const card = document.createElement('div');
+    card.className = 'stamp-card';
+    card.innerHTML = `
+      <div class="stamp-header">
+        <span class="stamp-num">#${String(i+1).padStart(2,'0')}</span>
+        <span class="stamp-size-label">370×320px</span>
+      </div>
+      <div class="canvas-wrap" id="wrap${i}">
+        <canvas id="canvas${i}" width="${W}" height="${H}"></canvas>
+        <div class="canvas-overlay">
+          <span class="icon">🖼</span>
+          <span>クリックまたはD&D</span>
+        </div>
+      </div>
+      <input class="stamp-text-input" type="text" placeholder="テロップテキスト" value="${stamp.text}" data-idx="${i}" oninput="onTextChange(this)">
+      <div class="stamp-actions">
+        <button class="btn-dl-s" onclick="downloadSingle(${i})">⬇ 保存</button>
+        <button class="btn-clear" onclick="clearImage(${i})">✕ 画像消去</button>
+      </div>
+      <input type="file" id="file${i}" class="file-input-hidden" accept="image/*" onchange="handleFileInput(this, ${i})">
+    `;
+    grid.appendChild(card);
+
+    const canvas = document.getElementById(`canvas${i}`);
+    canvases.push(canvas);
+
+    // Click to upload
+    const wrap = document.getElementById(`wrap${i}`);
+    wrap.addEventListener('click', () => document.getElementById(`file${i}`).click());
+
+    // Drag & drop
+    wrap.addEventListener('dragover', e => { e.preventDefault(); wrap.classList.add('drag-over'); });
+    wrap.addEventListener('dragleave', () => wrap.classList.remove('drag-over'));
+    wrap.addEventListener('drop', e => {
+      e.preventDefault();
+      wrap.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) loadImageFile(file, i);
+    });
+  });
+}
+
+function onTextChange(input) {
+  const idx = parseInt(input.dataset.idx);
+  stamps[idx].text = input.value;
+  renderStamp(canvases[idx], idx, getGlobal());
+}
+
+function handleFileInput(input, idx) {
+  if (input.files[0]) loadImageFile(input.files[0], idx);
+}
+
+function loadImageFile(file, idx) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      stamps[idx].img = img;
+      renderStamp(canvases[idx], idx, getGlobal());
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(idx) {
+  stamps[idx].img = null;
+  renderStamp(canvases[idx], idx, getGlobal());
+}
+
+function downloadSingle(idx) {
+  canvases[idx].toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `stamp_${String(idx+1).padStart(2,'0')}.png`;
+    a.click();
+  }, 'image/png');
+}
+
+async function downloadAll() {
+  const zip = new JSZip();
+  const folder = zip.folder('line_stamps');
+  const prog = document.getElementById('progress-container');
+  const bar  = document.getElementById('progress-bar');
+  const txt  = document.getElementById('progress-text');
+  prog.style.display = 'block';
+  bar.value = 0;
+
+  for (let i = 0; i < 12; i++) {
+    txt.textContent = `生成中... ${i+1}/12`;
+    const blob = await new Promise(r => canvases[i].toBlob(r, 'image/png'));
+    const buf  = await blob.arrayBuffer();
+    folder.file(`stamp_${String(i+1).padStart(2,'0')}.png`, buf);
+    bar.value = i + 1;
+  }
+
+  txt.textContent = 'ZIP作成中...';
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'line_stamps.zip');
+  txt.textContent = '✅ ダウンロード完了！';
+  setTimeout(() => { prog.style.display = 'none'; }, 3000);
+}
+
+function uploadAllImages() {
+  document.getElementById('allImagesInput').click();
+}
+
+function handleAllImages(input) {
+  const files = Array.from(input.files).slice(0, 12);
+  files.forEach((file, i) => { if (file.type.startsWith('image/')) loadImageFile(file, i); });
+}
+
+/* -------- Themes -------- */
+const THEMES = [
+  { textColor:'#ffffff', strokeColor:'#000000', textBg:'semi',       shadow:'soft', decoration:'none'     },
+  { textColor:'#ffff00', strokeColor:'#000000', textBg:'none',       shadow:'hard', decoration:'stars'    },
+  { textColor:'#ffffff', strokeColor:'#ff1493', textBg:'semi-white', shadow:'soft', decoration:'hearts'   },
+  { textColor:'#000000', strokeColor:'#ffffff', textBg:'solid',      shadow:'none', decoration:'sparkles' },
+  { textColor:'#ff6600', strokeColor:'#ffffff', textBg:'none',       shadow:'soft', decoration:'none'     },
+];
+
+function randomTheme() {
+  const t = THEMES[Math.floor(Math.random() * THEMES.length)];
+  document.getElementById('textColor').value   = t.textColor;
+  document.getElementById('strokeColor').value = t.strokeColor;
+  document.getElementById('textBg').value      = t.textBg;
+  document.getElementById('shadow').value      = t.shadow;
+  document.getElementById('decoration').value  = t.decoration;
+  renderAll();
+}
+
+function resetAll() {
+  stamps = DEFAULTS.map(d => ({ ...d, img: null }));
+  buildGrid();
+  document.getElementById('textColor').value   = '#ffffff';
+  document.getElementById('strokeColor').value = '#000000';
+  document.getElementById('fontStyle').value   = '900';
+  document.getElementById('fontSize').value    = 52;
+  document.getElementById('fontSizeVal').textContent = 52;
+  document.getElementById('strokeWidth').value = 8;
+  document.getElementById('strokeWidthVal').textContent = 8;
+  document.getElementById('textPos').value     = 'bottom';
+  document.getElementById('textBg').value      = 'semi';
+  document.getElementById('shadow').value      = 'soft';
+  document.getElementById('fallbackBg').value  = '#fffde7';
+  document.getElementById('decoration').value  = 'none';
+  document.getElementById('globalEmoji').value = '';
+  renderAll();
+}
+
+// Init
+buildGrid();
+renderAll();
+</script>
+</body>
+</html>
