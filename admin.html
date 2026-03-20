@@ -105,9 +105,29 @@
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: var(--accent); color: #fff;
       padding: 12px 28px; border-radius: 999px; font-size: 14px; font-weight: 600;
-      opacity: 0; transition: opacity .3s; pointer-events: none;
+      opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100;
     }
     .toast.show { opacity: 1; }
+    .toast.error { background: var(--danger); }
+
+    .gh-info {
+      font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6;
+    }
+    .gh-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; margin-top: 8px; padding: 4px 10px;
+      border-radius: 999px; font-weight: 600;
+    }
+    .gh-status.ok { background: #d1fae5; color: #065f46; }
+    .gh-status.err { background: #fee2e2; color: #991b1b; }
+    .gh-status.pending { background: #fef3c7; color: #92400e; }
+    .gh-toggle {
+      font-size: 12px; color: var(--accent); cursor: pointer;
+      text-decoration: underline; background: none; border: none; padding: 0;
+      margin-top: 6px; display: inline-block;
+    }
+    .gh-section { display: none; margin-top: 12px; }
+    .gh-section.open { display: block; }
   </style>
 </head>
 <body>
@@ -168,6 +188,23 @@
     <button class="btn-add" onclick="addTool()">＋ ツールを追加</button>
   </div>
 
+  <!-- GitHub設定 -->
+  <div class="section">
+    <div class="section-title">GitHub 連携設定</div>
+    <p class="gh-info">この設定をすると「保存する」ボタンを押したとき、スマホや他の端末でも同じ内容が表示されます。</p>
+    <div id="gh-status-wrap"></div>
+    <button class="gh-toggle" onclick="toggleGhSection()">▶ トークンを設定する</button>
+    <div class="gh-section" id="gh-section">
+      <label style="margin-top:12px">GitHub Personal Access Token</label>
+      <input type="password" id="gh-token" placeholder="github_pat_xxxxx または ghp_xxxxx">
+      <p class="gh-info">
+        取得方法: <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=recipe-app-admin" target="_blank" style="color:var(--accent)">こちらでトークンを作成</a>（public_repo スコープにチェック）<br>
+        ※ トークンはこのブラウザのみに保存され、外部には送信されません（GitHub APIにのみ使用）。
+      </p>
+      <button class="btn-upload" style="margin-top:8px" onclick="saveToken()">トークンを保存</button>
+    </div>
+  </div>
+
   <div class="actions">
     <button class="btn-save" onclick="save()">保存する</button>
     <a href="index.html" class="btn-preview">プレビュー →</a>
@@ -203,28 +240,6 @@
     } else {
       preview.innerHTML = '👤';
     }
-  }
-
-  function load() {
-    const d = JSON.parse(localStorage.getItem('siteData') || '{}');
-    document.getElementById('name').value = d.name || '';
-    document.getElementById('hero_title').value = d.hero_title || '';
-    document.getElementById('hero_desc').value = d.hero_desc || '';
-    document.getElementById('bio').value = d.bio || '';
-    document.getElementById('threads').value = d.threads || '';
-    document.getElementById('x').value = d.x || '';
-    document.getElementById('note_url').value = d.note_url || '';
-
-    avatarData = d.avatar || '';
-    updateAvatarPreview(avatarData);
-
-    const blogs = d.blogs || [{title:'',desc:'',url:'',tag:'',date:''}];
-    document.getElementById('blog-list').innerHTML = '';
-    blogs.forEach(b => addBlog(b));
-
-    const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
-    document.getElementById('tool-list').innerHTML = '';
-    tools.forEach(t => addTool(t));
   }
 
   function addBlog(data = {}) {
@@ -269,7 +284,77 @@
     list.appendChild(div);
   }
 
-  function save() {
+  const GH_OWNER = 'omiyasan777777-bit';
+  const GH_REPO  = 'recipe-app';
+  const GH_PATH  = 'siteData.json';
+
+  function toggleGhSection() {
+    const sec = document.getElementById('gh-section');
+    sec.classList.toggle('open');
+    const btn = document.querySelector('.gh-toggle');
+    btn.textContent = sec.classList.contains('open') ? '▼ トークンを設定する' : '▶ トークンを設定する';
+  }
+
+  function saveToken() {
+    const token = document.getElementById('gh-token').value.trim();
+    if (!token) return;
+    localStorage.setItem('ghToken', token);
+    document.getElementById('gh-section').classList.remove('open');
+    document.querySelector('.gh-toggle').textContent = '▶ トークンを設定する';
+    showGhStatus('ok', 'トークン設定済み（保存時にGitHubへ自動アップロード）');
+  }
+
+  function showGhStatus(type, msg) {
+    const wrap = document.getElementById('gh-status-wrap');
+    wrap.innerHTML = `<span class="gh-status ${type}">${msg}</span>`;
+  }
+
+  async function saveToGitHub(data) {
+    const token = localStorage.getItem('ghToken');
+    if (!token) return false;
+
+    showGhStatus('pending', '⏳ GitHubへ保存中...');
+
+    try {
+      const headers = {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      };
+
+      // 現在のファイルSHAを取得
+      let sha = '';
+      const getRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`, { headers });
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      }
+
+      // ファイルを更新（base64エンコード）
+      const json = JSON.stringify(data, null, 2);
+      const content = btoa(unescape(encodeURIComponent(json)));
+      const body = { message: 'Update site data', content };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`, {
+        method: 'PUT', headers, body: JSON.stringify(body),
+      });
+
+      if (putRes.ok) {
+        showGhStatus('ok', '✓ GitHubへ保存完了（全端末に反映されます）');
+        return true;
+      } else {
+        const err = await putRes.json();
+        showGhStatus('err', '✗ GitHub保存エラー: ' + (err.message || putRes.status));
+        return false;
+      }
+    } catch (e) {
+      showGhStatus('err', '✗ 通信エラー: ' + e.message);
+      return false;
+    }
+  }
+
+  async function save() {
     const blogs = [...document.querySelectorAll('#blog-list .card-group')].map(el => ({
       tag:   el.querySelector('.blog-tag').value,
       title: el.querySelector('.blog-title').value,
@@ -295,9 +380,47 @@
       blogs, tools,
     };
     localStorage.setItem('siteData', JSON.stringify(data));
+
+    const ghOk = await saveToGitHub(data);
+
     const t = document.getElementById('toast');
+    t.classList.remove('error');
+    if (ghOk) {
+      t.textContent = '保存しました！（全端末に反映）';
+    } else if (localStorage.getItem('ghToken')) {
+      t.textContent = '保存しました（GitHub連携エラー）';
+      t.classList.add('error');
+    } else {
+      t.textContent = 'このブラウザに保存しました';
+    }
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+    setTimeout(() => { t.classList.remove('show', 'error'); t.textContent = '保存しました！'; }, 3000);
+  }
+
+  function load() {
+    const token = localStorage.getItem('ghToken');
+    if (token) {
+      showGhStatus('ok', 'トークン設定済み（保存時にGitHubへ自動アップロード）');
+    }
+    const d = JSON.parse(localStorage.getItem('siteData') || '{}');
+    document.getElementById('name').value = d.name || '';
+    document.getElementById('hero_title').value = d.hero_title || '';
+    document.getElementById('hero_desc').value = d.hero_desc || '';
+    document.getElementById('bio').value = d.bio || '';
+    document.getElementById('threads').value = d.threads || '';
+    document.getElementById('x').value = d.x || '';
+    document.getElementById('note_url').value = d.note_url || '';
+
+    avatarData = d.avatar || '';
+    updateAvatarPreview(avatarData);
+
+    const blogs = d.blogs || [{title:'',desc:'',url:'',tag:'',date:''}];
+    document.getElementById('blog-list').innerHTML = '';
+    blogs.forEach(b => addBlog(b));
+
+    const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
+    document.getElementById('tool-list').innerHTML = '';
+    tools.forEach(t => addTool(t));
   }
 
   load();

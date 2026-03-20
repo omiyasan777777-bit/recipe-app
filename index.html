@@ -192,8 +192,7 @@
     ],
   };
 
-  function render() {
-    const d = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem('siteData') || '{}'));
+  function applyData(d) {
 
     document.title = d.name + ' | Portfolio';
     document.getElementById('nav-name').textContent = d.name;
@@ -240,6 +239,20 @@
       d.x        ? `<a href="${d.x}"       class="social-link" target="_blank">𝕏 X</a>`        : '',
       d.note_url ? `<a href="${d.note_url}" class="social-link" target="_blank">📝 note</a>`   : '',
     ].join('');
+  }
+
+  async function render() {
+    // まずGitHubのsiteData.jsonを取得（どの端末でも同じデータを表示）
+    try {
+      const res = await fetch('./siteData.json?_=' + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        applyData(Object.assign({}, DEFAULT, data));
+        return;
+      }
+    } catch (e) {}
+    // フォールバック: localStorageから読み込み
+    applyData(Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem('siteData') || '{}')));
   }
 
   render();
