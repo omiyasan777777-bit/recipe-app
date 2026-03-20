@@ -280,6 +280,12 @@ def thumbnail_generator():
     return render_template("thumbnail_generator.html")
 
 
+@app.route("/line-stamp-maker")
+def line_stamp_maker():
+    from flask import send_from_directory
+    return send_from_directory(".", "line_stamp_maker.html")
+
+
 # ── バックグラウンドスケジューラー ────────────────────────────────
 
 def _scheduler_loop():
