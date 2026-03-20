@@ -415,9 +415,9 @@
         'Content-Type': 'application/json',
       };
 
-      // 現在のファイルSHAを取得
+      // 現在のファイルSHAを取得（キャッシュ無効化）
       let sha = '';
-      const getRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`, { headers });
+      const getRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}&t=${Date.now()}`, { headers, cache: 'no-store' });
       if (getRes.ok) {
         const fileData = await getRes.json();
         sha = fileData.sha;
