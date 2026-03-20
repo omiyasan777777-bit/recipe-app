@@ -284,9 +284,10 @@
     list.appendChild(div);
   }
 
-  const GH_OWNER = 'omiyasan777777-bit';
-  const GH_REPO  = 'recipe-app';
-  const GH_PATH  = 'siteData.json';
+  const GH_OWNER  = 'omiyasan777777-bit';
+  const GH_REPO   = 'recipe-app';
+  const GH_PATH   = 'siteData.json';
+  const GH_BRANCH = 'master';
 
   function toggleGhSection() {
     const sec = document.getElementById('gh-section');
@@ -324,7 +325,7 @@
 
       // 現在のファイルSHAを取得
       let sha = '';
-      const getRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`, { headers });
+      const getRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`, { headers });
       if (getRes.ok) {
         const fileData = await getRes.json();
         sha = fileData.sha;
@@ -333,7 +334,7 @@
       // ファイルを更新（base64エンコード）
       const json = JSON.stringify(data, null, 2);
       const content = btoa(unescape(encodeURIComponent(json)));
-      const body = { message: 'Update site data', content };
+      const body = { message: 'Update site data', content, branch: GH_BRANCH };
       if (sha) body.sha = sha;
 
       const putRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`, {
