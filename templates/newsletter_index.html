@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+  <h2 style="font-size:20px; font-weight:700;">📧 メルマガ</h2>
+  <div style="display:flex; gap:8px;">
+    <a href="{{ url_for('newsletter_subscribers') }}" class="btn btn-outline" style="font-size:14px; padding:8px 14px;">
+      👥 購読者 {{ subscriber_count }}人
+    </a>
+    <a href="{{ url_for('newsletter_smtp_settings') }}" class="btn btn-outline" style="font-size:14px; padding:8px 14px;">⚙️ SMTP</a>
+  </div>
+</div>
+
+{% if not smtp_ok %}
+<div class="flash flash-warning">
+  SMTP設定が未完了です。<a href="{{ url_for('newsletter_smtp_settings') }}" style="color:inherit; font-weight:700;">設定画面</a>でメールサーバーを設定してください。
+</div>
+{% endif %}
+
+{% if newsletters %}
+  {% for nl in newsletters %}
+  <div class="card">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:16px; font-weight:700; margin-bottom:6px; word-break:break-word;">{{ nl.subject }}</div>
+        <div style="font-size:13px; color:var(--gray-400); display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+          {% if nl.status == 'sent' %}
+            <span class="badge" style="background:#dcfce7; color:#166534;">送信済み</span>
+            <span>{{ nl.sent_at.strftime('%Y年%m月%d日 %H:%M') }}</span>
+            <span>{{ nl.recipient_count }}件</span>
+          {% else %}
+            <span class="badge" style="background:#fef9c3; color:#92400e;">下書き</span>
+            <span>{{ nl.created_at.strftime('%Y年%m月%d日 %H:%M') }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <a href="{{ url_for('newsletter_detail', newsletter_id=nl.id) }}" class="btn btn-outline" style="font-size:14px; padding:8px 14px; white-space:nowrap;">詳細</a>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <div class="empty-icon">📭</div>
+    <div class="empty-text">メルマガはまだありません</div>
+  </div>
+{% endif %}
+
+<a href="{{ url_for('newsletter_new') }}" class="fab" title="新規メルマガ作成">✏️</a>
+
+{% endblock %}

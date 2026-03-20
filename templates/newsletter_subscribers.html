@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+  <a href="{{ url_for('newsletter_index') }}" class="icon-btn">←</a>
+  <h2 style="font-size:20px; font-weight:700;">👥 購読者管理</h2>
+</div>
+
+<div class="card">
+  <div style="font-size:15px; font-weight:600; margin-bottom:12px;">➕ 購読者を追加</div>
+  <form method="post" action="{{ url_for('newsletter_subscriber_add') }}">
+    <div class="form-group" style="margin-bottom:12px;">
+      <label for="email">メールアドレス <span style="color:var(--red);">*</span></label>
+      <input type="email" id="email" name="email" placeholder="example@email.com" required>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label for="name">お名前（任意）</label>
+      <input type="text" id="name" name="name" placeholder="山田 太郎">
+    </div>
+    <button type="submit" class="btn btn-primary btn-full">追加</button>
+  </form>
+</div>
+
+{% if subscribers %}
+<div style="font-size:14px; color:var(--gray-600); margin-bottom:8px; font-weight:600;">登録済み: {{ subscribers|length }}人</div>
+  {% for s in subscribers %}
+  <div class="card" style="padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:15px; font-weight:600; word-break:break-all;">{{ s.email }}</div>
+        {% if s.name %}
+        <div style="font-size:13px; color:var(--gray-400); margin-top:2px;">{{ s.name }}</div>
+        {% endif %}
+        <div style="font-size:12px; color:var(--gray-400); margin-top:2px;">登録: {{ s.created_at.strftime('%Y/%m/%d') }}</div>
+      </div>
+      <form method="post" action="{{ url_for('newsletter_subscriber_delete', subscriber_id=s.id) }}"
+            onsubmit="return confirm('{{ s.email }} を削除しますか？');">
+        <button type="submit" class="btn btn-danger" style="padding:8px 14px; font-size:14px;">削除</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <div class="empty-icon">📭</div>
+    <div class="empty-text">購読者はまだいません</div>
+  </div>
+{% endif %}
+
+{% endblock %}

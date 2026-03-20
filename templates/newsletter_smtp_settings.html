@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+  <a href="{{ url_for('newsletter_index') }}" class="icon-btn">←</a>
+  <h2 style="font-size:20px; font-weight:700;">⚙️ SMTP設定</h2>
+</div>
+
+<div class="card">
+  <form method="post">
+    <div class="form-group">
+      <label for="smtp_host">SMTPホスト</label>
+      <input type="text" id="smtp_host" name="smtp_host" placeholder="smtp.gmail.com" value="{{ cfg.host }}">
+    </div>
+
+    <div class="form-group">
+      <label for="smtp_port">SMTPポート</label>
+      <input type="text" id="smtp_port" name="smtp_port" placeholder="587" value="{{ cfg.port }}">
+      <div class="hint">通常は 587 (STARTTLS) を使用します。</div>
+    </div>
+
+    <div class="form-group">
+      <label for="smtp_user">SMTPユーザー名</label>
+      <input type="text" id="smtp_user" name="smtp_user" placeholder="your@gmail.com" value="{{ cfg.user }}">
+    </div>
+
+    <div class="form-group">
+      <label for="smtp_password">SMTPパスワード</label>
+      <input type="password" id="smtp_password" name="smtp_password" placeholder="アプリパスワードなど" value="{{ cfg.password }}">
+    </div>
+
+    <div class="form-group">
+      <label for="smtp_from_name">送信者名</label>
+      <input type="text" id="smtp_from_name" name="smtp_from_name" placeholder="レシピメルマガ" value="{{ cfg.from_name }}">
+    </div>
+
+    <div class="form-group">
+      <label for="smtp_from_email">送信元メールアドレス</label>
+      <input type="email" id="smtp_from_email" name="smtp_from_email" placeholder="noreply@example.com" value="{{ cfg.from_email }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">💾 保存</button>
+  </form>
+</div>
+
+<div class="card" style="background:var(--gray-50);">
+  <div style="font-size:14px; font-weight:600; margin-bottom:8px;">Gmailを使う場合</div>
+  <ul style="font-size:13px; color:var(--gray-600); line-height:1.8; padding-left:20px;">
+    <li>ホスト: <code>smtp.gmail.com</code></li>
+    <li>ポート: <code>587</code></li>
+    <li>ユーザー名: Gmailアドレス</li>
+    <li>パスワード: <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:var(--blue);">アプリパスワード</a>（2段階認証が必要）</li>
+  </ul>
+</div>
+
+{% endblock %}

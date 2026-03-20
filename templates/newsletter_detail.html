@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+  <a href="{{ url_for('newsletter_index') }}" class="icon-btn">←</a>
+  <h2 style="font-size:20px; font-weight:700;">📧 メルマガ詳細</h2>
+</div>
+
+<div class="card">
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+    <h3 style="font-size:18px; font-weight:700; flex:1;">{{ nl.subject }}</h3>
+    {% if nl.status == 'sent' %}
+      <span class="badge" style="background:#dcfce7; color:#166534;">送信済み</span>
+    {% else %}
+      <span class="badge" style="background:#fef9c3; color:#92400e;">下書き</span>
+    {% endif %}
+  </div>
+
+  {% if nl.status == 'sent' %}
+  <div style="font-size:13px; color:var(--gray-400); margin-bottom:16px;">
+    送信日時: {{ nl.sent_at.strftime('%Y年%m月%d日 %H:%M') }} ／ {{ nl.recipient_count }}件に送信
+  </div>
+  {% else %}
+  <div style="font-size:13px; color:var(--gray-400); margin-bottom:16px;">
+    作成日時: {{ nl.created_at.strftime('%Y年%m月%d日 %H:%M') }}
+  </div>
+  {% endif %}
+
+  <div style="background:var(--gray-50); border-radius:var(--radius); padding:16px; white-space:pre-wrap; font-size:15px; line-height:1.7; word-break:break-word; border: 1px solid var(--gray-200);">{{ nl.body }}</div>
+</div>
+
+{% if nl.status == 'draft' %}
+<div class="card">
+  <div style="font-size:15px; font-weight:600; margin-bottom:12px;">📤 送信</div>
+
+  {% if not smtp_ok %}
+  <div class="flash flash-warning" style="margin-bottom:12px;">
+    SMTP設定が未完了です。<a href="{{ url_for('newsletter_smtp_settings') }}" style="color:inherit; font-weight:700;">設定画面</a>で設定してください。
+  </div>
+  {% endif %}
+
+  <div style="font-size:14px; color:var(--gray-600); margin-bottom:16px;">
+    現在の購読者: <strong>{{ subscribers|length }}人</strong>
+    {% if subscribers %}
+      <span style="color:var(--gray-400); margin-left:4px;">
+        ({{ subscribers|map(attribute='email')|list|join(', ') if subscribers|length <= 3 else subscribers[:3]|map(attribute='email')|list|join(', ') + ' ...' }})
+      </span>
+    {% endif %}
+  </div>
+
+  {% if subscribers and smtp_ok %}
+  <form method="post" action="{{ url_for('newsletter_send', newsletter_id=nl.id) }}"
+        onsubmit="return confirm('{{ subscribers|length }}人の購読者にメルマガを送信しますか？');">
+    <button type="submit" class="btn btn-primary btn-full">📨 今すぐ送信 ({{ subscribers|length }}件)</button>
+  </form>
+  {% elif not subscribers %}
+  <a href="{{ url_for('newsletter_subscribers') }}" class="btn btn-outline btn-full">購読者を追加する</a>
+  {% else %}
+  <button class="btn btn-primary btn-full" disabled style="opacity:.5; cursor:not-allowed;">📨 送信 (SMTP未設定)</button>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="card">
+  <form method="post" action="{{ url_for('newsletter_delete', newsletter_id=nl.id) }}"
+        onsubmit="return confirm('このメルマガを削除しますか？');">
+    <button type="submit" class="btn btn-danger btn-full">🗑️ 削除</button>
+  </form>
+</div>
+
+{% endblock %}

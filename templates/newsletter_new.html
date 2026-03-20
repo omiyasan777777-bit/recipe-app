@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+  <a href="{{ url_for('newsletter_index') }}" class="icon-btn">←</a>
+  <h2 style="font-size:20px; font-weight:700;">✏️ 新規メルマガ作成</h2>
+</div>
+
+<div class="card">
+  <form method="post">
+    <div class="form-group">
+      <label for="subject">件名</label>
+      <input type="text" id="subject" name="subject" placeholder="例: 今週のおすすめレシピ" value="{{ form.get('subject', '') }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="body">本文</label>
+      <textarea id="body" name="body" rows="12" placeholder="メルマガの本文を入力してください...">{{ form.get('body', '') }}</textarea>
+      <div class="hint">プレーンテキスト形式で送信されます。</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">💾 下書き保存</button>
+  </form>
+</div>
+
+{% endblock %}

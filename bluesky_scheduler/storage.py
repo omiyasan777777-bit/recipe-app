@@ -5,6 +5,34 @@ from pathlib import Path
 from typing import Optional
 
 
+class Subscriber:
+    def __init__(self, id: int, email: str, name: str, created_at: datetime):
+        self.id = id
+        self.email = email
+        self.name = name
+        self.created_at = created_at
+
+
+class Newsletter:
+    def __init__(
+        self,
+        id: int,
+        subject: str,
+        body: str,
+        status: str,
+        created_at: datetime,
+        sent_at: Optional[datetime] = None,
+        recipient_count: int = 0,
+    ):
+        self.id = id
+        self.subject = subject
+        self.body = body
+        self.status = status  # draft | sent
+        self.created_at = created_at
+        self.sent_at = sent_at
+        self.recipient_count = recipient_count
+
+
 class Template:
     def __init__(
         self,
@@ -68,6 +96,25 @@ class Storage:
 
     def _init_db(self):
         with self._connect() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email      TEXT NOT NULL UNIQUE,
+                    name       TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL
+                )
+            """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS newsletters (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    subject         TEXT NOT NULL,
+                    body            TEXT NOT NULL,
+                    status          TEXT NOT NULL DEFAULT 'draft',
+                    created_at      TEXT NOT NULL,
+                    sent_at         TEXT,
+                    recipient_count INTEGER NOT NULL DEFAULT 0
+                )
+            """)
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS scheduled_posts (
                     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -222,6 +269,109 @@ class Storage:
             body=row["body"],
             hashtags=row["hashtags"],
             created_at=self._str_to_dt(row["created_at"]),
+        )
+
+    # ── Newsletter Subscriber methods ────────────────────────────────
+
+    def add_subscriber(self, email: str, name: str = "") -> Subscriber:
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            cur = conn.execute(
+                "INSERT INTO newsletter_subscribers (email, name, created_at) VALUES (?, ?, ?)",
+                (email.lower().strip(), name.strip(), now),
+            )
+            conn.commit()
+            return self.get_subscriber(cur.lastrowid)
+
+    def get_subscriber(self, subscriber_id: int) -> Optional[Subscriber]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM newsletter_subscribers WHERE id = ?", (subscriber_id,)
+            ).fetchone()
+        return self._row_to_subscriber(row) if row else None
+
+    def list_subscribers(self) -> list[Subscriber]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM newsletter_subscribers ORDER BY created_at DESC"
+            ).fetchall()
+        return [self._row_to_subscriber(r) for r in rows]
+
+    def delete_subscriber(self, subscriber_id: int) -> bool:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "DELETE FROM newsletter_subscribers WHERE id = ?", (subscriber_id,)
+            )
+            conn.commit()
+        return cur.rowcount > 0
+
+    def subscriber_exists(self, email: str) -> bool:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT id FROM newsletter_subscribers WHERE email = ?", (email.lower().strip(),)
+            ).fetchone()
+        return row is not None
+
+    # ── Newsletter methods ────────────────────────────────────────────
+
+    def add_newsletter(self, subject: str, body: str) -> Newsletter:
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            cur = conn.execute(
+                "INSERT INTO newsletters (subject, body, status, created_at) VALUES (?, ?, 'draft', ?)",
+                (subject, body, now),
+            )
+            conn.commit()
+            return self.get_newsletter(cur.lastrowid)
+
+    def get_newsletter(self, newsletter_id: int) -> Optional[Newsletter]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM newsletters WHERE id = ?", (newsletter_id,)
+            ).fetchone()
+        return self._row_to_newsletter(row) if row else None
+
+    def list_newsletters(self) -> list[Newsletter]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM newsletters ORDER BY created_at DESC"
+            ).fetchall()
+        return [self._row_to_newsletter(r) for r in rows]
+
+    def mark_newsletter_sent(self, newsletter_id: int, recipient_count: int):
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE newsletters SET status='sent', sent_at=?, recipient_count=? WHERE id=?",
+                (now, recipient_count, newsletter_id),
+            )
+            conn.commit()
+
+    def delete_newsletter(self, newsletter_id: int) -> bool:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "DELETE FROM newsletters WHERE id = ?", (newsletter_id,)
+            )
+            conn.commit()
+        return cur.rowcount > 0
+
+    def _row_to_subscriber(self, row: sqlite3.Row) -> Subscriber:
+        return Subscriber(
+            id=row["id"],
+            email=row["email"],
+            name=row["name"],
+            created_at=self._str_to_dt(row["created_at"]),
+        )
+
+    def _row_to_newsletter(self, row: sqlite3.Row) -> Newsletter:
+        return Newsletter(
+            id=row["id"],
+            subject=row["subject"],
+            body=row["body"],
+            status=row["status"],
+            created_at=self._str_to_dt(row["created_at"]),
+            sent_at=self._str_to_dt(row["sent_at"]) if row["sent_at"] else None,
+            recipient_count=row["recipient_count"],
         )
 
     def _row_to_post(self, row: sqlite3.Row) -> Post:
