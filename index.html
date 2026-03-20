@@ -260,7 +260,13 @@
   }
 
   async function render() {
-    // まずGitHubのsiteData.jsonを取得（どの端末でも同じデータを表示）
+    // localStorageに保存済みデータがあれば即時反映（管理画面での保存を即座に表示）
+    const local = JSON.parse(localStorage.getItem('siteData') || 'null');
+    if (local) {
+      applyData(Object.assign({}, DEFAULT, local));
+      return;
+    }
+    // localStorageがない場合はsiteData.jsonを取得（初回・他端末アクセス時）
     try {
       const res = await fetch('./siteData.json?_=' + Date.now());
       if (res.ok) {
@@ -269,8 +275,7 @@
         return;
       }
     } catch (e) {}
-    // フォールバック: localStorageから読み込み
-    applyData(Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem('siteData') || '{}')));
+    applyData(DEFAULT);
   }
 
   render();
