@@ -492,12 +492,7 @@
     setTimeout(() => { t.classList.remove('show', 'error'); t.textContent = '保存しました！'; }, 3000);
   }
 
-  function load() {
-    const token = localStorage.getItem('ghToken');
-    if (token) {
-      showGhStatus('ok', 'トークン設定済み（保存時にGitHubへ自動アップロード）');
-    }
-    const d = JSON.parse(localStorage.getItem('siteData') || '{}');
+  function applyFormData(d) {
     document.getElementById('name').value = d.name || '';
     document.getElementById('hero_title').value = d.hero_title || '';
     document.getElementById('hero_desc').value = d.hero_desc || '';
@@ -519,6 +514,27 @@
     const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
     document.getElementById('tool-list').innerHTML = '';
     tools.forEach(t => addTool(t));
+  }
+
+  async function load() {
+    const token = localStorage.getItem('ghToken');
+    if (token) {
+      showGhStatus('ok', 'トークン設定済み（GitHubからデータ読み込み中…）');
+      try {
+        const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' };
+        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`, { headers });
+        if (res.ok) {
+          const json = await res.json();
+          const d = JSON.parse(atob(json.content.replace(/\n/g, '')));
+          localStorage.setItem('siteData', JSON.stringify(d));
+          applyFormData(d);
+          showGhStatus('ok', 'トークン設定済み（GitHubから読み込み完了）');
+          return;
+        }
+      } catch (e) {}
+      showGhStatus('ok', 'トークン設定済み（GitHub読み込み失敗、ローカルを使用）');
+    }
+    applyFormData(JSON.parse(localStorage.getItem('siteData') || '{}'));
   }
 
   load();
