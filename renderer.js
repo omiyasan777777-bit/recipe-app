@@ -338,6 +338,7 @@
   // ── Init ──────────────────────────────────────────────────────────────────
 
   applyTransform();
+  spawnClaudeCard();
   updateEmptyState();
 
 })();
