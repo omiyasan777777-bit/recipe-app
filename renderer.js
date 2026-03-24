@@ -187,13 +187,19 @@
       <div class="card-resize-handle" data-dir="w"></div>
     `;
 
-    // Set initial explicit height (webview uses position:absolute to fill body)
     card.style.height = '600px';
 
     world.appendChild(card);
 
-    // Hide loading spinner once webview finishes loading
-    const webview = card.querySelector('webview');
+    // Keep webview sized to card-body at all times
+    const body    = card.querySelector('.card-body');
+    const webview = card.querySelector('.claude-webview');
+    const ro = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      webview.style.width  = width  + 'px';
+      webview.style.height = height + 'px';
+    });
+    ro.observe(body);
     const loading = card.querySelector('.card-loading');
 
     webview.addEventListener('did-finish-load', () => {
