@@ -18,22 +18,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Visual Studio Build Tools
-        run: npm install --global --production windows-build-tools --vs2019
-        continue-on-error: true
-
       - name: Install dependencies
         run: npm install
-
-      - name: Rebuild native modules for Electron
-        run: npx @electron/rebuild -f
-        env:
-          npm_config_msvs_version: '2019'
 
       - name: Build Windows installer
         run: npm run build

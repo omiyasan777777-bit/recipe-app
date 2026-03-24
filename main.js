@@ -1,17 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const os = require('os');
+const { spawn } = require('child_process');
 
-// Handle node-pty carefully — it's a native module
-let pty;
-try {
-  pty = require('node-pty');
-} catch (e) {
-  console.error('node-pty not available:', e.message);
-}
-
-// Map of id -> pty process
-const ptyProcesses = new Map();
+// Map of id -> child process
+const processes = new Map();
 let mainWindow = null;
 
 function createWindow() {
@@ -37,14 +30,11 @@ function createWindow() {
 
   mainWindow.loadFile('index.html');
 
-  // Open DevTools in dev — uncomment when debugging:
-  // mainWindow.webContents.openDevTools();
-
   mainWindow.on('closed', () => {
-    for (const [, proc] of ptyProcesses) {
+    for (const [, proc] of processes) {
       try { proc.kill(); } catch (_) {}
     }
-    ptyProcesses.clear();
+    processes.clear();
     mainWindow = null;
   });
 }
@@ -60,37 +50,35 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// ── IPC: Create PTY ──────────────────────────────────────────────────────────
-ipcMain.handle('pty:create', (event, { id, cols, rows }) => {
-  if (!pty) return { success: false, error: 'node-pty not available' };
-
+// ── IPC: Create process ───────────────────────────────────────────────────────
+ipcMain.handle('pty:create', (event, { id }) => {
   try {
-    const shell = process.platform === 'win32'
-      ? 'cmd.exe'
-      : (process.env.SHELL || '/bin/bash');
+    const isWin = process.platform === 'win32';
+    const shell = isWin ? 'cmd.exe' : (process.env.SHELL || '/bin/bash');
+    const args = isWin ? [] : [];
 
-    const proc = pty.spawn(shell, [], {
-      name: 'xterm-256color',
-      cols: cols || 80,
-      rows: rows || 24,
+    const proc = spawn(shell, args, {
       cwd: os.homedir(),
-      env: {
-        ...process.env,
-        TERM: 'xterm-256color',
-        COLORTERM: 'truecolor'
-      }
+      env: { ...process.env, TERM: 'xterm-256color', COLORTERM: 'truecolor' },
+      stdio: ['pipe', 'pipe', 'pipe']
     });
 
-    ptyProcesses.set(id, proc);
+    processes.set(id, proc);
 
-    proc.onData((data) => {
+    proc.stdout.on('data', (data) => {
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('pty:data', { id, data });
+        mainWindow.webContents.send('pty:data', { id, data: data.toString() });
       }
     });
 
-    proc.onExit(({ exitCode }) => {
-      ptyProcesses.delete(id);
+    proc.stderr.on('data', (data) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('pty:data', { id, data: data.toString() });
+      }
+    });
+
+    proc.on('exit', (exitCode) => {
+      processes.delete(id);
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('pty:exit', { id, exitCode });
       }
@@ -98,32 +86,27 @@ ipcMain.handle('pty:create', (event, { id, cols, rows }) => {
 
     return { success: true };
   } catch (err) {
-    console.error('Failed to create pty:', err);
+    console.error('Failed to create process:', err);
     return { success: false, error: err.message };
   }
 });
 
-// ── IPC: Write to PTY ────────────────────────────────────────────────────────
+// ── IPC: Write to process ─────────────────────────────────────────────────────
 ipcMain.on('pty:write', (event, { id, data }) => {
-  const proc = ptyProcesses.get(id);
-  if (proc) {
-    try { proc.write(data); } catch (e) { console.error('pty write error:', e); }
+  const proc = processes.get(id);
+  if (proc && proc.stdin) {
+    try { proc.stdin.write(data); } catch (e) { console.error('write error:', e); }
   }
 });
 
-// ── IPC: Resize PTY ──────────────────────────────────────────────────────────
-ipcMain.on('pty:resize', (event, { id, cols, rows }) => {
-  const proc = ptyProcesses.get(id);
-  if (proc) {
-    try { proc.resize(cols, rows); } catch (e) { console.error('pty resize error:', e); }
-  }
-});
+// ── IPC: Resize (no-op without pty, kept for API compatibility) ───────────────
+ipcMain.on('pty:resize', () => {});
 
-// ── IPC: Kill PTY ────────────────────────────────────────────────────────────
+// ── IPC: Kill process ─────────────────────────────────────────────────────────
 ipcMain.on('pty:kill', (event, { id }) => {
-  const proc = ptyProcesses.get(id);
+  const proc = processes.get(id);
   if (proc) {
     try { proc.kill(); } catch (_) {}
-    ptyProcesses.delete(id);
+    processes.delete(id);
   }
 });
