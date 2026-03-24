@@ -31,6 +31,40 @@
     .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
     .nav-admin:hover { border-color: var(--accent); color: var(--accent); }
 
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px; background: var(--text);
+      border-radius: 2px; transition: all .25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; flex-direction: column; gap: 0;
+      position: fixed; top: 60px; left: 0; right: 0;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); z-index: 99;
+      padding: 8px 0 16px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 12px 24px; color: var(--muted); text-decoration: none;
+      font-size: 15px; font-weight: 500; transition: color .2s;
+    }
+    .mobile-menu a:hover { color: var(--text); }
+    .mobile-menu .nav-admin {
+      margin: 8px 24px 0; text-align: center; border-radius: 999px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 100px 24px 60px; position: relative; overflow: hidden;
@@ -124,8 +158,17 @@
       <a href="#about">About</a>
       <a href="admin.html" class="nav-admin">編集</a>
     </div>
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#blog" class="mobile-nav-link">ブログ</a>
+  <a href="#tools" class="mobile-nav-link">ツール</a>
+  <a href="#about" class="mobile-nav-link">About</a>
+  <a href="admin.html" class="nav-admin mobile-nav-link">編集</a>
+</div>
 
 <section class="hero">
   <div class="hero-content">
@@ -279,6 +322,22 @@
   }
 
   render();
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open);
+  });
+  document.querySelectorAll('.mobile-nav-link').forEach(a => {
+    a.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', false);
+    });
+  });
 </script>
 </body>
 </html>
