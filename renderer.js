@@ -187,17 +187,10 @@
       <div class="card-resize-handle" data-dir="w"></div>
     `;
 
-    // Set initial explicit height so webview fills the card
-    const INIT_H = 600;
-    card.style.height = INIT_H + 'px';
+    // Set initial explicit height (webview uses position:absolute to fill body)
+    card.style.height = '600px';
 
     world.appendChild(card);
-
-    // Set body and webview heights explicitly after card is in DOM
-    const headerH = card.querySelector('.card-header').offsetHeight || 36;
-    const initBodyH = INIT_H - headerH;
-    card.querySelector('.card-body').style.height        = initBodyH + 'px';
-    card.querySelector('.claude-webview').style.height   = initBodyH + 'px';
 
     // Hide loading spinner once webview finishes loading
     const webview = card.querySelector('webview');
@@ -328,11 +321,6 @@
       card.style.height = newH + 'px';
       card.style.left   = newLeft + 'px';
       card.style.top    = newTop  + 'px';
-
-      const headerH = card.querySelector('.card-header').offsetHeight;
-      const bodyH   = newH - headerH;
-      card.querySelector('.card-body').style.height        = bodyH + 'px';
-      card.querySelector('.claude-webview').style.height   = bodyH + 'px';
     });
 
     window.addEventListener('mouseup', (e) => {
