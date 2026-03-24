@@ -191,15 +191,7 @@
 
     world.appendChild(card);
 
-    // Keep webview sized to card-body at all times
-    const body    = card.querySelector('.card-body');
     const webview = card.querySelector('.claude-webview');
-    const ro = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      webview.style.width  = width  + 'px';
-      webview.style.height = height + 'px';
-    });
-    ro.observe(body);
     const loading = card.querySelector('.card-loading');
 
     webview.addEventListener('did-finish-load', () => {

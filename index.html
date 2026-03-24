@@ -150,8 +150,6 @@
       border: 1px solid var(--border-card);
       border-radius: var(--radius-card);
       box-shadow: var(--shadow-card);
-      display: flex;
-      flex-direction: column;
       overflow: hidden;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
@@ -224,12 +222,12 @@
     /* Spacer to balance title centering */
     .card-header-right { width: 42px; flex-shrink: 0; }
 
-    /* Card body: holds the webview */
+    /* Card body: fills card below the 36px header */
     .card-body {
-      flex: 1;
+      position: absolute;
+      top: 36px; left: 0; right: 0; bottom: 0;
       background: #fff;
-      min-height: 0;
-      position: relative;
+      overflow: hidden;
     }
 
     /* Loading overlay */
@@ -263,12 +261,11 @@
       color: var(--text-muted);
     }
 
-    /* Webview — explicit size set by JS via ResizeObserver */
+    /* Webview fills card-body */
     .claude-webview {
-      width: 100%;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
       border: none;
-      display: block;
-      flex-shrink: 0;
     }
 
     /* Resize handles */
