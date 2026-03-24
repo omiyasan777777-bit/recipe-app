@@ -40,7 +40,7 @@
   let zoomTimer = null;
 
   // Claude.ai URL for each webview
-  const CLAUDE_URL = 'https://claude.ai/new';
+  const CLAUDE_URL = 'https://claude.ai/code';
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
