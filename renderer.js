@@ -187,7 +187,17 @@
       <div class="card-resize-handle" data-dir="w"></div>
     `;
 
+    // Set initial explicit height so webview fills the card
+    const INIT_H = 600;
+    card.style.height = INIT_H + 'px';
+
     world.appendChild(card);
+
+    // Set body and webview heights explicitly after card is in DOM
+    const headerH = card.querySelector('.card-header').offsetHeight || 36;
+    const initBodyH = INIT_H - headerH;
+    card.querySelector('.card-body').style.height        = initBodyH + 'px';
+    card.querySelector('.claude-webview').style.height   = initBodyH + 'px';
 
     // Hide loading spinner once webview finishes loading
     const webview = card.querySelector('webview');
