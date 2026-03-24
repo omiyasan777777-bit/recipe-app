@@ -318,6 +318,11 @@
       card.style.height = newH + 'px';
       card.style.left   = newLeft + 'px';
       card.style.top    = newTop  + 'px';
+
+      const headerH = card.querySelector('.card-header').offsetHeight;
+      const bodyH   = newH - headerH;
+      card.querySelector('.card-body').style.height        = bodyH + 'px';
+      card.querySelector('.claude-webview').style.height   = bodyH + 'px';
     });
 
     window.addEventListener('mouseup', (e) => {
