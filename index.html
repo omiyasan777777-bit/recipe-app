@@ -31,6 +31,38 @@
     .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
     .nav-admin:hover { border-color: var(--accent); color: var(--accent); }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px; cursor: pointer;
+      background: none; border: none; padding: 6px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--muted); border-radius: 999px; transition: all .3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none; position: fixed; top: 60px; left: 0; right: 0;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 16px 24px 20px;
+      flex-direction: column; gap: 4px; z-index: 99;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      color: var(--text); text-decoration: none; font-size: 15px;
+      font-weight: 600; padding: 10px 0; border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 100px 24px 60px; position: relative; overflow: hidden;
@@ -124,8 +156,18 @@
       <a href="#about">About</a>
       <a href="admin.html" class="nav-admin">編集</a>
     </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="メニューを開く" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#blog" onclick="closeMenu()">ブログ</a>
+  <a href="#tools" onclick="closeMenu()">ツール</a>
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="admin.html">編集</a>
+</div>
 
 <section class="hero">
   <div class="hero-content">
@@ -279,6 +321,18 @@
   }
 
   render();
+
+  function toggleMenu() {
+    const btn = document.getElementById('nav-hamburger');
+    const menu = document.getElementById('nav-mobile');
+    btn.classList.toggle('open');
+    menu.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('nav-hamburger').classList.remove('open');
+    document.getElementById('nav-mobile').classList.remove('open');
+  }
 </script>
 </body>
 </html>
