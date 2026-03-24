@@ -31,6 +31,41 @@
     .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
     .nav-admin:hover { border-color: var(--accent); color: var(--accent); }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; height: 2px; width: 100%; background: var(--text);
+      border-radius: 2px; transition: all .3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-drawer {
+      display: none; position: fixed; top: 60px; left: 0; right: 0;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px 24px; flex-direction: column; gap: 4px; z-index: 99;
+    }
+    .nav-drawer.open { display: flex; }
+    .nav-drawer a {
+      color: var(--text); text-decoration: none; font-size: 16px; font-weight: 600;
+      padding: 12px 0; border-bottom: 1px solid var(--border); transition: color .2s;
+    }
+    .nav-drawer a:last-child { border-bottom: none; }
+    .nav-drawer a:hover { color: var(--accent); }
+    .nav-drawer .nav-admin {
+      margin-top: 8px; font-size: 14px; text-align: center;
+      border: 1px solid var(--border); border-radius: 999px; padding: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 100px 24px 60px; position: relative; overflow: hidden;
@@ -124,8 +159,18 @@
       <a href="#about">About</a>
       <a href="admin.html" class="nav-admin">編集</a>
     </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="メニューを開く" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="nav-drawer" id="nav-drawer">
+  <a href="#blog" onclick="closeMenu()">ブログ</a>
+  <a href="#tools" onclick="closeMenu()">ツール</a>
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="admin.html" class="nav-admin">編集</a>
+</div>
 
 <section class="hero">
   <div class="hero-content">
@@ -182,6 +227,17 @@
 </footer>
 
 <script>
+  function toggleMenu() {
+    const btn = document.getElementById('nav-hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    btn.classList.toggle('open');
+    drawer.classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('nav-hamburger').classList.remove('open');
+    document.getElementById('nav-drawer').classList.remove('open');
+  }
+
   const DEFAULT = {
     name: 'YourName',
     hero_title: 'あなたの名前',
