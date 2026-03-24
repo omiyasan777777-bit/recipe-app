@@ -68,7 +68,10 @@ def run_daemon(interval_seconds: int = 60):
         stop_event[0] = True
 
     signal.signal(signal.SIGINT, _shutdown)
-    signal.signal(signal.SIGTERM, _shutdown)
+    try:
+        signal.signal(signal.SIGTERM, _shutdown)
+    except (AttributeError, OSError):
+        pass  # SIGTERM is not available on Windows
 
     try:
         while not stop_event[0]:

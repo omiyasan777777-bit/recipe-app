@@ -14,6 +14,9 @@ pip install -r requirements.txt
 
 ### ② Web アプリを起動
 
+**Windows の場合**: `start.bat` をダブルクリックするだけで起動できます。
+
+**Mac / Linux の場合**:
 ```bash
 python web_app.py
 ```
