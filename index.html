@@ -31,6 +31,36 @@
     .nav-admin { font-size: 12px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; transition: all .2s; }
     .nav-admin:hover { border-color: var(--accent); color: var(--accent); }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; padding: 6px; cursor: pointer;
+      background: none; border: none; border-radius: 8px; transition: background .2s;
+    }
+    .nav-hamburger:hover { background: var(--bg3); }
+    .nav-hamburger span {
+      display: block; width: 100%; height: 2px; background: var(--text);
+      border-radius: 999px; transition: transform .3s, opacity .3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 60px; left: 0; width: 100%;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); z-index: 99;
+      flex-direction: column; padding: 16px 24px 20px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; font-size: 15px; padding: 12px 0; border-bottom: 1px solid var(--border); transition: color .2s; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 100px 24px 60px; position: relative; overflow: hidden;
@@ -124,8 +154,18 @@
       <a href="#about">About</a>
       <a href="admin.html" class="nav-admin">編集</a>
     </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="メニューを開く" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#blog" onclick="closeMobileMenu()">ブログ</a>
+  <a href="#tools" onclick="closeMobileMenu()">ツール</a>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="admin.html">編集</a>
+</div>
 
 <section class="hero">
   <div class="hero-content">
@@ -279,6 +319,21 @@
   }
 
   render();
+
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('nav-hamburger');
+    const isOpen = menu.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+  }
+
+  function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    const btn = document.getElementById('nav-hamburger');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-label', 'メニューを開く');
+  }
 </script>
 </body>
 </html>
