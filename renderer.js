@@ -177,7 +177,14 @@
           webpreferences="contextIsolation=yes"
         ></webview>
       </div>
-      <div class="card-resize-handle"></div>
+      <div class="card-resize-handle" data-dir="se"></div>
+      <div class="card-resize-handle" data-dir="sw"></div>
+      <div class="card-resize-handle" data-dir="ne"></div>
+      <div class="card-resize-handle" data-dir="nw"></div>
+      <div class="card-resize-handle" data-dir="n"></div>
+      <div class="card-resize-handle" data-dir="s"></div>
+      <div class="card-resize-handle" data-dir="e"></div>
+      <div class="card-resize-handle" data-dir="w"></div>
     `;
 
     world.appendChild(card);
@@ -206,8 +213,8 @@
     // Drag on header
     makeDraggable(card, card.querySelector('.card-header'));
 
-    // Resize on handle
-    makeResizable(card, card.querySelector('.card-resize-handle'));
+    // Resize on handles
+    makeResizable(card);
 
     cards.set(id, { card });
     focusCard(card);
@@ -260,31 +267,56 @@
 
   // ── Resizable cards ───────────────────────────────────────────────────────
 
-  function makeResizable(card, handle) {
-    let resizing = false;
-    let startX   = 0;
-    let startY   = 0;
-    let origW    = 0;
-    let origH    = 0;
+  function makeResizable(card) {
+    let resizing  = false;
+    let dir       = '';
+    let startX    = 0;
+    let startY    = 0;
+    let origW     = 0;
+    let origH     = 0;
+    let origLeft  = 0;
+    let origTop   = 0;
 
-    handle.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      resizing = true;
-      startX   = e.clientX;
-      startY   = e.clientY;
-      origW    = card.offsetWidth;
-      origH    = card.offsetHeight;
-      e.preventDefault();
-      e.stopPropagation();
+    card.querySelectorAll('.card-resize-handle').forEach(handle => {
+      handle.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        resizing = true;
+        dir      = handle.dataset.dir;
+        startX   = e.clientX;
+        startY   = e.clientY;
+        origW    = card.offsetWidth;
+        origH    = card.offsetHeight;
+        origLeft = parseInt(card.style.left, 10) || 0;
+        origTop  = parseInt(card.style.top,  10) || 0;
+        e.preventDefault();
+        e.stopPropagation();
+      });
     });
 
     window.addEventListener('mousemove', (e) => {
       if (!resizing) return;
-      const dx   = (e.clientX - startX) / scale;
-      const dy   = (e.clientY - startY) / scale;
-      const newW = Math.max(400, origW + dx);
-      const newH = Math.max(300, origH + dy);
+      const dx = (e.clientX - startX) / scale;
+      const dy = (e.clientY - startY) / scale;
+
+      let newW    = origW;
+      let newH    = origH;
+      let newLeft = origLeft;
+      let newTop  = origTop;
+
+      if (dir.includes('e')) newW = Math.max(400, origW + dx);
+      if (dir.includes('s')) newH = Math.max(300, origH + dy);
+      if (dir.includes('w')) {
+        newW    = Math.max(400, origW - dx);
+        newLeft = origLeft + origW - newW;
+      }
+      if (dir.includes('n')) {
+        newH   = Math.max(300, origH - dy);
+        newTop = origTop + origH - newH;
+      }
+
       card.style.width = newW + 'px';
+      card.style.left  = newLeft + 'px';
+      card.style.top   = newTop  + 'px';
 
       const body    = card.querySelector('.card-body');
       const headerH = card.querySelector('.card-header').offsetHeight;
