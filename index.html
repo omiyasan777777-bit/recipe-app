@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collaborator</title>
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-canvas:       #0d1117;
+      --bg-card:         #161b22;
+      --bg-card-header:  #1c2129;
+      --border-card:     #30363d;
+      --border-focus:    #388bfd;
+      --text-primary:    #c9d1d9;
+      --text-secondary:  #8b949e;
+      --text-muted:      #484f58;
+      --accent:          #388bfd;
+      --accent-hover:    #58a6ff;
+      --danger:          #f85149;
+      --dot-color:       #21262d;
+      --shadow-card:     0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
+      --radius-card:     10px;
+      --titlebar-height: 38px;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    /* ── Toolbar ───────────────────────────────────────────────── */
+    #toolbar {
+      position: fixed;
+      top: var(--titlebar-height);
+      left: 0; right: 0;
+      height: 48px;
+      background: rgba(22, 27, 34, 0.93);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      z-index: 1000;
+      -webkit-app-region: drag;
+    }
+
+    #toolbar > * { -webkit-app-region: no-drag; }
+
+    .toolbar-brand {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-right: 6px;
+    }
+
+    .toolbar-brand span { color: var(--accent); }
+
+    .toolbar-divider {
+      width: 1px; height: 20px;
+      background: var(--border-card);
+    }
+
+    .toolbar-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .toolbar-btn:hover {
+      background: var(--bg-card-header);
+      border-color: var(--accent);
+      color: var(--accent-hover);
+    }
+
+    .toolbar-btn:active { transform: scale(0.96); }
+
+    .toolbar-btn svg { flex-shrink: 0; }
+
+    .toolbar-btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .toolbar-btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    .toolbar-hint {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── Viewport ──────────────────────────────────────────────── */
+    #viewport {
+      position: fixed;
+      top: calc(var(--titlebar-height) + 48px);
+      left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    /* Dot-grid background on the viewport */
+    #viewport::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* The infinite world that gets panned/zoomed */
+    #canvas-world {
+      position: absolute;
+      top: 0; left: 0;
+      width: 0; height: 0;          /* content determines size */
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* ── Terminal Card ─────────────────────────────────────────── */
+    .terminal-card {
+      position: absolute;
+      width: 700px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .terminal-card.focused {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-card), 0 0 0 1px var(--border-focus);
+    }
+
+    /* Card header — drag handle */
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 36px;
+      background: var(--bg-card-header);
+      border-bottom: 1px solid var(--border-card);
+      cursor: grab;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+
+    .card-header:active { cursor: grabbing; }
+
+    /* macOS-style traffic lights */
+    .card-traffic-lights {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .traffic-light {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: filter 0.1s;
+      flex-shrink: 0;
+    }
+
+    .traffic-light:hover { filter: brightness(1.3); }
+    .tl-close { background: #ff5f57; }
+    .tl-min   { background: #febc2e; }
+    .tl-max   { background: #28c840; }
+
+    .card-title {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    /* Spacer to balance title centering */
+    .card-header-right { width: 42px; flex-shrink: 0; }
+
+    /* Terminal body */
+    .card-body {
+      flex: 1;
+      padding: 6px;
+      background: #0d1117;
+      min-height: 0;
+      height: 380px;
+    }
+
+    .xterm-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Resize grip */
+    .card-resize-handle {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 18px; height: 18px;
+      cursor: se-resize;
+      z-index: 10;
+    }
+
+    .card-resize-handle::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; right: 4px;
+      width: 7px; height: 7px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      border-radius: 1px;
+    }
+
+    /* ── Empty State ───────────────────────────────────────────── */
+    #empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.3s;
+    }
+
+    #empty-state.hidden { opacity: 0; }
+
+    .empty-icon { font-size: 48px; opacity: 0.18; }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .empty-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    /* ── Zoom indicator ────────────────────────────────────────── */
+    #zoom-indicator {
+      position: fixed;
+      bottom: 16px; right: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #zoom-indicator.visible { opacity: 1; }
+
+    /* ── xterm.js overrides ────────────────────────────────────── */
+    .xterm { height: 100% !important; }
+    .xterm-viewport { overflow-y: auto !important; }
+    .xterm-screen { cursor: text; }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <div class="toolbar-brand">Collab<span>·</span>Windows</div>
+    <div class="toolbar-divider"></div>
+
+    <button class="toolbar-btn toolbar-btn-primary" id="btn-new-terminal">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      New Terminal
+    </button>
+
+    <button class="toolbar-btn" id="btn-reset-view">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M4 6h4M6 4v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Reset View
+    </button>
+
+    <div class="toolbar-hint">
+      Right-click drag or middle-click to pan &nbsp;·&nbsp; Ctrl+Scroll to zoom
+    </div>
+  </div>
+
+  <!-- Infinite canvas -->
+  <div id="viewport">
+    <div id="canvas-world">
+      <!-- Terminal cards injected here by renderer.js -->
+    </div>
+
+    <div id="empty-state">
+      <div class="empty-icon">&#x2328;</div>
+      <div class="empty-title">No terminals yet</div>
+      <div class="empty-subtitle">Click "New Terminal" to spawn a terminal window on the canvas</div>
+    </div>
+  </div>
+
+  <!-- Zoom level indicator -->
+  <div id="zoom-indicator">100%</div>
+
+  <!--
+    Load xterm.js + FitAddon from node_modules,
+    then load our renderer once they're ready.
+  -->
+  <script>
+    (function bootstrap() {
+      const base = './node_modules/';
+
+      function loadCSS(href) {
+        const el = document.createElement('link');
+        el.rel = 'stylesheet';
+        el.href = href;
+        document.head.appendChild(el);
+      }
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const el = document.createElement('script');
+          el.src = src;
+          el.onload = resolve;
+          el.onerror = () => reject(new Error('Failed to load: ' + src));
+          document.head.appendChild(el);
+        });
+      }
+
+      loadCSS(base + '@xterm/xterm/css/xterm.css');
+
+      loadScript(base + '@xterm/xterm/lib/xterm.js')
+        .then(() => loadScript(base + '@xterm/addon-fit/lib/addon-fit.js'))
+        .then(() => loadScript('./renderer.js'))
+        .catch(err => console.error('Bootstrap error:', err));
+    })();
+  </script>
+</body>
+</html>
