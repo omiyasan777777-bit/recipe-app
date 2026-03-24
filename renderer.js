@@ -1,7 +1,7 @@
 /**
  * renderer.js
- * Handles the infinite canvas, terminal card spawning, drag/resize,
- * and xterm.js terminal instances backed by node-pty via IPC.
+ * Infinite canvas with draggable/resizable Claude Code webview cards.
+ * Each card embeds a <webview> with an isolated session partition.
  */
 
 (function () {
@@ -9,12 +9,12 @@
 
   // ── State ─────────────────────────────────────────────────────────────────
 
-  const viewport    = document.getElementById('viewport');
-  const world       = document.getElementById('canvas-world');
-  const emptyState  = document.getElementById('empty-state');
-  const zoomEl      = document.getElementById('zoom-indicator');
-  const btnNew      = document.getElementById('btn-new-terminal');
-  const btnReset    = document.getElementById('btn-reset-view');
+  const viewport   = document.getElementById('viewport');
+  const world      = document.getElementById('canvas-world');
+  const emptyState = document.getElementById('empty-state');
+  const zoomEl     = document.getElementById('zoom-indicator');
+  const btnNew     = document.getElementById('btn-new-claude');
+  const btnReset   = document.getElementById('btn-reset-view');
 
   // Canvas transform
   let panX  = 0;
@@ -24,20 +24,23 @@
   const MIN_SCALE = 0.2;
   const MAX_SCALE = 3.0;
 
-  // Terminal card registry  { id -> { card, term, fitAddon, cleanupData, cleanupExit } }
-  const terminals = new Map();
-  let   nextId    = 1;
-  let   topZ      = 10;   // z-index counter
+  // Card registry  { id -> { card } }
+  const cards  = new Map();
+  let nextId   = 1;
+  let topZ     = 10;
 
   // Panning state
-  let isPanning     = false;
-  let panStartX     = 0;
-  let panStartY     = 0;
-  let panStartPanX  = 0;
-  let panStartPanY  = 0;
+  let isPanning    = false;
+  let panStartX    = 0;
+  let panStartY    = 0;
+  let panStartPanX = 0;
+  let panStartPanY = 0;
 
   // Zoom indicator hide timer
   let zoomTimer = null;
+
+  // Claude.ai URL for each webview
+  const CLAUDE_URL = 'https://claude.ai/new';
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -53,7 +56,7 @@
   }
 
   function updateEmptyState() {
-    if (terminals.size === 0) {
+    if (cards.size === 0) {
       emptyState.classList.remove('hidden');
     } else {
       emptyState.classList.add('hidden');
@@ -61,9 +64,8 @@
   }
 
   function focusCard(card) {
-    // Remove focused class from all cards
-    for (const [, t] of terminals) {
-      t.card.classList.remove('focused');
+    for (const [, c] of cards) {
+      c.card.classList.remove('focused');
     }
     card.classList.add('focused');
     card.style.zIndex = ++topZ;
@@ -72,11 +74,10 @@
   // ── Canvas pan ────────────────────────────────────────────────────────────
 
   viewport.addEventListener('mousedown', (e) => {
-    // Middle button (1) or right button (2) → start pan
     if (e.button === 1 || e.button === 2) {
-      isPanning   = true;
-      panStartX   = e.clientX;
-      panStartY   = e.clientY;
+      isPanning    = true;
+      panStartX    = e.clientX;
+      panStartY    = e.clientY;
       panStartPanX = panX;
       panStartPanY = panY;
       viewport.style.cursor = 'grabbing';
@@ -98,7 +99,6 @@
     }
   });
 
-  // Suppress context menu on right-click (we use it for panning)
   viewport.addEventListener('contextmenu', (e) => e.preventDefault());
 
   // ── Canvas zoom ───────────────────────────────────────────────────────────
@@ -114,21 +114,12 @@
     const zoomFactor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
     const newScale   = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * zoomFactor));
 
-    // Zoom towards mouse cursor
     panX = mouseX - (mouseX - panX) * (newScale / scale);
     panY = mouseY - (mouseY - panY) * (newScale / scale);
     scale = newScale;
 
     applyTransform();
     showZoom();
-
-    // Refit all terminals after zoom settles
-    clearTimeout(viewport._fitTimer);
-    viewport._fitTimer = setTimeout(() => {
-      for (const [, t] of terminals) {
-        try { t.fitAddon.fit(); } catch (_) {}
-      }
-    }, 150);
   }, { passive: false });
 
   // ── Reset view ────────────────────────────────────────────────────────────
@@ -139,25 +130,27 @@
     showZoom();
   });
 
-  // ── Spawn terminal ────────────────────────────────────────────────────────
+  // ── Spawn Claude Code card ────────────────────────────────────────────────
 
-  btnNew.addEventListener('click', spawnTerminal);
+  btnNew.addEventListener('click', spawnClaudeCard);
 
-  function spawnTerminal() {
+  function spawnClaudeCard() {
     const id = nextId++;
 
-    // Offset each new card so they don't stack perfectly
+    // Stagger new cards so they don't stack perfectly
     const offset = (id - 1) % 6;
-    const x = 40 + offset * 30;
-    const y = 40 + offset * 30;
+    const x = 40 + offset * 40;
+    const y = 40 + offset * 40;
 
-    // Build the card DOM
     const card = document.createElement('div');
-    card.className = 'terminal-card';
+    card.className = 'claude-card';
     card.dataset.id = id;
     card.style.left   = x + 'px';
     card.style.top    = y + 'px';
     card.style.zIndex = ++topZ;
+
+    // Each card gets its own persistent session so sessions don't collide
+    const partition = `persist:claude-${id}`;
 
     card.innerHTML = `
       <div class="card-header">
@@ -167,143 +160,81 @@
           <button class="traffic-light tl-max"   title="Maximize (decorative)"></button>
         </div>
         <div class="card-title">
-          <span class="card-title-icon">&#x276F;_</span> Terminal ${id}
+          <span class="card-title-icon"></span>Claude Code ${id}
         </div>
         <div class="card-header-right"></div>
       </div>
       <div class="card-body">
-        <div class="xterm-container"></div>
+        <div class="card-loading">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading Claude…</div>
+        </div>
+        <webview
+          class="claude-webview"
+          src="${CLAUDE_URL}"
+          partition="${partition}"
+          allowpopups
+          webpreferences="contextIsolation=yes"
+        ></webview>
       </div>
       <div class="card-resize-handle"></div>
     `;
 
     world.appendChild(card);
 
-    // Wire up close button
+    // Hide loading spinner once webview finishes loading
+    const webview = card.querySelector('webview');
+    const loading = card.querySelector('.card-loading');
+
+    webview.addEventListener('did-finish-load', () => {
+      loading.classList.add('hidden');
+    });
+
+    webview.addEventListener('did-fail-load', () => {
+      loading.querySelector('.loading-text').textContent = 'Failed to load';
+    });
+
+    // Close button
     card.querySelector('.tl-close').addEventListener('click', (e) => {
       e.stopPropagation();
-      closeTerminal(id);
+      closeCard(id);
     });
 
     // Focus on click
     card.addEventListener('mousedown', () => focusCard(card));
 
-    // Set up drag on header
+    // Drag on header
     makeDraggable(card, card.querySelector('.card-header'));
 
-    // Set up resize on handle
+    // Resize on handle
     makeResizable(card, card.querySelector('.card-resize-handle'));
 
-    // Create xterm.js instance
-    const term = new Terminal({
-      theme: {
-        background:   '#0d1117',
-        foreground:   '#c9d1d9',
-        cursor:       '#58a6ff',
-        cursorAccent: '#0d1117',
-        black:        '#484f58',
-        red:          '#f85149',
-        green:        '#3fb950',
-        yellow:       '#d29922',
-        blue:         '#388bfd',
-        magenta:      '#bc8cff',
-        cyan:         '#39c5cf',
-        white:        '#b1bac4',
-        brightBlack:  '#6e7681',
-        brightRed:    '#ff7b72',
-        brightGreen:  '#56d364',
-        brightYellow: '#e3b341',
-        brightBlue:   '#58a6ff',
-        brightMagenta:'#d2a8ff',
-        brightCyan:   '#39c5cf',
-        brightWhite:  '#f0f6fc'
-      },
-      fontFamily: "'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, 'Courier New', monospace",
-      fontSize: 13,
-      lineHeight: 1.3,
-      cursorBlink: true,
-      cursorStyle: 'bar',
-      scrollback: 5000,
-      allowProposedApi: true
-    });
-
-    const fitAddon = new FitAddon.FitAddon();
-    term.loadAddon(fitAddon);
-
-    const container = card.querySelector('.xterm-container');
-    term.open(container);
-
-    // Small delay so layout settles before fit
-    setTimeout(() => {
-      fitAddon.fit();
-    }, 50);
-
-    // Forward keystrokes to pty
-    term.onData((data) => {
-      window.electronAPI.ptyWrite(id, data);
-    });
-
-    // Register IPC listeners
-    const cleanupData = window.electronAPI.onPtyData(({ id: tid, data }) => {
-      if (tid === id) term.write(data);
-    });
-
-    const cleanupExit = window.electronAPI.onPtyExit(({ id: tid }) => {
-      if (tid === id) {
-        term.writeln('\r\n\x1b[2m[process exited]\x1b[0m');
-      }
-    });
-
-    // Store entry
-    terminals.set(id, { card, term, fitAddon, cleanupData, cleanupExit });
-
-    // Focus
+    cards.set(id, { card });
     focusCard(card);
     updateEmptyState();
-
-    // Launch the pty
-    const dims = fitAddon.proposeDimensions() || { cols: 80, rows: 24 };
-    window.electronAPI.ptyCreate({ id, cols: dims.cols, rows: dims.rows })
-      .then((res) => {
-        if (!res.success) {
-          term.writeln(`\x1b[31mFailed to start shell: ${res.error}\x1b[0m`);
-        }
-      });
   }
 
-  // ── Close terminal ────────────────────────────────────────────────────────
+  // ── Close card ────────────────────────────────────────────────────────────
 
-  function closeTerminal(id) {
-    const entry = terminals.get(id);
+  function closeCard(id) {
+    const entry = cards.get(id);
     if (!entry) return;
-
-    // Kill pty
-    window.electronAPI.ptyKill(id);
-
-    // Clean up IPC listeners
-    if (entry.cleanupData) entry.cleanupData();
-    if (entry.cleanupExit) entry.cleanupExit();
-
-    // Dispose xterm
-    try { entry.term.dispose(); } catch (_) {}
-
-    // Remove DOM
     entry.card.remove();
-    terminals.delete(id);
+    cards.delete(id);
     updateEmptyState();
   }
 
   // ── Draggable cards ───────────────────────────────────────────────────────
 
   function makeDraggable(card, handle) {
-    let dragging  = false;
-    let startX    = 0;
-    let startY    = 0;
-    let origLeft  = 0;
-    let origTop   = 0;
+    let dragging = false;
+    let startX   = 0;
+    let startY   = 0;
+    let origLeft = 0;
+    let origTop  = 0;
 
     handle.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;   // left button only
+      if (e.button !== 0) return;
       dragging = true;
       startX   = e.clientX;
       startY   = e.clientY;
@@ -316,7 +247,6 @@
 
     window.addEventListener('mousemove', (e) => {
       if (!dragging) return;
-      // Mouse delta in screen space → convert to world space
       const dx = (e.clientX - startX) / scale;
       const dy = (e.clientY - startY) / scale;
       card.style.left = (origLeft + dx) + 'px';
@@ -331,11 +261,11 @@
   // ── Resizable cards ───────────────────────────────────────────────────────
 
   function makeResizable(card, handle) {
-    let resizing   = false;
-    let startX     = 0;
-    let startY     = 0;
-    let origW      = 0;
-    let origH      = 0;
+    let resizing = false;
+    let startX   = 0;
+    let startY   = 0;
+    let origW    = 0;
+    let origH    = 0;
 
     handle.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
@@ -350,44 +280,28 @@
 
     window.addEventListener('mousemove', (e) => {
       if (!resizing) return;
-      const dx = (e.clientX - startX) / scale;
-      const dy = (e.clientY - startY) / scale;
-      const newW = Math.max(360, origW + dx);
-      const newH = Math.max(200, origH + dy);
+      const dx   = (e.clientX - startX) / scale;
+      const dy   = (e.clientY - startY) / scale;
+      const newW = Math.max(400, origW + dx);
+      const newH = Math.max(300, origH + dy);
       card.style.width = newW + 'px';
 
-      // The card-body has an explicit height we need to adjust
-      const body = card.querySelector('.card-body');
+      const body    = card.querySelector('.card-body');
       const headerH = card.querySelector('.card-header').offsetHeight;
       body.style.height = (newH - headerH) + 'px';
     });
 
     window.addEventListener('mouseup', (e) => {
-      if (e.button === 0 && resizing) {
-        resizing = false;
-        // Refit terminal after resize
-        const entry = terminals.get(parseInt(card.dataset.id, 10));
-        if (entry) {
-          setTimeout(() => {
-            try {
-              entry.fitAddon.fit();
-              const dims = entry.fitAddon.proposeDimensions();
-              if (dims) {
-                window.electronAPI.ptyResize(parseInt(card.dataset.id, 10), dims.cols, dims.rows);
-              }
-            } catch (_) {}
-          }, 50);
-        }
-      }
+      if (e.button === 0) resizing = false;
     });
   }
 
-  // ── Keyboard shortcut: Ctrl+T → new terminal ─────────────────────────────
+  // ── Keyboard shortcut: Ctrl+T → new Claude Code ───────────────────────────
 
   window.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === 't') {
       e.preventDefault();
-      spawnTerminal();
+      spawnClaudeCard();
     }
   });
 

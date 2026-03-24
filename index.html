@@ -9,20 +9,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-canvas:       #0d1117;
-      --bg-card:         #161b22;
-      --bg-card-header:  #1c2129;
-      --border-card:     #30363d;
-      --border-focus:    #388bfd;
-      --text-primary:    #c9d1d9;
-      --text-secondary:  #8b949e;
-      --text-muted:      #484f58;
-      --accent:          #388bfd;
-      --accent-hover:    #58a6ff;
-      --danger:          #f85149;
-      --dot-color:       #21262d;
-      --shadow-card:     0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
-      --radius-card:     10px;
+      --bg-canvas:       #e8e5e0;
+      --bg-card:         #ffffff;
+      --bg-card-header:  #f5f3f0;
+      --border-card:     #d0ccc7;
+      --border-focus:    #d97757;
+      --text-primary:    #2d2d2d;
+      --text-secondary:  #666;
+      --text-muted:      #aaa;
+      --accent:          #d97757;
+      --accent-hover:    #c4623e;
+      --dot-color:       #ccc9c3;
+      --shadow-card:     0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+      --radius-card:     12px;
       --titlebar-height: 38px;
     }
 
@@ -42,7 +41,7 @@
       top: var(--titlebar-height);
       left: 0; right: 0;
       height: 48px;
-      background: rgba(22, 27, 34, 0.93);
+      background: rgba(240, 237, 232, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-card);
@@ -90,11 +89,10 @@
     .toolbar-btn:hover {
       background: var(--bg-card-header);
       border-color: var(--accent);
-      color: var(--accent-hover);
+      color: var(--accent);
     }
 
     .toolbar-btn:active { transform: scale(0.96); }
-
     .toolbar-btn svg { flex-shrink: 0; }
 
     .toolbar-btn-primary {
@@ -124,7 +122,7 @@
       cursor: default;
     }
 
-    /* Dot-grid background on the viewport */
+    /* Dot-grid background */
     #viewport::before {
       content: '';
       position: absolute;
@@ -135,19 +133,19 @@
       z-index: 0;
     }
 
-    /* The infinite world that gets panned/zoomed */
+    /* The infinite world */
     #canvas-world {
       position: absolute;
       top: 0; left: 0;
-      width: 0; height: 0;          /* content determines size */
+      width: 0; height: 0;
       transform-origin: 0 0;
       will-change: transform;
     }
 
-    /* ── Terminal Card ─────────────────────────────────────────── */
-    .terminal-card {
+    /* ── Claude Card ───────────────────────────────────────────── */
+    .claude-card {
       position: absolute;
-      width: 700px;
+      width: 800px;
       background: var(--bg-card);
       border: 1px solid var(--border-card);
       border-radius: var(--radius-card);
@@ -158,9 +156,9 @@
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .terminal-card.focused {
+    .claude-card.focused {
       border-color: var(--border-focus);
-      box-shadow: var(--shadow-card), 0 0 0 1px var(--border-focus);
+      box-shadow: var(--shadow-card), 0 0 0 2px rgba(217, 119, 87, 0.25);
     }
 
     /* Card header — drag handle */
@@ -195,7 +193,7 @@
       flex-shrink: 0;
     }
 
-    .traffic-light:hover { filter: brightness(1.3); }
+    .traffic-light:hover { filter: brightness(0.85); }
     .tl-close { background: #ff5f57; }
     .tl-min   { background: #febc2e; }
     .tl-max   { background: #28c840; }
@@ -211,21 +209,67 @@
       text-align: center;
     }
 
+    .card-title-icon {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 3px;
+      margin-right: 5px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
     /* Spacer to balance title centering */
     .card-header-right { width: 42px; flex-shrink: 0; }
 
-    /* Terminal body */
+    /* Card body: holds the webview */
     .card-body {
       flex: 1;
-      padding: 6px;
-      background: #0d1117;
+      background: #fff;
       min-height: 0;
-      height: 380px;
+      height: 600px;
+      position: relative;
     }
 
-    .xterm-container {
+    /* Loading overlay */
+    .card-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #fff;
+      z-index: 2;
+      transition: opacity 0.3s;
+    }
+
+    .card-loading.hidden { opacity: 0; pointer-events: none; }
+
+    .loading-spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--border-card);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Webview fills card body */
+    .claude-webview {
       width: 100%;
       height: 100%;
+      border: none;
+      display: block;
     }
 
     /* Resize grip */
@@ -263,7 +307,10 @@
 
     #empty-state.hidden { opacity: 0; }
 
-    .empty-icon { font-size: 48px; opacity: 0.18; }
+    .empty-icon {
+      width: 64px; height: 64px;
+      opacity: 0.18;
+    }
 
     .empty-title {
       font-size: 18px;
@@ -294,25 +341,20 @@
     }
 
     #zoom-indicator.visible { opacity: 1; }
-
-    /* ── xterm.js overrides ────────────────────────────────────── */
-    .xterm { height: 100% !important; }
-    .xterm-viewport { overflow-y: auto !important; }
-    .xterm-screen { cursor: text; }
   </style>
 </head>
 <body>
 
   <!-- Toolbar -->
   <div id="toolbar">
-    <div class="toolbar-brand">Collab<span>·</span>Windows</div>
+    <div class="toolbar-brand">Collab<span>·</span>Claude</div>
     <div class="toolbar-divider"></div>
 
-    <button class="toolbar-btn toolbar-btn-primary" id="btn-new-terminal">
+    <button class="toolbar-btn toolbar-btn-primary" id="btn-new-claude">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
-      New Terminal
+      New Claude Code
     </button>
 
     <button class="toolbar-btn" id="btn-reset-view">
@@ -331,51 +373,23 @@
   <!-- Infinite canvas -->
   <div id="viewport">
     <div id="canvas-world">
-      <!-- Terminal cards injected here by renderer.js -->
+      <!-- Claude Code cards injected here by renderer.js -->
     </div>
 
     <div id="empty-state">
-      <div class="empty-icon">&#x2328;</div>
-      <div class="empty-title">No terminals yet</div>
-      <div class="empty-subtitle">Click "New Terminal" to spawn a terminal window on the canvas</div>
+      <!-- Claude logo SVG -->
+      <svg class="empty-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="14" fill="#d97757"/>
+        <text x="32" y="44" text-anchor="middle" font-size="32" fill="white" font-family="serif">C</text>
+      </svg>
+      <div class="empty-title">No Claude Code sessions yet</div>
+      <div class="empty-subtitle">Click "New Claude Code" to open a session on the canvas</div>
     </div>
   </div>
 
   <!-- Zoom level indicator -->
   <div id="zoom-indicator">100%</div>
 
-  <!--
-    Load xterm.js + FitAddon from node_modules,
-    then load our renderer once they're ready.
-  -->
-  <script>
-    (function bootstrap() {
-      const base = './node_modules/';
-
-      function loadCSS(href) {
-        const el = document.createElement('link');
-        el.rel = 'stylesheet';
-        el.href = href;
-        document.head.appendChild(el);
-      }
-
-      function loadScript(src) {
-        return new Promise((resolve, reject) => {
-          const el = document.createElement('script');
-          el.src = src;
-          el.onload = resolve;
-          el.onerror = () => reject(new Error('Failed to load: ' + src));
-          document.head.appendChild(el);
-        });
-      }
-
-      loadCSS(base + '@xterm/xterm/css/xterm.css');
-
-      loadScript(base + '@xterm/xterm/lib/xterm.js')
-        .then(() => loadScript(base + '@xterm/addon-fit/lib/addon-fit.js'))
-        .then(() => loadScript('./renderer.js'))
-        .catch(err => console.error('Bootstrap error:', err));
-    })();
-  </script>
+  <script src="./renderer.js"></script>
 </body>
 </html>
