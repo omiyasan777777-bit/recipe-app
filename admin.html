@@ -220,6 +220,13 @@
     <button class="btn-add" onclick="addTool()">＋ ツールを追加</button>
   </div>
 
+  <!-- メニュー -->
+  <div class="section">
+    <div class="section-title">メニュー</div>
+    <div id="menu-list"></div>
+    <button class="btn-add" onclick="addMenu()">＋ メニューを追加</button>
+  </div>
+
   <!-- GitHub設定 -->
   <div class="section">
     <div class="section-title">GitHub 連携設定</div>
@@ -356,6 +363,60 @@
     list.appendChild(div);
   }
 
+  function addMenu(data = {}) {
+    const list = document.getElementById('menu-list');
+    const idx = list.children.length;
+    const imgId = 'menu-img-' + (blogImgCounter++);
+    const div = document.createElement('div');
+    div.className = 'card-group';
+    div.innerHTML = `
+      <div class="card-num">メニュー ${idx + 1}</div>
+      <button class="btn-remove" onclick="this.parentElement.remove()">削除</button>
+      <label>カテゴリ（例：主食、汁物）</label>
+      <input type="text" class="menu-category" value="${data.category||''}" placeholder="主食">
+      <label>アイコン（絵文字）</label>
+      <input type="text" class="menu-icon" value="${data.icon||'🍽️'}" placeholder="🍽️" style="max-width:80px">
+      <label>料理名</label>
+      <input type="text" class="menu-title" value="${data.title||''}" placeholder="料理名">
+      <label>説明（2〜3行）</label>
+      <textarea class="menu-desc" placeholder="料理の説明">${data.desc||''}</textarea>
+      <label>URL（レシピページなど）</label>
+      <input type="url" class="menu-url" value="${data.url||''}" placeholder="https://...">
+      <label>画像（1.91:1）</label>
+      <div class="img-preview-191 menu-img-preview" onclick="document.getElementById('${imgId}').click()">
+        ${data.image ? `<img src="${data.image}" alt="">` : '<span class="img-placeholder">📷 クリックして画像を選択</span>'}
+      </div>
+      <input type="hidden" class="menu-image" value="${data.image||''}">
+      <div class="img-btns">
+        <button type="button" class="btn-upload-sm" onclick="document.getElementById('${imgId}').click()">画像を選択</button>
+        <button type="button" class="btn-remove-sm" onclick="removeMenuImage(this)">削除</button>
+      </div>
+      <input type="file" id="${imgId}" class="menu-img-file" accept="image/*" style="display:none" onchange="onMenuImageChange(event, this)">
+    `;
+    list.appendChild(div);
+  }
+
+  function onMenuImageChange(e, fileInput) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const card = fileInput.closest('.card-group');
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const src = ev.target.result;
+      card.querySelector('.menu-image').value = src;
+      card.querySelector('.menu-img-preview').innerHTML = `<img src="${src}" alt="">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeMenuImage(btn) {
+    const card = btn.closest('.card-group');
+    card.querySelector('.menu-image').value = '';
+    card.querySelector('.menu-img-preview').innerHTML = '<span class="img-placeholder">📷 クリックして画像を選択</span>';
+    const fileInput = card.querySelector('input[type="file"].menu-img-file');
+    if (fileInput) fileInput.value = '';
+  }
+
   function addTool(data = {}) {
     const list = document.getElementById('tool-list');
     const idx = list.children.length;
@@ -462,6 +523,14 @@
       desc:  el.querySelector('.tool-desc').value,
       url:   el.querySelector('.tool-url').value,
     }));
+    const menus = [...document.querySelectorAll('#menu-list .card-group')].map(el => ({
+      category: el.querySelector('.menu-category').value,
+      icon:     el.querySelector('.menu-icon').value,
+      title:    el.querySelector('.menu-title').value,
+      desc:     el.querySelector('.menu-desc').value,
+      url:      el.querySelector('.menu-url').value,
+      image:    el.querySelector('.menu-image').value,
+    }));
     const data = {
       name:       document.getElementById('name').value,
       hero_title: document.getElementById('hero_title').value,
@@ -472,7 +541,7 @@
       note_url:   document.getElementById('note_url').value,
       avatar:     avatarData,
       hero_image: heroImageData,
-      blogs, tools,
+      blogs, tools, menus,
     };
     localStorage.setItem('siteData', JSON.stringify(data));
 
@@ -514,6 +583,10 @@
     const tools = d.tools || [{icon:'🛠️',title:'',desc:'',url:''}];
     document.getElementById('tool-list').innerHTML = '';
     tools.forEach(t => addTool(t));
+
+    const menus = d.menus || [{category:'',icon:'🍽️',title:'',desc:'',url:'',image:''}];
+    document.getElementById('menu-list').innerHTML = '';
+    menus.forEach(m => addMenu(m));
   }
 
   async function load() {

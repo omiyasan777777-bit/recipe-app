@@ -68,6 +68,20 @@
     .section-title { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; margin-bottom: 12px; }
     .divider { width: 48px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; margin: 12px auto 0; }
 
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .menu-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      text-decoration: none; color: inherit; transition: all .2s; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .menu-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(108,92,231,.1); }
+    .menu-card-img { width: 100%; aspect-ratio: 191 / 100; object-fit: cover; display: block; }
+    .menu-card-img-placeholder { width: 100%; aspect-ratio: 191 / 100; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    .menu-card-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .menu-category { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--accent); background: rgba(108,92,231,.08); padding: 3px 10px; border-radius: 999px; width: fit-content; }
+    .menu-card h3 { font-size: 16px; font-weight: 700; line-height: 1.4; }
+    .menu-card p { font-size: 14px; color: var(--muted); flex: 1; }
+
     .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .blog-card {
       background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
@@ -119,6 +133,7 @@
   <div class="nav-inner">
     <span class="nav-logo" id="nav-name">YourName</span>
     <div class="nav-links">
+      <a href="#menu">メニュー</a>
       <a href="#blog">ブログ</a>
       <a href="#tools">ツール</a>
       <a href="#about">About</a>
@@ -139,6 +154,17 @@
       <a href="#blog" class="btn btn-primary">記事を読む</a>
       <a href="#about" class="btn btn-secondary">About me</a>
     </div>
+  </div>
+</section>
+
+<section id="menu">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Menu</div>
+      <h2 class="section-title">メニュー</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="menu-grid" id="menu-grid"></div>
   </div>
 </section>
 
@@ -197,6 +223,11 @@
       { icon: '🖼️', title: 'サムネイルプロンプト生成', desc: 'ブログ・SNS用のサムネイル画像生成プロンプトを自動生成するツール。', url: 'thumbnail_generator.html' },
       { icon: '🛠️', title: 'ツール名をここに', desc: 'ツールの説明を2〜3行で書きます。', url: '#' },
     ],
+    menus: [
+      { category: '主食', icon: '🍚', title: '料理名をここに', desc: '料理の説明を2〜3行で書きます。', url: '#' },
+      { category: '汁物', icon: '🍜', title: '料理名をここに', desc: '料理の説明を2〜3行で書きます。', url: '#' },
+      { category: 'デザート', icon: '🍰', title: '料理名をここに', desc: '料理の説明を2〜3行で書きます。', url: '#' },
+    ],
   };
 
   function applyData(d) {
@@ -226,6 +257,21 @@
     } else {
       avatar.innerHTML = '👤';
     }
+
+    // Menu
+    const menuGrid = document.getElementById('menu-grid');
+    menuGrid.innerHTML = (d.menus || []).map(m => `
+      <a href="${m.url || '#'}" class="menu-card" ${m.url && m.url !== '#' ? 'target="_blank"' : ''}>
+        ${m.image
+          ? `<img class="menu-card-img" src="${m.image}" alt="">`
+          : `<div class="menu-card-img-placeholder">${m.icon || '🍽️'}</div>`}
+        <div class="menu-card-body">
+          ${m.category ? `<span class="menu-category">${m.category}</span>` : ''}
+          <h3>${m.title || '料理名'}</h3>
+          <p>${m.desc || ''}</p>
+        </div>
+      </a>
+    `).join('');
 
     // Blog
     const blogGrid = document.getElementById('blog-grid');
