@@ -314,13 +314,10 @@
         newTop = origTop + origH - newH;
       }
 
-      card.style.width = newW + 'px';
-      card.style.left  = newLeft + 'px';
-      card.style.top   = newTop  + 'px';
-
-      const body    = card.querySelector('.card-body');
-      const headerH = card.querySelector('.card-header').offsetHeight;
-      body.style.height = (newH - headerH) + 'px';
+      card.style.width  = newW + 'px';
+      card.style.height = newH + 'px';
+      card.style.left   = newLeft + 'px';
+      card.style.top    = newTop  + 'px';
     });
 
     window.addEventListener('mouseup', (e) => {
