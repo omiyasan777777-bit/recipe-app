@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典①｜回避型スコアカード「元彼は本当に回避型か？」</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #e84393; --accent2: #ff6eb4; --bg: #fff5f9;
+      --border: #f5c6de; --text: #1a1a2e; --muted: #7a5570;
+      --green: #00b894; --orange: #e17055; --blue: #0984e3;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.75; padding: 24px;
+    }
+    .page {
+      max-width: 800px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 44px 52px;
+      box-shadow: 0 4px 32px rgba(232,67,147,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(232,67,147,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      padding: 4px 16px; border-radius: 999px; margin-bottom: 14px;
+    }
+    h1 { font-size: 1.75rem; font-weight: 900; margin-bottom: 6px; line-height: 1.35; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .chapter-note {
+      display: inline-block; font-size: 12px; color: var(--accent);
+      background: rgba(232,67,147,.07); padding: 3px 12px; border-radius: 999px;
+      margin-bottom: 28px; font-weight: 600;
+    }
+    .intro-box {
+      background: rgba(232,67,147,.05); border-left: 4px solid var(--accent);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted);
+    }
+    .intro-box strong { color: var(--text); }
+
+    /* 診断カード */
+    .question-list { list-style: none; margin-bottom: 36px; }
+    .question-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 18px; border-radius: 12px;
+      border: 1.5px solid var(--border);
+      margin-bottom: 12px;
+      transition: border-color .2s, background .2s;
+      cursor: pointer;
+    }
+    .question-item:hover { border-color: var(--accent); background: rgba(232,67,147,.02); }
+    .question-item.checked { border-color: var(--accent); background: rgba(232,67,147,.06); }
+    .q-num {
+      min-width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(232,67,147,.1); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0; margin-top: 2px;
+    }
+    .question-item.checked .q-num { background: var(--accent); color: #fff; }
+    .q-body { flex: 1; }
+    .q-text { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .q-sub { font-size: 12px; color: var(--muted); }
+    .q-check {
+      width: 22px; height: 22px; border-radius: 6px;
+      border: 2px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 4px; transition: all .2s;
+    }
+    .question-item.checked .q-check {
+      background: var(--accent); border-color: var(--accent);
+      color: #fff; font-size: 14px; font-weight: 700;
+    }
+
+    /* スコア表示 */
+    .score-display {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 16px; padding: 28px 32px;
+      color: #fff; text-align: center; margin-bottom: 28px;
+    }
+    .score-label { font-size: 14px; font-weight: 700; opacity: .9; margin-bottom: 8px; }
+    .score-num { font-size: 3.5rem; font-weight: 900; line-height: 1; }
+    .score-denom { font-size: 1.2rem; opacity: .8; }
+    .score-bar-bg {
+      height: 12px; background: rgba(255,255,255,.25); border-radius: 999px;
+      margin: 16px 0 8px; overflow: hidden;
+    }
+    .score-bar { height: 100%; background: #fff; border-radius: 999px; transition: width .5s; }
+    .score-result-label { font-size: 15px; font-weight: 800; margin-top: 8px; }
+
+    /* 結果判定ゾーン */
+    .result-zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 36px; }
+    .zone-card { padding: 18px 16px; border-radius: 12px; text-align: center; }
+    .zone-card.high { background: rgba(232,67,147,.08); border: 2px solid rgba(232,67,147,.3); }
+    .zone-card.mid  { background: rgba(225,112,85,.07); border: 2px solid rgba(225,112,85,.25); }
+    .zone-card.low  { background: rgba(9,132,227,.07); border: 2px solid rgba(9,132,227,.2); }
+    .zone-range { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+    .zone-card.high .zone-range { color: var(--accent); }
+    .zone-card.mid  .zone-range { color: var(--orange); }
+    .zone-card.low  .zone-range { color: var(--blue); }
+    .zone-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .zone-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+    /* 特徴まとめ */
+    .traits-section { margin-bottom: 36px; }
+    .traits-title { font-size: 15px; font-weight: 800; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .trait-card {
+      padding: 14px 16px; border-radius: 10px;
+      background: #fafafa; border: 1px solid var(--border);
+    }
+    .trait-icon { font-size: 20px; margin-bottom: 6px; }
+    .trait-name { font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--accent); }
+    .trait-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .note-box {
+      background: rgba(232,67,147,.04); border: 1.5px solid rgba(232,67,147,.15);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 28px;
+      font-size: 13px; color: var(--muted); line-height: 1.75;
+    }
+    .note-box strong { color: var(--text); }
+
+    .action-bar {
+      display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 26px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(232,67,147,.04); transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 28px 18px; }
+      .result-zones { grid-template-columns: 1fr; }
+      .traits-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典①</div>
+  <h1>回避型スコアカード</h1>
+  <p class="subtitle">「元彼は本当に回避型か？」10項目でセルフチェック</p>
+  <span class="chapter-note">本編 第1章 収録</span>
+
+  <div class="intro-box">
+    <strong>使い方：</strong>元彼に当てはまると思う項目をタップ（クリック）してチェックしてください。<br>
+    10項目すべてに答えたら「スコアを確認する」ボタンを押すと結果が表示されます。<br>
+    ※ あくまでも傾向を把握するためのツールです。確定的な診断ではありません。
+  </div>
+
+  <ul class="question-list" id="question-list">
+    <li class="question-item" data-index="0" onclick="toggle(0)">
+      <div class="q-num">1</div>
+      <div class="q-body">
+        <div class="q-text">感情の話題になると、急に話を変えるか無口になった</div>
+        <div class="q-sub">「好き」「不安」などの気持ちを聞くと、はぐらかしたり黙り込んだりしていた</div>
+      </div>
+      <div class="q-check" id="check-0"></div>
+    </li>
+    <li class="question-item" data-index="1" onclick="toggle(1)">
+      <div class="q-num">2</div>
+      <div class="q-body">
+        <div class="q-text">「好きだよ」「大切にしたい」などの言葉をほとんど言わなかった</div>
+        <div class="q-sub">愛情表現が極端に少なく、言葉で気持ちを伝えることを避けていた</div>
+      </div>
+      <div class="q-check" id="check-1"></div>
+    </li>
+    <li class="question-item" data-index="2" onclick="toggle(2)">
+      <div class="q-num">3</div>
+      <div class="q-body">
+        <div class="q-text">関係が深まったタイミングや記念日前後に、突然距離を置いた</div>
+        <div class="q-sub">デートが増えたり「好き」と言った直後など、関係が進んだ瞬間に引いた</div>
+      </div>
+      <div class="q-check" id="check-2"></div>
+    </li>
+    <li class="question-item" data-index="3" onclick="toggle(3)">
+      <div class="q-num">4</div>
+      <div class="q-body">
+        <div class="q-text">「一人になりたい」「自由が欲しい」「息が詰まる」という言葉が出た</div>
+        <div class="q-sub">親密さに対して窮屈さや圧迫感を感じている発言があった</div>
+      </div>
+      <div class="q-check" id="check-3"></div>
+    </li>
+    <li class="question-item" data-index="4" onclick="toggle(4)">
+      <div class="q-num">5</div>
+      <div class="q-body">
+        <div class="q-text">自分の悩みや弱い部分をほとんど話してくれなかった</div>
+        <div class="q-sub">仕事や家族の問題など、自分の内面を見せることを極力避けていた</div>
+      </div>
+      <div class="q-check" id="check-4"></div>
+    </li>
+    <li class="question-item" data-index="5" onclick="toggle(5)">
+      <div class="q-num">6</div>
+      <div class="q-body">
+        <div class="q-text">連絡が突然途絶えたり、既読無視が多い時期があった</div>
+        <div class="q-sub">一定のペースで連絡が来ていたのに急に返事がなくなる、を繰り返した</div>
+      </div>
+      <div class="q-check" id="check-5"></div>
+    </li>
+    <li class="question-item" data-index="6" onclick="toggle(6)">
+      <div class="q-num">7</div>
+      <div class="q-body">
+        <div class="q-text">「将来のこと」や「結婚」の話題になると、露骨に嫌がるか無反応だった</div>
+        <div class="q-sub">二人の未来について具体的に考えることを強く避けていた</div>
+      </div>
+      <div class="q-check" id="check-6"></div>
+    </li>
+    <li class="question-item" data-index="7" onclick="toggle(7)">
+      <div class="q-num">8</div>
+      <div class="q-body">
+        <div class="q-text">束縛や依存を極端に嫌がっていた</div>
+        <div class="q-sub">「重い」「依存しないで」「自分のペースを乱さないで」という反応があった</div>
+      </div>
+      <div class="q-check" id="check-7"></div>
+    </li>
+    <li class="question-item" data-index="8" onclick="toggle(8)">
+      <div class="q-num">9</div>
+      <div class="q-body">
+        <div class="q-text">喧嘩や問題が起きると、話し合いを拒否して沈黙（シャットダウン）した</div>
+        <div class="q-sub">感情的な議論になると無言になるか、その場を去って問題を先送りにした</div>
+      </div>
+      <div class="q-check" id="check-8"></div>
+    </li>
+    <li class="question-item" data-index="9" onclick="toggle(9)">
+      <div class="q-num">10</div>
+      <div class="q-body">
+        <div class="q-text">友人・趣味・仕事を優先し、二人の時間を後回しにしがちだった</div>
+        <div class="q-sub">「友達と約束があるから」を理由にデートをキャンセルすることが多かった</div>
+      </div>
+      <div class="q-check" id="check-9"></div>
+    </li>
+  </ul>
+
+  <!-- スコア表示 -->
+  <div class="score-display">
+    <div class="score-label">チェックした項目数</div>
+    <div>
+      <span class="score-num" id="score-num">0</span>
+      <span class="score-denom"> / 10 項目</span>
+    </div>
+    <div class="score-bar-bg">
+      <div class="score-bar" id="score-bar" style="width:0%"></div>
+    </div>
+    <div class="score-result-label" id="score-result">項目をチェックしてください</div>
+  </div>
+
+  <!-- 判定ゾーン -->
+  <div class="result-zones">
+    <div class="zone-card high">
+      <div class="zone-range">7〜10点</div>
+      <div class="zone-title">回避型の可能性が高い</div>
+      <div class="zone-desc">多くの特徴が当てはまります。本編の戦略が特に効果的に機能するケースです。焦らず冷却期間を大切にしてください。</div>
+    </div>
+    <div class="zone-card mid">
+      <div class="zone-range">4〜6点</div>
+      <div class="zone-title">回避型の傾向あり</div>
+      <div class="zone-desc">一部の特徴が見られます。状況や環境によって引き起こされた回避行動の可能性もあります。本編で詳しく確認しましょう。</div>
+    </div>
+    <div class="zone-card low">
+      <div class="zone-range">0〜3点</div>
+      <div class="zone-title">別の要因の可能性</div>
+      <div class="zone-desc">回避型以外の要因（タイミング・環境・第三者の存在等）が影響しているかもしれません。本編の第1章で他の要因も確認しましょう。</div>
+    </div>
+  </div>
+
+  <!-- 回避型の主な特徴 -->
+  <div class="traits-section">
+    <div class="traits-title">回避型の人が示す主な特徴（参考）</div>
+    <div class="traits-grid">
+      <div class="trait-card">
+        <div class="trait-icon">🔐</div>
+        <div class="trait-name">感情の封鎖</div>
+        <div class="trait-desc">幼少期の経験から、感情を出すことは「弱さ」だと学んでいることが多い。感情的な話題から逃げるのはそのため。</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">🏃</div>
+        <div class="trait-name">親密さへの恐れ</div>
+        <div class="trait-desc">「深くつながると傷つく」という無意識の恐れがある。関係が深まるほど逃げ出したくなるのが特徴。</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">🔄</div>
+        <div class="trait-name">プッシュプル行動</div>
+        <div class="trait-desc">近づいたり離れたりを繰り返す。「好き」と思う気持ちはあるが、その気持ちに向き合うことが怖い。</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">🛡️</div>
+        <div class="trait-name">自己防衛の強さ</div>
+        <div class="trait-desc">批判や拒絶を極端に恐れているため、先に自分から距離を置くことで傷つくことを避けようとする。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <strong>注意点：</strong>このスコアはあくまでも傾向の参考です。高得点だからといって復縁が難しいわけでも、低得点だから簡単なわけでもありません。<br>
+    回避型かどうかよりも、<strong>あなた自身がどう行動するか</strong>の方がはるかに重要です。本編の戦略をしっかり読み込んでください。
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-ghost" onclick="resetAll()">リセット</button>
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+    <button class="btn btn-primary" onclick="showScore()">スコアを確認する</button>
+  </div>
+</div>
+
+<script>
+  const checked = new Array(10).fill(false);
+
+  const resultMap = [
+    { min: 7, label: '回避型の可能性が高い ——本編の戦略が特に有効です', color: '#e84393' },
+    { min: 4, label: '回避型の傾向あり ——本編第1章で詳しく確認しましょう', color: '#e17055' },
+    { min: 0, label: '別の要因の可能性あり ——本編で他のケースも確認を', color: '#0984e3' },
+  ];
+
+  function toggle(i) {
+    checked[i] = !checked[i];
+    const item = document.querySelectorAll('.question-item')[i];
+    const checkEl = document.getElementById('check-' + i);
+    if (checked[i]) {
+      item.classList.add('checked');
+      checkEl.textContent = '✓';
+    } else {
+      item.classList.remove('checked');
+      checkEl.textContent = '';
+    }
+    showScore();
+  }
+
+  function showScore() {
+    const score = checked.filter(Boolean).length;
+    document.getElementById('score-num').textContent = score;
+    document.getElementById('score-bar').style.width = (score / 10 * 100) + '%';
+    const r = resultMap.find(x => score >= x.min);
+    const el = document.getElementById('score-result');
+    el.textContent = r.label;
+    el.style.color = 'rgba(255,255,255,1)';
+  }
+
+  function resetAll() {
+    checked.fill(false);
+    document.querySelectorAll('.question-item').forEach(el => el.classList.remove('checked'));
+    for (let i = 0; i < 10; i++) {
+      const c = document.getElementById('check-' + i);
+      if (c) c.textContent = '';
+    }
+    document.getElementById('score-num').textContent = '0';
+    document.getElementById('score-bar').style.width = '0%';
+    document.getElementById('score-result').textContent = '項目をチェックしてください';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典②｜NG行動チェックリスト「やってしまった行動」確認ツール</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #e17055; --accent2: #fab1a0; --bg: #fff8f6;
+      --border: #f5cdc5; --text: #1a1a2e; --muted: #7a5550;
+      --green: #00b894; --pink: #e84393; --blue: #0984e3;
+      --red: #d63031;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.75; padding: 24px;
+    }
+    .page {
+      max-width: 820px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 44px 52px;
+      box-shadow: 0 4px 32px rgba(225,112,85,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(225,112,85,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      padding: 4px 16px; border-radius: 999px; margin-bottom: 14px;
+    }
+    h1 { font-size: 1.75rem; font-weight: 900; margin-bottom: 6px; line-height: 1.35; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .chapter-note {
+      display: inline-block; font-size: 12px; color: var(--accent);
+      background: rgba(225,112,85,.07); padding: 3px 12px; border-radius: 999px;
+      margin-bottom: 28px; font-weight: 600;
+    }
+    .alert-box {
+      background: rgba(214,48,49,.05); border-left: 4px solid var(--red);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted);
+    }
+    .alert-box strong { color: var(--red); }
+
+    /* セクション */
+    .section { margin-bottom: 32px; }
+    .section-title {
+      font-size: 14px; font-weight: 800; letter-spacing: .04em;
+      padding: 8px 16px; border-radius: 8px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title.red    { background: rgba(214,48,49,.08);  color: #b02020; }
+    .section-title.orange { background: rgba(225,112,85,.1);  color: #b85a40; }
+    .section-title.pink   { background: rgba(232,67,147,.08); color: #c0254a; }
+    .section-title.blue   { background: rgba(9,132,227,.08);  color: #0660a9; }
+
+    /* チェックアイテム */
+    .check-list { list-style: none; }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: 10px;
+      border: 1.5px solid var(--border);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .check-item:hover { border-color: var(--accent); background: rgba(225,112,85,.02); }
+    .check-item.done {
+      border-color: var(--green);
+      background: rgba(0,184,148,.04);
+    }
+    .check-item.done .check-box { background: var(--green); border-color: var(--green); color: #fff; }
+    .check-item.done .item-text { color: var(--muted); text-decoration: line-through; }
+    .check-box {
+      min-width: 22px; height: 22px; border-radius: 6px;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0; margin-top: 2px;
+      transition: all .2s;
+    }
+    .item-body { flex: 1; }
+    .item-text { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .item-why { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .severity {
+      flex-shrink: 0; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; margin-top: 3px; align-self: flex-start;
+    }
+    .severity.high { background: rgba(214,48,49,.1); color: var(--red); }
+    .severity.mid  { background: rgba(225,112,85,.1); color: var(--accent); }
+    .severity.low  { background: rgba(253,203,110,.2); color: #8a6800; }
+
+    /* 進捗 */
+    .progress-box {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 16px; padding: 24px 28px;
+      color: #fff; margin-bottom: 28px;
+    }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .progress-title { font-size: 15px; font-weight: 800; }
+    .progress-count { font-size: 2rem; font-weight: 900; }
+    .progress-denom { font-size: 14px; opacity: .85; }
+    .progress-bar-bg { height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; }
+    .progress-bar { height: 100%; background: #fff; border-radius: 999px; transition: width .4s; }
+    .progress-msg { font-size: 13px; margin-top: 12px; opacity: .9; }
+
+    /* 解説ブロック */
+    .explain-box {
+      background: #f8f8f8; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 28px; font-size: 13px; color: var(--muted); line-height: 1.75;
+    }
+    .explain-box h3 { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+
+    .action-bar {
+      display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 26px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); color: var(--text); transform: translateY(-2px); }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(225,112,85,.04); transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 28px 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典②</div>
+  <h1>NG行動チェックリスト</h1>
+  <p class="subtitle">「やってしまった行動」を確認して、今日から行動を変える</p>
+  <span class="chapter-note">本編 第2章 収録</span>
+
+  <div class="alert-box">
+    <strong>重要：</strong>やってしまった行動にチェックを入れてください。チェックが多くても落ち込まないで。<br>
+    「気づいた瞬間から変えられる」——このリストはあなたの行動を変えるための第一歩です。
+  </div>
+
+  <!-- 進捗バー -->
+  <div class="progress-box">
+    <div class="progress-header">
+      <div class="progress-title">確認済み NG 行動数</div>
+      <div><span class="progress-count" id="prog-count">0</span><span class="progress-denom"> / 15項目</span></div>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar" id="prog-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-msg" id="prog-msg">チェックした項目数が増えるほど、改善の余地が明確になります。</div>
+  </div>
+
+  <!-- カテゴリ1：追いすぎ行動 -->
+  <div class="section">
+    <div class="section-title red">🚨 追いすぎ・連絡しすぎ</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">毎日・何度もLINEや電話をしてしまった</div>
+          <div class="item-why">回避型は連絡が多いほど「重い」と感じ、さらに距離を置きます。返事がないのに送り続けることが最も逆効果です。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「なんで返事くれないの？」「無視しないで」と責めるメッセージを送った</div>
+          <div class="item-why">責められると回避型はさらに殻に閉じこもります。問い詰めるほど連絡は返ってこなくなります。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">深夜に感情的なメッセージを何通も送った</div>
+          <div class="item-why">感情的・深夜の連絡は「不安定な人」という印象を与え、回避型が最も敬遠するパターンです。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「もう諦める」「さよならだね」など別れを示唆するメッセージで反応を試した</div>
+          <div class="item-why">回避型はこうした脅し的なメッセージをプレッシャーと感じ、そのまま離れていくことが多いです。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- カテゴリ2：直接アプローチ -->
+  <div class="section">
+    <div class="section-title orange">⚠️ 直接的な復縁アプローチ</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">別れた直後（1週間以内）に復縁を直接求めた</div>
+          <div class="item-why">別れ直後は回避型のガードが最も固い時期。このタイミングでの告白はほぼ確実に逆効果です。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「友達として会いたい」という名目で会おうとした（本音は復縁目的）</div>
+          <div class="item-why">回避型は相手の「本音」を察します。下心が透けると信頼を失い、再会のチャンスが遠のきます。</div>
+        </div>
+        <div class="severity mid">危険度：中</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「私がいないとどうするの？」など、依存や情に訴えるメッセージを送った</div>
+          <div class="item-why">回避型が最も苦手とする「感情的な重さ」そのものです。送れば送るほど距離が開きます。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「あのときこうだったよね」と過去の出来事や喧嘩を蒸し返した</div>
+          <div class="item-why">回避型は過去の感情的なやり取りを掘り起こされることを嫌います。前向きな会話とは正反対です。</div>
+        </div>
+        <div class="severity mid">危険度：中</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- カテゴリ3：SNS・探り行動 -->
+  <div class="section">
+    <div class="section-title pink">📱 SNS・周囲を使った行動</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">元彼のSNS投稿すべてにいいね・リプをし続けた</div>
+          <div class="item-why">SNSでの過剰な反応は「監視されている」という圧力になります。回避型には特に逆効果です。</div>
+        </div>
+        <div class="severity mid">危険度：中</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">「おはよう」「おやすみ」などをアピールするためのSNS投稿を繰り返した</div>
+          <div class="item-why">自分の存在を意識させようとする投稿は相手に「見られている」と感じさせ、プレッシャーになります。</div>
+        </div>
+        <div class="severity low">危険度：低</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">共通の友人に状況を探ってもらった・元彼の様子を聞いた</div>
+          <div class="item-why">回避型は「話が回ってくること」を非常に嫌います。本人の耳に入ると関係修復が一気に難しくなります。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">元彼の新しい交友関係・異性への嫉妬を表すメッセージを送った</div>
+          <div class="item-why">嫉妬の感情を直接ぶつけることは「支配」に見えます。回避型が最も距離を置きたくなるパターンです。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- カテゴリ4：その他 -->
+  <div class="section">
+    <div class="section-title blue">💡 判断を誤らせる行動</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">元彼の家・職場・よく行く場所の近くをうろついた（偶然を装って会おうとした）</div>
+          <div class="item-why">もしバレれば即ブロックの可能性大。「偶然」は回避型には通じません。最悪の行動の一つです。</div>
+        </div>
+        <div class="severity high">危険度：高</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">占い師・スピリチュアル情報・SNSの噂だけを根拠に行動した</div>
+          <div class="item-why">「○月○日に連絡が来る」などの情報を信じて待ち続けると、冷却期間を有効に使えません。</div>
+        </div>
+        <div class="severity low">危険度：低</div>
+      </li>
+      <li class="check-item" onclick="toggleNG(this)">
+        <div class="check-box"></div>
+        <div class="item-body">
+          <div class="item-text">冷却期間を設けずに毎日相手のことを考えて動いてしまっている</div>
+          <div class="item-why">自分の感情をコントロールできていない状態で動いても、回避型のガードは下がりません。まず自分を整えることが先決です。</div>
+        </div>
+        <div class="severity mid">危険度：中</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 解説 -->
+  <div class="explain-box">
+    <h3>チェックが多かった場合——どう対処するか</h3>
+    NGの行動をしてしまっていても、<strong>今すぐやめれば回復できます</strong>。大切なのは「気づいた今日から変える」ことです。<br><br>
+    まず取るべき行動は <strong>①完全な冷却期間を設ける（最低1ヶ月）</strong>、<strong>②自分の生活・自分磨きに集中する</strong>、<strong>③本編の戦略通りに最初のLINEを送る</strong> ——この3ステップだけです。<br><br>
+    過去にやってしまったことは変えられません。でも、これから先の行動は今この瞬間から変えられます。
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-ghost" onclick="resetAll()">リセット</button>
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+  </div>
+</div>
+
+<script>
+  const msgs = [
+    '全項目確認できました。今日からNGゼロで再スタートしましょう！',
+    '残りわずかです。全項目確認してから次のステップへ進みましょう。',
+    '半分以上確認できています。引き続きチェックを続けてください。',
+    '確認を始めましょう。チェックが多いほど改善の余地が見えてきます。',
+  ];
+
+  function getMsg(count, total) {
+    if (count === total) return msgs[0];
+    if (count >= total * 0.8) return msgs[1];
+    if (count >= total * 0.5) return msgs[2];
+    return msgs[3];
+  }
+
+  function updateProgress() {
+    const items = document.querySelectorAll('.check-item');
+    const total = items.length;
+    const done = document.querySelectorAll('.check-item.done').length;
+    document.getElementById('prog-count').textContent = done;
+    document.getElementById('prog-bar').style.width = (done / total * 100) + '%';
+    document.getElementById('prog-msg').textContent = getMsg(done, total);
+  }
+
+  function toggleNG(el) {
+    el.classList.toggle('done');
+    const box = el.querySelector('.check-box');
+    box.textContent = el.classList.contains('done') ? '✓' : '';
+    updateProgress();
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.check-item').forEach(el => {
+      el.classList.remove('done');
+      el.querySelector('.check-box').textContent = '';
+    });
+    updateProgress();
+  }
+</script>
+</body>
+</html>
