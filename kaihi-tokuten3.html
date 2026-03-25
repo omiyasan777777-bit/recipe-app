@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典③｜最初のLINEテンプレート3選｜冷却期間別</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #0984e3; --accent2: #74b9ff; --bg: #f0f8ff;
+      --border: #c0d8f0; --text: #1a1a2e; --muted: #4a6080;
+      --green: #00b894; --pink: #e84393; --orange: #e17055;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.75; padding: 24px;
+    }
+    .page {
+      max-width: 820px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 44px 52px;
+      box-shadow: 0 4px 32px rgba(9,132,227,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(9,132,227,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      padding: 4px 16px; border-radius: 999px; margin-bottom: 14px;
+    }
+    h1 { font-size: 1.75rem; font-weight: 900; margin-bottom: 6px; line-height: 1.35; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .chapter-note {
+      display: inline-block; font-size: 12px; color: var(--accent);
+      background: rgba(9,132,227,.07); padding: 3px 12px; border-radius: 999px;
+      margin-bottom: 28px; font-weight: 600;
+    }
+    .intro-box {
+      background: rgba(9,132,227,.05); border-left: 4px solid var(--accent);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted);
+    }
+    .intro-box strong { color: var(--text); }
+
+    /* タブ */
+    .tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+    .tab {
+      flex: 1; min-width: 160px; padding: 12px 16px;
+      border-radius: 10px; border: 2px solid var(--border);
+      background: #f8fbff; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: var(--muted);
+      transition: all .2s; text-align: center;
+    }
+    .tab:hover { border-color: var(--accent); color: var(--accent); }
+    .tab.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .tab .tab-period { font-size: 11px; font-weight: 600; opacity: .8; display: block; margin-bottom: 2px; }
+    .tab .tab-title { font-size: 14px; }
+
+    /* テンプレートパネル */
+    .template-panel { display: none; }
+    .template-panel.active { display: block; }
+
+    .template-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px; border-radius: 12px 12px 0 0;
+      margin-bottom: 0;
+    }
+    .template-header.t1 { background: linear-gradient(135deg, #0984e3, #74b9ff); color: #fff; }
+    .template-header.t2 { background: linear-gradient(135deg, #00b894, #55efc4); color: #fff; }
+    .template-header.t3 { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: #fff; }
+    .th-icon { font-size: 28px; }
+    .th-body { flex: 1; }
+    .th-period { font-size: 12px; opacity: .9; font-weight: 600; margin-bottom: 2px; }
+    .th-title { font-size: 18px; font-weight: 900; }
+    .th-desc { font-size: 12px; opacity: .85; }
+
+    .template-body {
+      border: 2px solid var(--border); border-top: none;
+      border-radius: 0 0 12px 12px; overflow: hidden; margin-bottom: 28px;
+    }
+
+    /* LINEプレビュー */
+    .line-preview {
+      background: #b7d3e0;
+      padding: 20px 16px;
+      min-height: 120px;
+    }
+    .line-preview-label {
+      font-size: 11px; font-weight: 700; color: #5a7a8a;
+      text-align: center; margin-bottom: 12px; letter-spacing: .06em;
+    }
+    .line-bubble-wrapper { display: flex; justify-content: flex-end; }
+    .line-bubble {
+      max-width: 75%;
+      background: #fff;
+      border-radius: 16px 4px 16px 16px;
+      padding: 12px 14px;
+      font-size: 14px; line-height: 1.75;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .line-time { font-size: 10px; color: #7a9aaa; margin-top: 4px; text-align: right; }
+
+    /* テキストエリア */
+    .template-edit {
+      padding: 20px 24px; background: #f8fbff;
+    }
+    .edit-label {
+      font-size: 12px; font-weight: 700; color: var(--muted);
+      margin-bottom: 10px; letter-spacing: .05em;
+    }
+    textarea.template-text {
+      width: 100%; min-height: 110px;
+      padding: 14px 16px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; line-height: 1.75;
+      font-family: inherit; resize: vertical;
+      background: #fff; color: var(--text);
+      transition: border-color .2s;
+    }
+    textarea.template-text:focus { outline: none; border-color: var(--accent); }
+    .template-actions {
+      display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .btn-copy {
+      padding: 8px 20px; border-radius: 999px;
+      background: var(--accent); color: #fff;
+      font-size: 13px; font-weight: 700; border: none; cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-copy:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-reset-text {
+      padding: 8px 18px; border-radius: 999px;
+      background: #fff; color: var(--muted);
+      font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-reset-text:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-msg { font-size: 12px; color: var(--green); font-weight: 700; display: none; align-self: center; }
+
+    /* ポイント解説 */
+    .points-section { padding: 20px 24px; border-top: 1.5px solid var(--border); }
+    .points-title { font-size: 14px; font-weight: 800; margin-bottom: 14px; color: var(--text); }
+    .point-list { list-style: none; }
+    .point-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .point-item:last-child { border-bottom: none; }
+    .point-icon { font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+    .point-text { line-height: 1.65; color: var(--muted); }
+    .point-text strong { color: var(--text); }
+
+    /* NG例 */
+    .ng-section { padding: 16px 24px 20px; background: rgba(214,48,49,.03); border-top: 1.5px solid rgba(214,48,49,.1); }
+    .ng-title { font-size: 13px; font-weight: 800; color: #c0202a; margin-bottom: 10px; }
+    .ng-example {
+      background: rgba(214,48,49,.06); border-radius: 8px;
+      padding: 12px 14px; font-size: 13px; color: #8a2020;
+      line-height: 1.7; margin-bottom: 8px;
+    }
+    .ng-reason { font-size: 12px; color: var(--muted); }
+
+    /* 全体注意 */
+    .caution-box {
+      background: rgba(9,132,227,.05); border-radius: 12px;
+      padding: 18px 22px; margin-bottom: 28px;
+      font-size: 13px; color: var(--muted); line-height: 1.75;
+    }
+    .caution-box h3 { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+
+    .action-bar {
+      display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 26px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(9,132,227,.04); transform: translateY(-2px); }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+      .template-panel { display: block !important; margin-bottom: 36px; }
+      .tabs { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 28px 16px; }
+      .tabs { flex-direction: column; }
+      .tab { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典③</div>
+  <h1>最初のLINEテンプレート3選</h1>
+  <p class="subtitle">冷却期間1ヶ月・3ヶ月・半年以上 それぞれ対応版 ——コピーして使えます</p>
+  <span class="chapter-note">本編 第4章 収録</span>
+
+  <div class="intro-box">
+    <strong>使い方：</strong>あなたの冷却期間に合ったタブを選んでください。テンプレート文をそのままコピーするか、自分の状況に合わせて編集して使えます。<br>
+    「コピーする」ボタンを押すとクリップボードに文章がコピーされます。
+  </div>
+
+  <!-- タブ -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">
+      <span class="tab-period">冷却期間</span>
+      <span class="tab-title">約1ヶ月</span>
+    </div>
+    <div class="tab" onclick="switchTab(1)">
+      <span class="tab-period">冷却期間</span>
+      <span class="tab-title">約3ヶ月</span>
+    </div>
+    <div class="tab" onclick="switchTab(2)">
+      <span class="tab-period">冷却期間</span>
+      <span class="tab-title">半年以上</span>
+    </div>
+  </div>
+
+  <!-- テンプレート1：1ヶ月 -->
+  <div class="template-panel active" id="panel-0">
+    <div class="template-header t1">
+      <div class="th-icon">📅</div>
+      <div class="th-body">
+        <div class="th-period">冷却期間：約1ヶ月</div>
+        <div class="th-title">「さりげなく近況を伝える」型</div>
+        <div class="th-desc">まだ記憶が新しい時期。軽いトーンで存在を思い出させることが目的。</div>
+      </div>
+    </div>
+    <div class="template-body">
+      <div class="line-preview">
+        <div class="line-preview-label">LINE プレビュー</div>
+        <div class="line-bubble-wrapper">
+          <div>
+            <div class="line-bubble" id="preview-0"></div>
+            <div class="line-time">既読</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-edit">
+        <div class="edit-label">テンプレート（編集できます）</div>
+        <textarea class="template-text" id="text-0" oninput="updatePreview(0)">久しぶり。最近どうしてる？
+
+ちょっと前に[共通の話題・場所・出来事]のこと思い出して、なんとなく連絡してみた。
+
+忙しいところごめんね、返信は全然気にしなくていいよ。</textarea>
+        <div class="template-actions">
+          <button class="btn-copy" onclick="copyText(0)">コピーする</button>
+          <button class="btn-reset-text" onclick="resetText(0)">元に戻す</button>
+          <span class="copy-msg" id="copy-msg-0">コピーしました！</span>
+        </div>
+      </div>
+      <div class="points-section">
+        <div class="points-title">このテンプレートのポイント</div>
+        <ul class="point-list">
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>「久しぶり」で始める：</strong>別れたことを意識させず、自然な会話のスタートが切れます。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>「返信は気にしなくていい」：</strong>回避型へのプレッシャーを最小化。返事をする心理的障壁を下げます。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>共通の話題を入れる：</strong>[　]の部分を二人が共有している思い出や話題に変えて、具体性を出してください。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>短くシンプル：</strong>1ヶ月時点では長文は逆効果。読むだけで完結する短さが最適です。</span>
+          </li>
+        </ul>
+      </div>
+      <div class="ng-section">
+        <div class="ng-title">やってはいけないNG文例</div>
+        <div class="ng-example">「ずっと考えてた。もう一度だけ話せない？私のこと嫌いになった？」</div>
+        <div class="ng-reason">→ 感情的・復縁を匂わせる・質問攻めの三重NGです。1ヶ月では絶対に送らないでください。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- テンプレート2：3ヶ月 -->
+  <div class="template-panel" id="panel-1">
+    <div class="template-header t2">
+      <div class="th-icon">🌿</div>
+      <div class="th-body">
+        <div class="th-period">冷却期間：約3ヶ月</div>
+        <div class="th-title">「自然な近況共有」型</div>
+        <div class="th-desc">記憶が落ち着いた時期。自分の変化を自然に伝えつつ近況を聞く。</div>
+      </div>
+    </div>
+    <div class="template-body">
+      <div class="line-preview">
+        <div class="line-preview-label">LINE プレビュー</div>
+        <div class="line-bubble-wrapper">
+          <div>
+            <div class="line-bubble" id="preview-1"></div>
+            <div class="line-time">既読</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-edit">
+        <div class="edit-label">テンプレート（編集できます）</div>
+        <textarea class="template-text" id="text-1" oninput="updatePreview(1)">久しぶり。元気にしてる？
+
+最近[自分が取り組んでいること・変化したこと]を始めて、なんか毎日充実してる感じがする。
+
+[相手が好きだったこと・共通の話題]って、今でも続けてる？なんとなく気になった。</textarea>
+        <div class="template-actions">
+          <button class="btn-copy" onclick="copyText(1)">コピーする</button>
+          <button class="btn-reset-text" onclick="resetText(1)">元に戻す</button>
+          <span class="copy-msg" id="copy-msg-1">コピーしました！</span>
+        </div>
+      </div>
+      <div class="points-section">
+        <div class="points-title">このテンプレートのポイント</div>
+        <ul class="point-list">
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>自分の充実を自然に見せる：</strong>「追いかけていない、自分の人生を歩んでいる」という印象が回避型の警戒心を解きます。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>相手のことを一つだけ聞く：</strong>興味はあるが重くない、ちょうどいいバランスです。質問は一つに絞ること。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>[　]を必ず埋める：</strong>具体的な内容が入ることで「定型文感」がなくなり、自然なメッセージになります。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>復縁の話は一切しない：</strong>3ヶ月時点では「友人として普通に話せる状態に戻る」が目標。復縁は次のステップです。</span>
+          </li>
+        </ul>
+      </div>
+      <div class="ng-section">
+        <div class="ng-title">やってはいけないNG文例</div>
+        <div class="ng-example">「3ヶ月経ったね。あのとき色々ごめんね。またやり直せないかな…」</div>
+        <div class="ng-reason">→ 経過期間の言及・謝罪・復縁打診を一気に詰め込んだNGの典型。3ヶ月ではまだ早すぎます。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- テンプレート3：半年以上 -->
+  <div class="template-panel" id="panel-2">
+    <div class="template-header t3">
+      <div class="th-icon">🌟</div>
+      <div class="th-body">
+        <div class="th-period">冷却期間：半年以上</div>
+        <div class="th-title">「完全に自然な友人として」型</div>
+        <div class="th-desc">十分な時間が経った今、普通の知人として自然につながり直す。</div>
+      </div>
+    </div>
+    <div class="template-body">
+      <div class="line-preview">
+        <div class="line-preview-label">LINE プレビュー</div>
+        <div class="line-bubble-wrapper">
+          <div>
+            <div class="line-bubble" id="preview-2"></div>
+            <div class="line-time">既読</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-edit">
+        <div class="edit-label">テンプレート（編集できます）</div>
+        <textarea class="template-text" id="text-2" oninput="updatePreview(2)">久しぶり！元気？
+
+今日[共通の思い出・場所・モノ]を見かけて、ふと思い出した。
+
+[相手が関心を持っていたこと]、最近どんな感じ？</textarea>
+        <div class="template-actions">
+          <button class="btn-copy" onclick="copyText(2)">コピーする</button>
+          <button class="btn-reset-text" onclick="resetText(2)">元に戻す</button>
+          <span class="copy-msg" id="copy-msg-2">コピーしました！</span>
+        </div>
+      </div>
+      <div class="points-section">
+        <div class="points-title">このテンプレートのポイント</div>
+        <ul class="point-list">
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>「！」で明るいトーンを演出：</strong>半年以上経てば少し明るめのトーンが違和感なく使えます。暗さや重さが消えます。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>「今日見かけて」で自然な流れを作る：</strong>「なぜ今連絡してきたの？」という疑問を自然に解消します。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>非常にコンパクト：</strong>半年以上経つと「久しぶり感」が大きくなるため、短くても十分なインパクトがあります。</span>
+          </li>
+          <li class="point-item">
+            <span class="point-icon">✅</span>
+            <span class="point-text"><strong>相手への関心を一言だけ：</strong>「あなたに興味がある」ことを示しつつも、重くない絶妙なバランスです。</span>
+          </li>
+        </ul>
+      </div>
+      <div class="ng-section">
+        <div class="ng-title">やってはいけないNG文例</div>
+        <div class="ng-example">「半年以上連絡しなかったね。ずっと気になってた。もう一度だけ話したい」</div>
+        <div class="ng-reason">→ 経過期間の強調・「ずっと気にしていた」という依存の表明が、回避型のスイッチを入れてしまいます。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全体の注意 -->
+  <div class="caution-box">
+    <h3>送る前に必ず確認すること</h3>
+    ① <strong>冷却期間中は本当に連絡を断っていましたか？</strong> — 途中で連絡していた場合、カウントはその時点からリセットです。<br>
+    ② <strong>自分の感情は落ち着いていますか？</strong> — 「送りたい衝動」ではなく、落ち着いた状態で送ることが重要です。<br>
+    ③ <strong>[　]の部分を必ず自分の言葉に置き換えてください</strong> — テンプレートそのままでは相手に「定型文感」が伝わります。<br>
+    ④ <strong>返信がなくても追わない</strong> — 返信は相手のペースに任せます。督促は絶対にしないでください。
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+  </div>
+</div>
+
+<script>
+  const defaults = [
+    `久しぶり。最近どうしてる？\n\nちょっと前に[共通の話題・場所・出来事]のこと思い出して、なんとなく連絡してみた。\n\n忙しいところごめんね、返信は全然気にしなくていいよ。`,
+    `久しぶり。元気にしてる？\n\n最近[自分が取り組んでいること・変化したこと]を始めて、なんか毎日充実してる感じがする。\n\n[相手が好きだったこと・共通の話題]って、今でも続けてる？なんとなく気になった。`,
+    `久しぶり！元気？\n\n今日[共通の思い出・場所・モノ]を見かけて、ふと思い出した。\n\n[相手が関心を持っていたこと]、最近どんな感じ？`,
+  ];
+
+  function updatePreview(i) {
+    const val = document.getElementById('text-' + i).value;
+    document.getElementById('preview-' + i).textContent = val;
+  }
+
+  function copyText(i) {
+    const val = document.getElementById('text-' + i).value;
+    navigator.clipboard.writeText(val).then(() => {
+      const msg = document.getElementById('copy-msg-' + i);
+      msg.style.display = 'inline';
+      setTimeout(() => { msg.style.display = 'none'; }, 2500);
+    });
+  }
+
+  function resetText(i) {
+    document.getElementById('text-' + i).value = defaults[i];
+    updatePreview(i);
+  }
+
+  function switchTab(i) {
+    document.querySelectorAll('.tab').forEach((t, idx) => {
+      t.classList.toggle('active', idx === i);
+    });
+    document.querySelectorAll('.template-panel').forEach((p, idx) => {
+      p.classList.toggle('active', idx === i);
+    });
+  }
+
+  // 初期プレビュー
+  defaults.forEach((_, i) => updatePreview(i));
+</script>
+</body>
+</html>

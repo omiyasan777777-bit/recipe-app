@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典④｜5人の事例ダイジェスト｜実際にアドバイスしたケース</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6c5ce7; --accent2: #a29bfe; --bg: #f8f6ff;
+      --border: #d8d4f0; --text: #1a1a2e; --muted: #5a5580;
+      --green: #00b894; --pink: #e84393; --orange: #e17055; --blue: #0984e3;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.75; padding: 24px;
+    }
+    .page {
+      max-width: 840px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 44px 52px;
+      box-shadow: 0 4px 32px rgba(108,92,231,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(108,92,231,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      padding: 4px 16px; border-radius: 999px; margin-bottom: 14px;
+    }
+    h1 { font-size: 1.75rem; font-weight: 900; margin-bottom: 6px; line-height: 1.35; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .chapter-note {
+      display: inline-block; font-size: 12px; color: var(--accent);
+      background: rgba(108,92,231,.07); padding: 3px 12px; border-radius: 999px;
+      margin-bottom: 28px; font-weight: 600;
+    }
+    .intro-box {
+      background: rgba(108,92,231,.05); border-left: 4px solid var(--accent);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted);
+    }
+    .intro-box strong { color: var(--text); }
+    .privacy-note {
+      background: #f8f8f8; border-radius: 8px; padding: 10px 16px;
+      font-size: 12px; color: var(--muted); margin-bottom: 32px;
+    }
+
+    /* 事例カード */
+    .case-card {
+      border-radius: 14px; overflow: hidden;
+      border: 1.5px solid var(--border);
+      margin-bottom: 28px;
+      transition: box-shadow .2s;
+    }
+    .case-card:hover { box-shadow: 0 4px 20px rgba(108,92,231,.1); }
+
+    .case-header {
+      padding: 18px 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .case-header.c1 { background: linear-gradient(135deg, rgba(232,67,147,.1), rgba(255,110,180,.05)); }
+    .case-header.c2 { background: linear-gradient(135deg, rgba(225,112,85,.1), rgba(250,177,160,.05)); }
+    .case-header.c3 { background: linear-gradient(135deg, rgba(9,132,227,.1), rgba(116,185,255,.05)); }
+    .case-header.c4 { background: linear-gradient(135deg, rgba(0,184,148,.1), rgba(85,239,196,.05)); }
+    .case-header.c5 { background: linear-gradient(135deg, rgba(108,92,231,.1), rgba(162,155,254,.05)); }
+
+    .case-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .c1 .case-avatar { background: rgba(232,67,147,.15); }
+    .c2 .case-avatar { background: rgba(225,112,85,.15); }
+    .c3 .case-avatar { background: rgba(9,132,227,.15); }
+    .c4 .case-avatar { background: rgba(0,184,148,.15); }
+    .c5 .case-avatar { background: rgba(108,92,231,.15); }
+
+    .case-meta { flex: 1; }
+    .case-name { font-size: 16px; font-weight: 900; margin-bottom: 2px; }
+    .c1 .case-name { color: var(--pink); }
+    .c2 .case-name { color: var(--orange); }
+    .c3 .case-name { color: var(--blue); }
+    .c4 .case-name { color: var(--green); }
+    .c5 .case-name { color: var(--accent); }
+    .case-profile { font-size: 12px; color: var(--muted); }
+
+    .outcome-badge {
+      display: inline-block; font-size: 11px; font-weight: 800;
+      padding: 4px 14px; border-radius: 999px; flex-shrink: 0;
+    }
+    .outcome-badge.success { background: rgba(0,184,148,.15); color: #006a53; }
+    .outcome-badge.progress { background: rgba(9,132,227,.12); color: #0660a9; }
+    .outcome-badge.lesson  { background: rgba(253,203,110,.2); color: #8a6000; }
+
+    .case-body { padding: 20px 24px; }
+
+    .situation-box {
+      background: #fafafa; border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--muted); line-height: 1.75;
+    }
+    .situation-label {
+      font-size: 11px; font-weight: 800; letter-spacing: .06em;
+      color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+
+    .timeline { margin-bottom: 16px; }
+    .timeline-title {
+      font-size: 12px; font-weight: 800; letter-spacing: .06em;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .tl-item {
+      display: flex; gap: 12px; margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .tl-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .c1 .tl-dot { background: var(--pink); }
+    .c2 .tl-dot { background: var(--orange); }
+    .c3 .tl-dot { background: var(--blue); }
+    .c4 .tl-dot { background: var(--green); }
+    .c5 .tl-dot { background: var(--accent); }
+    .tl-text { line-height: 1.65; color: var(--muted); }
+    .tl-text strong { color: var(--text); }
+
+    .lesson-box {
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 13px; line-height: 1.75;
+    }
+    .lesson-box.success { background: rgba(0,184,148,.07); border: 1.5px solid rgba(0,184,148,.2); }
+    .lesson-box.progress { background: rgba(9,132,227,.06); border: 1.5px solid rgba(9,132,227,.18); }
+    .lesson-box.lesson  { background: rgba(253,203,110,.1); border: 1.5px solid rgba(253,203,110,.3); }
+    .lesson-label {
+      font-size: 12px; font-weight: 800; letter-spacing: .06em; margin-bottom: 6px;
+    }
+    .lesson-box.success .lesson-label { color: #006a53; }
+    .lesson-box.progress .lesson-label { color: #0660a9; }
+    .lesson-box.lesson  .lesson-label { color: #8a6000; }
+    .lesson-text { color: var(--muted); }
+    .lesson-text strong { color: var(--text); }
+
+    /* 類似度チェック */
+    .similarity-section { margin-bottom: 32px; }
+    .similarity-title { font-size: 15px; font-weight: 800; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    .sim-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .sim-card {
+      padding: 12px 10px; border-radius: 10px;
+      text-align: center; border: 1.5px solid var(--border);
+      cursor: pointer; transition: all .2s;
+    }
+    .sim-card:hover { border-color: var(--accent); }
+    .sim-card.selected { border-color: var(--accent); background: rgba(108,92,231,.07); }
+    .sim-name { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+    .sim-label { font-size: 10px; color: var(--muted); }
+    .sim-card input[type="checkbox"] { display: none; }
+
+    .checklist-note {
+      background: rgba(108,92,231,.05); border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 28px;
+      font-size: 13px; color: var(--muted); line-height: 1.75;
+    }
+    .checklist-note h3 { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+
+    .action-bar {
+      display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 26px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(108,92,231,.04); transform: translateY(-2px); }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 28px 16px; }
+      .sim-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典④</div>
+  <h1>5人の事例ダイジェスト</h1>
+  <p class="subtitle">実際にアドバイスした5人のケース概要 ——「自分と似たケースはどれか」を確認できます</p>
+  <span class="chapter-note">本編 第5章 収録</span>
+
+  <div class="intro-box">
+    <strong>使い方：</strong>5つのケースを読んで、自分の状況に近いと思うものを確認してください。<br>
+    「自分と似ている」と感じたケースは、本編第5章の該当箇所を重点的に読むことをおすすめします。
+  </div>
+
+  <div class="privacy-note">※ すべて実際のご相談をもとに、個人が特定されないよう年齢・職業・状況を匿名・一部変更して掲載しています。</div>
+
+  <!-- ケース1 -->
+  <div class="case-card c1">
+    <div class="case-header c1">
+      <div class="case-avatar">👩</div>
+      <div class="case-meta">
+        <div class="case-name">Aさん（25歳・会社員）</div>
+        <div class="case-profile">別れてから2ヶ月・冷却期間1.5ヶ月で連絡→3ヶ月後に復縁</div>
+      </div>
+      <span class="outcome-badge success">復縁成功</span>
+    </div>
+    <div class="case-body">
+      <div class="situation-box">
+        <div class="situation-label">📋 状況</div>
+        2年間付き合った彼氏から「一人になりたい」と言われて突然別れを告げられた。別れる直前、二人でいる時間を楽しんでいたのに急に距離を置かれた。別れ際に「嫌いじゃない」とも言われており、理由がわからずひどく混乱していた。
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">経緯</div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">別れ直後、毎日LINEを送り続けたが既読無視が続いた</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">相談開始後、<strong>完全な冷却期間1.5ヶ月</strong>を実行。自分の趣味と仕事に集中した</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">特典③のテンプレート（1ヶ月版）をアレンジして最初のLINEを送信</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">翌日返信あり。その後2週間かけて徐々に会話が再開</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">約3ヶ月後、元彼から「また会いたい」と連絡。再デートを経て復縁</div></div>
+      </div>
+      <div class="lesson-box success">
+        <div class="lesson-label">このケースのポイント</div>
+        <div class="lesson-text"><strong>「追うのをやめた瞬間に状況が動いた」</strong>典型的なケースです。Aさんが冷却期間を守り、自分の生活を充実させたことで、元彼から動いてきました。回避型は「自分のペース」を取り戻すと、改めて相手の存在を見直す傾向があります。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ケース2 -->
+  <div class="case-card c2">
+    <div class="case-header c2">
+      <div class="case-avatar">👩</div>
+      <div class="case-meta">
+        <div class="case-name">Bさん（28歳・フリーランス）</div>
+        <div class="case-profile">追いすぎてブロックされた→半年後にブロック解除・関係再構築中</div>
+      </div>
+      <span class="outcome-badge progress">関係再構築中</span>
+    </div>
+    <div class="case-body">
+      <div class="situation-box">
+        <div class="situation-label">📋 状況</div>
+        3年間の交際後、連絡が減り自然消滅的に別れた。Bさんは納得できず、毎日LINEを送り続け、共通の友人を通じて状況を探ったり、SNSに毎日投稿してアピールするなど多くのNG行動を取り続けた結果、ブロックされた。
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">経緯</div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">ブロック後も別のSNSで連絡を試みたが無視された</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">相談開始後、すべての連絡を完全停止。<strong>半年間の冷却期間</strong>を実行</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">自分の生活を立て直し、仕事・友人関係・外見を整えることに集中した</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">半年後、共通の友人のイベントで偶然再会。自然に会話が成立した</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">その数週間後にブロック解除を確認。現在、少しずつ連絡が再開している</div></div>
+      </div>
+      <div class="lesson-box progress">
+        <div class="lesson-label">このケースのポイント</div>
+        <div class="lesson-text"><strong>「NG行動をしてしまった後でも、時間と行動で回復できる」</strong>ことを示すケースです。ブロックされた場合は長めの冷却期間が必要ですが、諦める必要はありません。Bさんは今も再構築中であり、焦らず継続することが重要です。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ケース3 -->
+  <div class="case-card c3">
+    <div class="case-header c3">
+      <div class="case-avatar">👩</div>
+      <div class="case-meta">
+        <div class="case-name">Cさん（23歳・大学院生）</div>
+        <div class="case-profile">「回避型」と思っていたが「怖れ・回避型」と判明→アプローチ方法を変更</div>
+      </div>
+      <span class="outcome-badge lesson">気づき・方針転換</span>
+    </div>
+    <div class="case-body">
+      <div class="situation-box">
+        <div class="situation-label">📋 状況</div>
+        半年付き合った彼氏に「気持ちが冷めた」と言われて別れた。特典①のスコアカードで8点と高スコアだったため回避型と判断していたが、詳しく話を聞くと「近づくほど激しく自己嫌悪に陥る」「自分が傷つけてしまうと怖い」という発言が見られた。
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">経緯</div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">最初は「回避型」として冷却期間戦略を実行していた</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">元彼の発言パターンを詳しく分析した結果、<strong>「怖れ・回避型（FA型）」</strong>の可能性が高いと判断</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">アプローチを「安全な存在として認識させる」方向に変更</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">3ヶ月後に連絡。返信はあったが不安定なやり取りが続いている</div></div>
+      </div>
+      <div class="lesson-box lesson">
+        <div class="lesson-label">このケースのポイント</div>
+        <div class="lesson-text"><strong>「回避型にも種類がある」</strong>ことを示すケースです。回避型（DA型）と怖れ・回避型（FA型）では対応が異なります。元彼の行動パターンが「感情を見せない」だけでなく「感情が激しく揺れる」場合はFA型の可能性を疑ってください。本編第1章で詳しく解説しています。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ケース4 -->
+  <div class="case-card c4">
+    <div class="case-header c4">
+      <div class="case-avatar">👩</div>
+      <div class="case-meta">
+        <div class="case-name">Dさん（31歳・医療職）</div>
+        <div class="case-profile">元彼が別れ直後に新しい彼女→半年後に自然消滅・現在アプローチ中</div>
+      </div>
+      <span class="outcome-badge progress">アプローチ中</span>
+    </div>
+    <div class="case-body">
+      <div class="situation-box">
+        <div class="situation-label">📋 状況</div>
+        4年交際後、「もっと自由になりたい」と言われて別れた。その2ヶ月後、SNSで元彼が新しい彼女を作ったことを知りひどく落ち込んだ。「新しい彼女がいるなら諦めるべきか」という相談でアドバイスを開始した。
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">経緯</div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">新しい彼女への嫉妬からSNSを監視し続けていたが、相談後に完全停止</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">「<strong>回避型がすぐ新しい交際を始めるのはリバウンド行動</strong>」であることを理解し、焦りが和らいだ</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">半年後、元彼の新しい彼女との関係が自然消滅したことを共通の友人から偶然知る</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">特典③の半年以上版テンプレートをアレンジして連絡。返信あり</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">現在、月に数回LINEが続いている段階</div></div>
+      </div>
+      <div class="lesson-box progress">
+        <div class="lesson-label">このケースのポイント</div>
+        <div class="lesson-text"><strong>「回避型の新しい恋愛は長続きしないことが多い」</strong>ことを示すケースです。別れ直後の新しい交際はリバウンド（孤独回避）行動であることが多く、深刻になる必要はありません。諦めずに自分磨きを続けながら待つことが結果的に正解でした。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ケース5 -->
+  <div class="case-card c5">
+    <div class="case-header c5">
+      <div class="case-avatar">👩</div>
+      <div class="case-meta">
+        <div class="case-name">Eさん（26歳・営業職）</div>
+        <div class="case-profile">LINEテンプレートを活用→再デートから2ヶ月で復縁</div>
+      </div>
+      <span class="outcome-badge success">復縁成功</span>
+    </div>
+    <div class="case-body">
+      <div class="situation-box">
+        <div class="situation-label">📋 状況</div>
+        1年半交際した彼氏に「自分の時間を大切にしたい」と言われて別れた。Eさんはもともと感情をコントロールするのが得意で、別れ直後から冷静に対応していた。相談開始時点では、すでにNG行動は一つもしていなかった。
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">経緯</div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">別れ直後から冷却期間を自然に実行。仕事と自己投資に集中していた</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">3ヶ月後、特典③の「約3ヶ月版テンプレート」を自分の言葉でアレンジして送信</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">当日中に返信。「最近どんな感じ？」という自然な会話が続いた</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">2週間後に「久しぶりに飯でも行く？」と元彼から誘いあり</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">再デートを3回重ねた後、元彼から復縁を申し込まれた</div></div>
+      </div>
+      <div class="lesson-box success">
+        <div class="lesson-label">このケースのポイント</div>
+        <div class="lesson-text"><strong>「正しく行動すれば、回避型でも動いてくれる」</strong>ことを最もシンプルに示すケースです。Eさんのように、感情的にならずに冷却期間を守り、自然なテンプレートから会話を再開するだけで、元彼が自分から動いてくることがあります。特典③の使い方のお手本です。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 類似度チェック -->
+  <div class="similarity-section">
+    <div class="similarity-title">自分に最も近いケースはどれですか？</div>
+    <div class="sim-grid">
+      <div class="sim-card" onclick="toggleSim(this)">
+        <input type="checkbox">
+        <div class="sim-name" style="color:var(--pink)">Aさん型</div>
+        <div class="sim-label">突然の別れ・冷却後復縁</div>
+      </div>
+      <div class="sim-card" onclick="toggleSim(this)">
+        <input type="checkbox">
+        <div class="sim-name" style="color:var(--orange)">Bさん型</div>
+        <div class="sim-label">NG行動多数・ブロック済み</div>
+      </div>
+      <div class="sim-card" onclick="toggleSim(this)">
+        <input type="checkbox">
+        <div class="sim-name" style="color:var(--blue)">Cさん型</div>
+        <div class="sim-label">回避型か判断が難しい</div>
+      </div>
+      <div class="sim-card" onclick="toggleSim(this)">
+        <input type="checkbox">
+        <div class="sim-name" style="color:var(--green)">Dさん型</div>
+        <div class="sim-label">新しい彼女がいる</div>
+      </div>
+      <div class="sim-card" onclick="toggleSim(this)">
+        <input type="checkbox">
+        <div class="sim-name" style="color:var(--accent)">Eさん型</div>
+        <div class="sim-label">NG行動なし・正攻法</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checklist-note">
+    <h3>まとめ：5つのケースに共通する「成功の法則」</h3>
+    ① <strong>冷却期間を必ず設ける（最低1ヶ月、理想は3ヶ月）</strong><br>
+    ② <strong>追いかけるのをやめ、自分の生活を整えることに集中する</strong><br>
+    ③ <strong>最初の連絡は軽く・短く・プレッシャーなしで送る</strong><br>
+    ④ <strong>返信があっても焦って復縁を迫らず、まず「普通に話せる関係」に戻す</strong><br>
+    ⑤ <strong>相手のペースを尊重し、動いてくるのを待つ姿勢を持つ</strong>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+  </div>
+</div>
+
+<script>
+  function toggleSim(el) {
+    el.classList.toggle('selected');
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = el.classList.contains('selected');
+  }
+</script>
+</body>
+</html>
