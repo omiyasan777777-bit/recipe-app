@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典①｜子育て世帯の固定費全項目棚卸しシート</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6c5ce7; --accent2: #8b7cf8; --bg: #f9f8ff;
+      --border: #dddde8; --text: #111111; --muted: #666688;
+      --green: #00b894; --orange: #e17055; --blue: #0984e3;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.7;
+      padding: 24px;
+    }
+    .page {
+      max-width: 860px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 40px 48px;
+      box-shadow: 0 4px 24px rgba(108,92,231,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(108,92,231,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .1em;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;
+    }
+    h1 { font-size: 1.7rem; font-weight: 900; margin-bottom: 8px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .intro-box {
+      background: rgba(108,92,231,.05); border-left: 4px solid var(--accent);
+      padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted);
+    }
+    .section { margin-bottom: 36px; }
+    .section-title {
+      font-size: 16px; font-weight: 800;
+      padding: 8px 16px; border-radius: 8px;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title.green { background: rgba(0,184,148,.1); color: #00836a; }
+    .section-title.orange { background: rgba(225,112,85,.1); color: #b85a40; }
+    .section-title.blue { background: rgba(9,132,227,.1); color: #0660a9; }
+    .section-title.purple { background: rgba(108,92,231,.1); color: var(--accent); }
+    .section-title.pink { background: rgba(253,121,168,.1); color: #c0395e; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      background: #f0eeff; color: var(--muted);
+      font-size: 12px; font-weight: 700; letter-spacing: .05em;
+      padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 8px 12px; border-bottom: 1px solid #eeeeee; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+    .label { font-size: 13px; font-weight: 600; width: 180px; }
+    .input-cell { width: 120px; }
+    input[type="number"], input[type="text"] {
+      width: 100%; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: 14px; text-align: right;
+      background: #fafafe;
+      transition: border .2s;
+    }
+    input[type="text"] { text-align: left; }
+    input:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .note-input {
+      width: 100%; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: 12px; color: var(--muted);
+      background: #fafafe;
+    }
+    .note-input:focus { outline: none; border-color: var(--accent); }
+    .total-row td { font-weight: 800; background: #f0eeff; color: var(--accent); }
+    .total-row .total-label { font-size: 14px; }
+    .grand-total {
+      margin-top: 32px; padding: 24px 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px; color: #fff;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .grand-total-label { font-size: 16px; font-weight: 800; }
+    .grand-total-amount { font-size: 2.2rem; font-weight: 900; }
+    .grand-total-note { font-size: 12px; opacity: .8; }
+    .action-bar {
+      margin-top: 28px; display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 24px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary {
+      background: #fff; color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+    .btn-secondary:hover { background: rgba(108,92,231,.05); transform: translateY(-2px); }
+    .hint { font-size: 11px; color: var(--muted); font-style: italic; }
+    .check-section { margin-top: 36px; }
+    .check-title { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .check-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; padding: 8px 12px;
+      background: #f8f8fc; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .check-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+      input { border: 1px solid #ccc !important; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 24px 20px; }
+      .check-grid { grid-template-columns: 1fr; }
+      .grand-total { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典①</div>
+  <h1>子育て世帯の固定費<br>全項目棚卸しシート</h1>
+  <p class="subtitle">記入日：<input type="text" style="width:140px;display:inline-block;border-bottom:1px solid var(--border);border-top:none;border-left:none;border-right:none;border-radius:0;background:transparent;text-align:left;font-size:14px;" placeholder="　　　年　　月　　日"> ／ 家族構成：<input type="text" style="width:160px;display:inline-block;border-bottom:1px solid var(--border);border-top:none;border-left:none;border-right:none;border-radius:0;background:transparent;text-align:left;font-size:14px;" placeholder="大人　人、子ども　人"></p>
+
+  <div class="intro-box">
+    各項目に月額を入力してください。年払いのものは ÷12 した金額を入力します。<br>
+    「見直し優先度」欄は 高／中／低 で記入し、棚卸し後の削減アクションに活用しましょう。
+  </div>
+
+  <!-- 住居費 -->
+  <div class="section">
+    <div class="section-title green">🏠 住居費</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>契約先・備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">家賃・住宅ローン</td><td class="input-cell"><input type="number" placeholder="0" id="h1"></td><td><input type="text" class="note-input" placeholder="○○銀行 / ○○不動産"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">管理費・修繕積立金</td><td class="input-cell"><input type="number" placeholder="0" id="h2"></td><td><input type="text" class="note-input" placeholder="マンション管理組合"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">火災保険・地震保険</td><td class="input-cell"><input type="number" placeholder="0" id="h3"></td><td><input type="text" class="note-input" placeholder="年払い÷12で記入"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">駐車場代</td><td class="input-cell"><input type="number" placeholder="0" id="h4"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label" colspan="1">住居費 合計</td><td><span id="total-h">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 水道光熱費 -->
+  <div class="section">
+    <div class="section-title blue">💡 水道光熱費</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>契約先・備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">電気代</td><td class="input-cell"><input type="number" placeholder="0" id="u1"></td><td><input type="text" class="note-input" placeholder="東京電力 / 楽天でんき 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">ガス代</td><td class="input-cell"><input type="number" placeholder="0" id="u2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">水道代</td><td class="input-cell"><input type="number" placeholder="0" id="u3"></td><td><input type="text" class="note-input" placeholder="2ヶ月に1回の場合÷2"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">光熱費 合計</td><td><span id="total-u">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 通信費 -->
+  <div class="section">
+    <div class="section-title orange">📱 通信費</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>契約先・備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">スマホ代（大人1人目）</td><td class="input-cell"><input type="number" placeholder="0" id="c1"></td><td><input type="text" class="note-input" placeholder="docomo / au / SoftBank / 格安SIM"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">スマホ代（大人2人目）</td><td class="input-cell"><input type="number" placeholder="0" id="c2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">子どものスマホ・キッズケータイ</td><td class="input-cell"><input type="number" placeholder="0" id="c3"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">自宅インターネット回線</td><td class="input-cell"><input type="number" placeholder="0" id="c4"></td><td><input type="text" class="note-input" placeholder="光回線 / ポケットWi-Fi 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">NHK受信料</td><td class="input-cell"><input type="number" placeholder="0" id="c5"></td><td><input type="text" class="note-input" placeholder="2ヶ月払い÷2"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">通信費 合計</td><td><span id="total-c">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 保険料 -->
+  <div class="section">
+    <div class="section-title purple">🛡️ 保険料</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>保険会社・種類</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">生命保険（大人1人目）</td><td class="input-cell"><input type="number" placeholder="0" id="i1"></td><td><input type="text" class="note-input" placeholder="○○生命 / 定期・終身 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">生命保険（大人2人目）</td><td class="input-cell"><input type="number" placeholder="0" id="i2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">医療保険（大人1人目）</td><td class="input-cell"><input type="number" placeholder="0" id="i3"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">医療保険（大人2人目）</td><td class="input-cell"><input type="number" placeholder="0" id="i4"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">子どもの医療保険・学資保険</td><td class="input-cell"><input type="number" placeholder="0" id="i5"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">がん保険</td><td class="input-cell"><input type="number" placeholder="0" id="i6"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">自動車保険</td><td class="input-cell"><input type="number" placeholder="0" id="i7"></td><td><input type="text" class="note-input" placeholder="年払い÷12で記入"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">その他保険</td><td class="input-cell"><input type="number" placeholder="0" id="i8"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">保険料 合計</td><td><span id="total-i">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 車両費 -->
+  <div class="section">
+    <div class="section-title orange">🚗 車両費</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">車のローン返済</td><td class="input-cell"><input type="number" placeholder="0" id="v1"></td><td><input type="text" class="note-input" placeholder="残○年"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">自動車税（月割り）</td><td class="input-cell"><input type="number" placeholder="0" id="v2"></td><td><input type="text" class="note-input" placeholder="年額÷12で記入"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">車検積立</td><td class="input-cell"><input type="number" placeholder="0" id="v3"></td><td><input type="text" class="note-input" placeholder="2年に1回の費用÷24"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">車両費 合計</td><td><span id="total-v">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 教育費・習い事 -->
+  <div class="section">
+    <div class="section-title green">📚 教育費・習い事</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>子ども名・内容</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">保育園・幼稚園・こども園</td><td class="input-cell"><input type="number" placeholder="0" id="e1"></td><td><input type="text" class="note-input" placeholder="○○ちゃん / 公立・私立"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">学校費（給食・教材費等）</td><td class="input-cell"><input type="number" placeholder="0" id="e2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">学習塾・通信教育</td><td class="input-cell"><input type="number" placeholder="0" id="e3"></td><td><input type="text" class="note-input" placeholder="○○ちゃん / ○○塾"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">習い事①（スポーツ系）</td><td class="input-cell"><input type="number" placeholder="0" id="e4"></td><td><input type="text" class="note-input" placeholder="サッカー / 水泳 / 体操 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">習い事②（文化系）</td><td class="input-cell"><input type="number" placeholder="0" id="e5"></td><td><input type="text" class="note-input" placeholder="ピアノ / 英語 / 習字 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">習い事③（その他）</td><td class="input-cell"><input type="number" placeholder="0" id="e6"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">教育費 合計</td><td><span id="total-e">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- サブスク・定期購読 -->
+  <div class="section">
+    <div class="section-title pink">📺 サブスク・定期購読</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>サービス名・備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">動画配信（Netflix等）</td><td class="input-cell"><input type="number" placeholder="0" id="s1"></td><td><input type="text" class="note-input" placeholder="Netflix / Amazon / Disney+ 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">音楽配信（Spotify等）</td><td class="input-cell"><input type="number" placeholder="0" id="s2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">クラウドストレージ</td><td class="input-cell"><input type="number" placeholder="0" id="s3"></td><td><input type="text" class="note-input" placeholder="iCloud / Google One 等"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">新聞・雑誌・電子書籍</td><td class="input-cell"><input type="number" placeholder="0" id="s4"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">フィットネス・ジム</td><td class="input-cell"><input type="number" placeholder="0" id="s5"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">その他サブスク①</td><td class="input-cell"><input type="number" placeholder="0" id="s6"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">その他サブスク②</td><td class="input-cell"><input type="number" placeholder="0" id="s7"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">サブスク 合計</td><td><span id="total-s">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ローン・奨学金 -->
+  <div class="section">
+    <div class="section-title orange">💳 ローン・奨学金返済</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>残高・残期間・備考</th><th style="width:90px">見直し優先度</th></tr></thead>
+      <tbody>
+        <tr><td class="label">カードローン・消費者金融</td><td class="input-cell"><input type="number" placeholder="0" id="l1"></td><td><input type="text" class="note-input" placeholder="残高：　円 / 残○ヶ月"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">奨学金返済</td><td class="input-cell"><input type="number" placeholder="0" id="l2"></td><td><input type="text" class="note-input" placeholder="残○年"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr><td class="label">その他ローン</td><td class="input-cell"><input type="number" placeholder="0" id="l3"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="高・中・低"></td></tr>
+        <tr class="total-row"><td class="total-label">ローン 合計</td><td><span id="total-l">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 貯蓄・投資 -->
+  <div class="section">
+    <div class="section-title green">💰 先取り貯蓄・投資</div>
+    <table>
+      <thead><tr><th class="label">項目</th><th class="input-cell">月額（円）</th><th>口座・備考</th><th style="width:90px">現状評価</th></tr></thead>
+      <tbody>
+        <tr><td class="label">新NISA（つみたて）</td><td class="input-cell"><input type="number" placeholder="0" id="sa1"></td><td><input type="text" class="note-input" placeholder="○○証券 / ○○ファンド"></td><td><input type="text" class="note-input" placeholder="増やす・維持・減らす"></td></tr>
+        <tr><td class="label">iDeCo</td><td class="input-cell"><input type="number" placeholder="0" id="sa2"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="増やす・維持・減らす"></td></tr>
+        <tr><td class="label">子ども用貯蓄（ジュニアNISA等）</td><td class="input-cell"><input type="number" placeholder="0" id="sa3"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="増やす・維持・減らす"></td></tr>
+        <tr><td class="label">定期預金・積立預金</td><td class="input-cell"><input type="number" placeholder="0" id="sa4"></td><td><input type="text" class="note-input"></td><td><input type="text" class="note-input" placeholder="増やす・維持・減らす"></td></tr>
+        <tr class="total-row"><td class="total-label">貯蓄・投資 合計</td><td><span id="total-sa">0</span> 円</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- グランドトータル -->
+  <div class="grand-total">
+    <div>
+      <div class="grand-total-label">月々の固定費 総合計</div>
+      <div class="grand-total-note">（貯蓄・投資を含む）</div>
+    </div>
+    <div style="text-align:right">
+      <div class="grand-total-amount"><span id="grand-total">0</span> 円</div>
+    </div>
+  </div>
+
+  <!-- チェックリスト -->
+  <div class="check-section">
+    <div class="check-title">見直しアクションチェックリスト</div>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox">スマホを格安SIMに切り替える</label>
+      <label class="check-item"><input type="checkbox">電力・ガスの自由化プランを比較する</label>
+      <label class="check-item"><input type="checkbox">使っていないサブスクを解約する</label>
+      <label class="check-item"><input type="checkbox">保険を見直す（保障の重複を確認）</label>
+      <label class="check-item"><input type="checkbox">住宅ローンの借り換えを検討する</label>
+      <label class="check-item"><input type="checkbox">自動車保険を一括見積もりで比較する</label>
+      <label class="check-item"><input type="checkbox">習い事の費用対効果を家族で話し合う</label>
+      <label class="check-item"><input type="checkbox">NISAの積立額を見直す</label>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+    <button class="btn btn-primary" onclick="calcAll()">合計を再計算</button>
+  </div>
+</div>
+
+<script>
+  function sum(...ids) {
+    return ids.reduce((acc, id) => {
+      const v = parseFloat(document.getElementById(id)?.value) || 0;
+      return acc + v;
+    }, 0);
+  }
+  function fmt(n) { return n.toLocaleString('ja-JP'); }
+
+  function calcAll() {
+    const h = sum('h1','h2','h3','h4');
+    const u = sum('u1','u2','u3');
+    const c = sum('c1','c2','c3','c4','c5');
+    const i = sum('i1','i2','i3','i4','i5','i6','i7','i8');
+    const v = sum('v1','v2','v3');
+    const e = sum('e1','e2','e3','e4','e5','e6');
+    const s = sum('s1','s2','s3','s4','s5','s6','s7');
+    const l = sum('l1','l2','l3');
+    const sa = sum('sa1','sa2','sa3','sa4');
+    document.getElementById('total-h').textContent = fmt(h);
+    document.getElementById('total-u').textContent = fmt(u);
+    document.getElementById('total-c').textContent = fmt(c);
+    document.getElementById('total-i').textContent = fmt(i);
+    document.getElementById('total-v').textContent = fmt(v);
+    document.getElementById('total-e').textContent = fmt(e);
+    document.getElementById('total-s').textContent = fmt(s);
+    document.getElementById('total-l').textContent = fmt(l);
+    document.getElementById('total-sa').textContent = fmt(sa);
+    document.getElementById('grand-total').textContent = fmt(h+u+c+i+v+e+s+l+sa);
+  }
+
+  // Auto-calc on input change
+  document.querySelectorAll('input[type="number"]').forEach(el => {
+    el.addEventListener('input', calcAll);
+  });
+</script>
+</body>
+</html>

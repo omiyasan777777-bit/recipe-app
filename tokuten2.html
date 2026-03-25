@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典②｜公的支援もらい漏れチェックシート2026年版</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #00b894; --accent2: #00cec9; --bg: #f0fdf8;
+      --border: #b2dfdb; --text: #111111; --muted: #557065;
+      --orange: #e17055; --blue: #0984e3; --purple: #6c5ce7;
+      --red: #d63031; --yellow: #fdcb6e;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.7; padding: 24px;
+    }
+    .page {
+      max-width: 900px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 40px 48px;
+      box-shadow: 0 4px 24px rgba(0,184,148,.12);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0,184,148,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .1em;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;
+    }
+    h1 { font-size: 1.7rem; font-weight: 900; margin-bottom: 8px; line-height: 1.3; }
+    .version-badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+      margin-left: 10px; vertical-align: middle;
+    }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .alert-box {
+      background: rgba(253,203,110,.15); border-left: 4px solid var(--yellow);
+      padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px;
+      font-size: 13px;
+    }
+    .alert-box strong { color: #c0860a; }
+    .section { margin-bottom: 36px; }
+    .section-title {
+      font-size: 15px; font-weight: 800;
+      padding: 10px 16px; border-radius: 8px 8px 0 0;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 0;
+    }
+    .section-title.green { background: rgba(0,184,148,.12); color: #007a62; border-bottom: 2px solid rgba(0,184,148,.3); }
+    .section-title.blue { background: rgba(9,132,227,.1); color: #0660a9; border-bottom: 2px solid rgba(9,132,227,.25); }
+    .section-title.orange { background: rgba(225,112,85,.1); color: #b85a40; border-bottom: 2px solid rgba(225,112,85,.25); }
+    .section-title.purple { background: rgba(108,92,231,.1); color: var(--purple); border-bottom: 2px solid rgba(108,92,231,.25); }
+    .section-title.red { background: rgba(214,48,49,.08); color: #b02020; border-bottom: 2px solid rgba(214,48,49,.2); }
+    .check-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .check-table thead th {
+      background: #f5f5f5; color: var(--muted);
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    .check-table tbody tr { border-bottom: 1px solid #efefef; }
+    .check-table tbody tr:hover { background: #f9fffe; }
+    .check-table td { padding: 10px 12px; vertical-align: top; }
+    .check-col { width: 36px; text-align: center; }
+    .check-col input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; }
+    .name-col { width: 210px; font-weight: 700; font-size: 13px; }
+    .amount-col { width: 110px; font-weight: 700; color: #c0392b; font-size: 13px; white-space: nowrap; }
+    .who-col { width: 140px; }
+    .desc-col { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .tag {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 1px 8px; border-radius: 999px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .tag-new { background: rgba(214,48,49,.1); color: var(--red); }
+    .tag-apply { background: rgba(9,132,227,.1); color: var(--blue); }
+    .tag-auto { background: rgba(0,184,148,.1); color: var(--accent); }
+    .tag-check { background: rgba(253,203,110,.2); color: #b08020; }
+    .status-col { width: 90px; }
+    .status-sel {
+      width: 100%; padding: 4px 6px;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: 12px; background: #fafffe;
+    }
+    .status-sel:focus { outline: none; border-color: var(--accent); }
+    .summary-box {
+      margin-top: 32px; padding: 24px 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px; color: #fff;
+    }
+    .summary-title { font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .summary-item { text-align: center; }
+    .summary-num { font-size: 2rem; font-weight: 900; }
+    .summary-label { font-size: 12px; opacity: .85; }
+    .note-area {
+      margin-top: 28px; padding: 20px 24px;
+      background: #f8f8f8; border-radius: 12px;
+    }
+    .note-area h3 { font-size: 14px; font-weight: 800; margin-bottom: 12px; color: var(--muted); }
+    .note-area textarea {
+      width: 100%; height: 80px; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 13px; resize: vertical; font-family: inherit;
+      background: #fff;
+    }
+    .note-area textarea:focus { outline: none; border-color: var(--accent); }
+    .action-bar {
+      margin-top: 24px; display: flex; gap: 14px; justify-content: flex-end;
+    }
+    .btn {
+      padding: 10px 24px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(0,184,148,.05); transform: translateY(-2px); }
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; padding: 20px 28px; }
+      .action-bar { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 24px 16px; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .who-col, .status-col { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">特典②</div>
+  <h1>公的支援もらい漏れチェックシート<span class="version-badge">2026年版</span></h1>
+  <p class="subtitle">子育て世帯向け 給付金・補助金・制度一覧｜申請・確認状況を記録しましょう</p>
+
+  <div class="alert-box">
+    <strong>注意：</strong>給付金・補助金の金額・要件は自治体や年度により異なります。<br>
+    本シートは2026年時点の一般的な制度を記載しています。最新情報は各自治体窓口・公式サイトで必ず確認してください。
+  </div>
+
+  <!-- 子育て手当・給付 -->
+  <div class="section">
+    <div class="section-title green">👶 子育て手当・給付金</div>
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th class="check-col">確認</th>
+          <th class="name-col">制度名</th>
+          <th class="amount-col">金額の目安</th>
+          <th class="who-col">対象</th>
+          <th class="desc-col">概要・申請先</th>
+          <th class="status-col">状況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">児童手当<span class="tag tag-new">2024拡充</span></td>
+          <td class="amount-col">月1万〜3万円</td>
+          <td class="who-col">0〜18歳の子</td>
+          <td class="desc-col">2024年10月より高校生世代まで拡充。第3子以降は月3万円。所得制限撤廃。市区町村へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">出産育児一時金</td>
+          <td class="amount-col">50万円</td>
+          <td class="who-col">出産した方</td>
+          <td class="desc-col">健康保険加入者に出産1子につき50万円。直接支払い制度が利用可能。加入健康保険へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">出産・子育て応援交付金</td>
+          <td class="amount-col">計10万円相当</td>
+          <td class="who-col">妊娠・出産した方</td>
+          <td class="desc-col">妊娠届出時5万円＋出産後5万円のギフト（経済的支援）。市区町村の窓口・面談で受取。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">乳幼児・子ども医療費助成</td>
+          <td class="amount-col">自己負担ほぼ0〜</td>
+          <td class="who-col">子ども（年齢は自治体による）</td>
+          <td class="desc-col">多くの自治体で中学・高校卒業まで医療費を無料または低額に。市区町村窓口で医療証を取得。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>取得済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">高校等就学支援金</td>
+          <td class="amount-col">年最大118,800円〜</td>
+          <td class="who-col">高校生の子</td>
+          <td class="desc-col">公立高校は授業料相当額、私立は所得に応じて加算。学校経由で申請。所得要件あり。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">幼児教育・保育の無償化</td>
+          <td class="amount-col">月最大3.7万円</td>
+          <td class="who-col">3〜5歳（0〜2歳は住民税非課税世帯）</td>
+          <td class="desc-col">認可保育所・幼稚園・こども園等の保育料を無償化。市区町村へ認定申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>適用中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 育休・産休関連 -->
+  <div class="section">
+    <div class="section-title blue">🏥 育休・産休・雇用関連の給付</div>
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th class="check-col">確認</th>
+          <th class="name-col">制度名</th>
+          <th class="amount-col">金額の目安</th>
+          <th class="who-col">対象</th>
+          <th class="desc-col">概要・申請先</th>
+          <th class="status-col">状況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">出産手当金（傷病手当）</td>
+          <td class="amount-col">賃金の約2/3×98日</td>
+          <td class="who-col">会社員・公務員の産休取得者</td>
+          <td class="desc-col">産前42日・産後56日の休業中、標準報酬日額の2/3を支給。加入健康保険組合へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">育児休業給付金</td>
+          <td class="amount-col">賃金の最大80%（最初の6ヶ月）</td>
+          <td class="who-col">雇用保険加入の育休取得者</td>
+          <td class="desc-col">最初の6ヶ月は賃金の67%、以降50%（2025年より条件付き80%に引き上げ）。ハローワーク経由で会社が申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">育休中の社会保険料免除</td>
+          <td class="amount-col">免除期間×保険料分</td>
+          <td class="who-col">育休取得者・事業主</td>
+          <td class="desc-col">育休期間中は健康保険・厚生年金保険料が労使ともに免除。会社経由で年金事務所へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>適用中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">パパ育休（産後パパ育休）<span class="tag tag-new">注目</span></td>
+          <td class="amount-col">賃金の最大80%×最大28日</td>
+          <td class="who-col">育休取得した父親</td>
+          <td class="desc-col">出生後8週以内に最大28日取得可。2025年より両親ともに育休取得で最大28日間手取りほぼ10割相当に。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 税制優遇 -->
+  <div class="section">
+    <div class="section-title orange">📋 税制優遇・控除</div>
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th class="check-col">確認</th>
+          <th class="name-col">制度名</th>
+          <th class="amount-col">節税効果の目安</th>
+          <th class="who-col">対象</th>
+          <th class="desc-col">概要・申請先</th>
+          <th class="status-col">状況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">扶養控除（子ども）</td>
+          <td class="amount-col">年3.8〜63万円控除</td>
+          <td class="who-col">16歳以上の子がいる方</td>
+          <td class="desc-col">16〜18歳は38万円、19〜22歳の特定扶養は63万円控除。年末調整または確定申告で適用。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>適用中</option><option>確認済</option><option>未確認</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">医療費控除</td>
+          <td class="amount-col">10万円超の部分が対象</td>
+          <td class="who-col">世帯年間医療費10万円超</td>
+          <td class="desc-col">家族全員の医療費合計が10万円超えた分を所得から控除。確定申告で申請。セルフメディケーション特例あり。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>申請済</option><option>検討中</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">住宅ローン控除</td>
+          <td class="amount-col">年最大35万円税額控除</td>
+          <td class="who-col">住宅ローン利用者</td>
+          <td class="desc-col">年末ローン残高の0.7%を最大13年間税額控除。初年度は確定申告、2年目以降は年末調整。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>適用中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">ふるさと納税</td>
+          <td class="amount-col">自己負担2,000円で返礼品</td>
+          <td class="who-col">所得税・住民税納税者</td>
+          <td class="desc-col">上限額内の寄付は実質2,000円で返礼品が受け取れ、税金が還付・控除される。ワンストップ特例または確定申告。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>活用中</option><option>検討中</option><option>未活用</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">iDeCo（個人型確定拠出年金）</td>
+          <td class="amount-col">掛金全額所得控除</td>
+          <td class="who-col">20〜64歳の会社員・自営業等</td>
+          <td class="desc-col">掛金が全額所得控除。月5,000円〜加入可。金融機関で口座開設し申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>加入中</option><option>検討中</option><option>未加入</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">新NISA（つみたて・成長投資）</td>
+          <td class="amount-col">運用益・配当非課税</td>
+          <td class="who-col">18歳以上</td>
+          <td class="desc-col">年360万円まで非課税投資が可能（生涯1,800万円まで）。証券会社・銀行でNISA口座を開設。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>活用中</option><option>口座開設済</option><option>未活用</option><option>対象外</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ひとり親・低所得世帯向け -->
+  <div class="section">
+    <div class="section-title red">🤝 ひとり親世帯・低所得世帯向け支援</div>
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th class="check-col">確認</th>
+          <th class="name-col">制度名</th>
+          <th class="amount-col">金額の目安</th>
+          <th class="who-col">対象</th>
+          <th class="desc-col">概要・申請先</th>
+          <th class="status-col">状況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">児童扶養手当</td>
+          <td class="amount-col">月最大45,500円（第1子）</td>
+          <td class="who-col">ひとり親家庭</td>
+          <td class="desc-col">ひとり親（離婚・死別・未婚等）で生計を立てる方が対象。第2子・第3子は加算あり。市区町村窓口へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">ひとり親家庭等医療費助成</td>
+          <td class="amount-col">自己負担軽減</td>
+          <td class="who-col">ひとり親家庭</td>
+          <td class="desc-col">都道府県・市区町村により医療費の自己負担を軽減。市区町村窓口で医療証を取得。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>取得済</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">就学援助制度</td>
+          <td class="amount-col">給食費・学用品等を補助</td>
+          <td class="who-col">低所得世帯の小中学生</td>
+          <td class="desc-col">給食費・学用品費・修学旅行費等を補助。学校または市区町村の教育委員会へ申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">高等学校奨学給付金</td>
+          <td class="amount-col">年32,300〜138,000円</td>
+          <td class="who-col">住民税非課税世帯の高校生</td>
+          <td class="desc-col">住民税非課税世帯の高校生の授業料以外の教育費（教科書・教材等）を補助。学校経由で申請。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未申請</option><option>対象外</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 自治体独自の支援 -->
+  <div class="section">
+    <div class="section-title purple">🏛️ 自治体独自の支援（要確認）</div>
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th class="check-col">確認</th>
+          <th class="name-col">チェック項目</th>
+          <th class="amount-col">金額の目安</th>
+          <th colspan="2" class="desc-col">内容・メモ</th>
+          <th class="status-col">状況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">出産祝い金（自治体）</td>
+          <td class="amount-col">数万〜100万円超</td>
+          <td colspan="2" class="desc-col">自治体によっては第2子・第3子に独自の祝い金を支給。居住の市区町村HPを確認。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>確認済</option><option>未確認</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">多子世帯への保育料減額</td>
+          <td class="amount-col">第2子以降の減額</td>
+          <td colspan="2" class="desc-col">兄弟姉妹が同時に保育園等に通う場合の多子減額制度（国制度に加え自治体独自あり）。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>適用中</option><option>確認済</option><option>未確認</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">子育て支援券・クーポン</td>
+          <td class="amount-col">自治体により異なる</td>
+          <td colspan="2" class="desc-col">育児用品・サービスに使えるクーポンを配布する自治体あり。子育て窓口で確認。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>活用中</option><option>確認済</option><option>未確認</option><option>対象外</option></select></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td class="name-col">高校生等奨学金（都道府県）</td>
+          <td class="amount-col">月数千〜数万円</td>
+          <td colspan="2" class="desc-col">都道府県独自の奨学金制度。給付型・無利子貸与型あり。居住都道府県の教育委員会に確認。</td>
+          <td class="status-col"><select class="status-sel"><option value="">選択</option><option>受給中</option><option>申請済</option><option>未確認</option><option>対象外</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- サマリー -->
+  <div class="summary-box">
+    <div class="summary-title">チェック済み数を確認する</div>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-num" id="count-all">0</div>
+        <div class="summary-label">総チェック項目数</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num" id="count-checked">0</div>
+        <div class="summary-label">確認・対応済み</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num" id="count-unchecked">0</div>
+        <div class="summary-label">未チェック</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- メモ欄 -->
+  <div class="note-area">
+    <h3>確認メモ・問い合わせ先</h3>
+    <textarea placeholder="例）児童手当：○月○日に市役所へ申請済み。ふるさと納税：今年の上限額を確認する。"></textarea>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷・PDF保存</button>
+    <button class="btn btn-primary" onclick="updateCount()">チェック数を更新</button>
+  </div>
+</div>
+
+<script>
+  function updateCount() {
+    const all = document.querySelectorAll('input[type="checkbox"]').length;
+    const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+    document.getElementById('count-all').textContent = all;
+    document.getElementById('count-checked').textContent = checked;
+    document.getElementById('count-unchecked').textContent = all - checked;
+  }
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', updateCount);
+  });
+  updateCount();
+</script>
+</body>
+</html>
