@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3大特典｜Claude Code × Threads自動化</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6C63FF;
+      --accent2: #FF6584;
+      --dark: #1a1a2e;
+      --text: #333;
+      --muted: #666;
+      --bg: #f7f8fc;
+      --card: #fff;
+      --radius: 12px;
+    }
+    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    /* ヘッダー */
+    .hero { background: linear-gradient(135deg, var(--dark) 0%, #16213e 60%, #0f3460 100%); color: white; text-align: center; padding: 60px 20px 50px; }
+    .hero .badge { display: inline-block; background: var(--accent); color: white; font-size: 0.75rem; font-weight: bold; padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.05em; }
+    .hero h1 { font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 900; margin-bottom: 12px; line-height: 1.3; }
+    .hero p { font-size: 0.95rem; color: #ccc; max-width: 520px; margin: 0 auto; }
+    .bonus-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+    .bonus-nav a { background: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 8px 18px; border-radius: 30px; font-size: 0.82rem; border: 1px solid rgba(255,255,255,0.2); transition: background 0.2s; }
+    .bonus-nav a:hover { background: rgba(255,255,255,0.22); }
+
+    /* セクション共通 */
+    .section { max-width: 860px; margin: 0 auto; padding: 50px 20px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .section-num { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; color: white; flex-shrink: 0; }
+    .num-1 { background: var(--accent); }
+    .num-2 { background: #00b4d8; }
+    .num-3 { background: #f77f00; }
+    .section-title { font-size: 1.2rem; font-weight: 800; }
+    .section-desc { font-size: 0.88rem; color: var(--muted); margin-top: 2px; }
+    .divider { border: none; border-top: 2px dashed #e0e0e0; margin: 0 0 40px; }
+
+    /* 特典1: プロンプトカード */
+    .pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .pattern-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-top: 4px solid var(--accent); transition: transform 0.15s, box-shadow 0.15s; }
+    .pattern-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .pattern-num { font-size: 0.72rem; font-weight: bold; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 4px; }
+    .pattern-name { font-size: 1rem; font-weight: 800; margin-bottom: 6px; }
+    .pattern-goal { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; }
+    .copy-btn { width: 100%; padding: 8px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    .copy-btn:hover { background: #574fd6; }
+    .copy-btn.copied { background: #4CAF50; }
+    .prompt-box { display: none; margin-top: 14px; background: #f4f4f8; border-radius: 8px; padding: 14px; font-size: 0.78rem; line-height: 1.6; white-space: pre-wrap; word-break: break-all; color: #333; border: 1px solid #e0e0e0; }
+    .prompt-box.open { display: block; }
+    .toggle-btn { width: 100%; padding: 6px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; font-size: 0.78rem; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+    .toggle-btn:hover { background: #f0eeff; }
+
+    /* 特典2: チェックリスト */
+    .checklist { display: flex; flex-direction: column; gap: 14px; }
+    .check-item { background: var(--card); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 16px; align-items: flex-start; }
+    .check-icon { width: 34px; height: 34px; border-radius: 50%; background: #e3f8f5; color: #00b4d8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; flex-shrink: 0; }
+    .check-content h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
+    .check-content p { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+    .check-content code { background: #f0f0f0; padding: 1px 6px; border-radius: 4px; font-size: 0.78rem; color: #c0392b; font-family: monospace; }
+    .warn { display: inline-block; background: #fff3e0; color: #bf360c; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: bold; }
+
+    /* 特典3: カレンダーへのリンク */
+    .cal-cta { background: linear-gradient(135deg, #f77f00, #d62828); color: white; border-radius: var(--radius); padding: 36px 28px; text-align: center; }
+    .cal-cta h3 { font-size: 1.3rem; font-weight: 900; margin-bottom: 10px; }
+    .cal-cta p { font-size: 0.88rem; opacity: 0.9; margin-bottom: 22px; }
+    .cal-features { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 24px; }
+    .cal-feature { background: rgba(255,255,255,0.18); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; }
+    .cal-btn { display: inline-block; background: white; color: #d62828; font-weight: 900; padding: 14px 36px; border-radius: 30px; text-decoration: none; font-size: 1rem; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+    .cal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+    /* フッター */
+    footer { text-align: center; padding: 30px 20px; font-size: 0.8rem; color: #aaa; }
+
+    /* トースト */
+    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #333; color: white; padding: 10px 24px; border-radius: 30px; font-size: 0.85rem; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 999; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      .pattern-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="hero">
+  <div class="badge">🎁 3大特典 完全無料</div>
+  <h1>Claude Code × Threads<br>自動化スターターキット</h1>
+  <p>プロンプト集・APIチェックリスト・投稿カレンダーの3点セット。今すぐ使えます。</p>
+  <nav class="bonus-nav">
+    <a href="#bonus1">特典1 プロンプト集</a>
+    <a href="#bonus2">特典2 APIチェックリスト</a>
+    <a href="#bonus3">特典3 カレンダー</a>
+  </nav>
+</div>
+
+<!-- 特典1 -->
+<div id="bonus1" class="section">
+  <div class="section-header">
+    <div class="section-num num-1">1</div>
+    <div>
+      <div class="section-title">Threads投稿生成プロンプト集（10パターン）</div>
+      <div class="section-desc">「コピー」してClaudeに貼るだけ。【】の中を書き換えて使ってください。</div>
+    </div>
+  </div>
+
+  <div class="pattern-grid" id="patternGrid"></div>
+</div>
+
+<hr class="divider" style="max-width:860px;margin:0 auto 0;" />
+
+<!-- 特典2 -->
+<div id="bonus2" class="section">
+  <div class="section-header">
+    <div class="section-num num-2">2</div>
+    <div>
+      <div class="section-title">Buffer APIセットアップ チェックリスト</div>
+      <div class="section-desc">つまずきやすい9つのポイントを先回りして解説。上から順に確認してください。</div>
+    </div>
+  </div>
+
+  <div class="checklist" id="checklist"></div>
+</div>
+
+<hr class="divider" style="max-width:860px;margin:0 auto 0;" />
+
+<!-- 特典3 -->
+<div id="bonus3" class="section">
+  <div class="section-header">
+    <div class="section-num num-3">3</div>
+    <div>
+      <div class="section-title">30日分投稿カレンダー（インタラクティブ版）</div>
+      <div class="section-desc">ブラウザで動く管理ツール。CSV出力・ローカル保存対応。</div>
+    </div>
+  </div>
+
+  <div class="cal-cta">
+    <h3>📅 30日間の投稿を一元管理</h3>
+    <p>日付・タイプ・テキスト・ステータス・品質チェックをすべて1画面で管理できます。</p>
+    <div class="cal-features">
+      <span class="cal-feature">✅ ステータス管理</span>
+      <span class="cal-feature">🔍 品質チェック</span>
+      <span class="cal-feature">📥 CSVエクスポート</span>
+      <span class="cal-feature">💾 ローカル保存</span>
+      <span class="cal-feature">📱 スマホ対応</span>
+    </div>
+    <a class="cal-btn" href="bonus3_30day_post_calendar.html" target="_blank">カレンダーを開く →</a>
+  </div>
+</div>
+
+<footer>© 2026 Claude Code × Threads 自動化特典</footer>
+<div id="toast">コピーしました！</div>
+
+<script>
+const PATTERNS = [
+  {
+    num: "Pattern 01", name: "気づき型", goal: "インプレッション・保存数アップ",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: 気づき型
+テーマ: 【例：料理のタイムパフォーマンスを上げる方法】
+ターゲット: 【例：忙しい30代の料理初心者】
+文字数: 150〜200文字
+トーン: 親しみやすく、少し驚きがある
+末尾: ハッシュタグを2〜3個
+
+条件:
+- 冒頭の1文で読者の注意を引く
+- 「実は〜」「知らなかった〜」などの言葉を使う
+- 具体的な数字やデータを1つ入れる`
+  },
+  {
+    num: "Pattern 02", name: "ストーリー型", goal: "フォロワーとの信頼関係構築",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: ストーリー型（体験談）
+テーマ: 【例：料理が苦手だった私が毎日自炊できるようになった話】
+ターゲット: 【例：料理に苦手意識がある人】
+文字数: 200〜250文字
+トーン: リアルで等身大、少し感情的
+構成: 「以前の自分 → 転機 → 今の自分」の3段階
+
+条件:
+- 感情の変化を表現する（困った→やってみた→変わった）
+- 読者が「自分もできるかも」と思える終わり方にする
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 03", name: "リスト型", goal: "保存・シェア数アップ",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: リスト型
+テーマ: 【例：冷蔵庫の余り野菜を使い切る5つの方法】
+ターゲット: 【例：食材を無駄にしがちな人】
+文字数: 180〜220文字
+構成: リードコピー（1文）+ 箇条書き（3〜5項目）+ 締めのひと言
+
+条件:
+- リスト項目は短く（各20文字以内）
+- 番号または絵文字で視認性を上げる
+- 「保存して使ってください」などの行動促進フレーズを入れる
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 04", name: "共感型", goal: "コメント・リプライ促進",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: 共感型
+テーマ: 【例：仕事後に料理する気が起きない問題】
+ターゲット: 【例：平日に自炊をがんばりたいが疲れてしまう人】
+文字数: 150〜200文字
+トーン: 優しく、寄り添う
+構成: 共感の表明 + 解決策のヒント + 背中を押す締め
+
+条件:
+- 「〜ですよね」「わかります」などの共感ワードを使う
+- 読者を責めない、比べない
+- 小さな一歩を提案する（ハードルを下げる）
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 05", name: "問いかけ型", goal: "エンゲージメント率アップ",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: 問いかけ型
+テーマ: 【例：みんなの「定番晩ごはん」を教えてほしい】
+文字数: 100〜150文字
+トーン: フレンドリー、会話的
+構成: 問いかけ（1〜2文）+ 自分の答えを先に開示（1文）+ リプライ促進（1文）
+
+条件:
+- 答えやすい具体的な問いにする
+- 「あなたはどうですか？」などの直接呼びかけを入れる
+- 自分の意見を先に言うことで場を作る
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 06", name: "ノウハウ型", goal: "専門性・権威性の向上",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: ノウハウ型（ステップ解説）
+テーマ: 【例：失敗しない鶏むね肉のしっとり調理法】
+文字数: 200〜250文字
+トーン: 丁寧で信頼感がある
+構成: タイトル的な1文 + ステップ（2〜4つ）+ プロのひとこと
+
+条件:
+- 「ポイントは〜」「コツは〜」など専門的な言葉を適度に使う
+- 初心者でもわかる平易な表現にする
+- 読者が「やってみたい」と思える具体性を入れる
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 07", name: "比較型", goal: "説得力・信頼度アップ",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: 比較型（Before/After）
+テーマ: 【例：調味料を揃える前と後で料理の満足度がどう変わったか】
+文字数: 180〜220文字
+構成: Before（1〜2文）+ After（1〜2文）+ 変化の理由（1文）+ 行動促進（1文）
+
+条件:
+- 数字や具体例で差を示す
+- 大げさにしすぎない（リアリティを保つ）
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 08", name: "トレンド型", goal: "新規リーチ・拡散",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: トレンド活用型
+テーマ: 【例：「節約飯」ブームに乗じて低コスト高タンパクレシピを紹介】
+文字数: 150〜200文字
+トーン: タイムリー感があり、軽快
+
+条件:
+- 「今こそ〜」「最近話題の〜」などのフレーズを使う
+- 差別化のある独自の視点を1つ入れる
+- トレンドタグを含むハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 09", name: "引用型", goal: "フォロワーの思考促進",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: 引用・名言型
+テーマ: 【例：「料理は愛情」という言葉について自分の考えを述べる】
+文字数: 150〜200文字
+トーン: 思慮深く、少し詩的
+構成: 引用または印象的な一文 + 自分の解釈・意見 + 読者への問いかけ
+
+条件:
+- 抽象的すぎず、生活に根ざした内容にする
+- ハッシュタグ2〜3個を末尾に追加`
+  },
+  {
+    num: "Pattern 10", name: "シリーズ型", goal: "継続フォロー・定着率アップ",
+    prompt: `以下の内容でThreads投稿を生成してください。
+
+スタイル: シリーズ連投型
+シリーズ名: 【例：「30日自炊チャレンジ」】
+今回の回数: 【例：Day 7】
+今日のトピック: 【例：冷凍食材を上手に使う方法を実践した】
+文字数: 150〜200文字
+トーン: 日記的、親近感
+構成: 何日目かの宣言 + 今日の出来事・気づき + 次回予告
+
+条件:
+- 失敗や迷いも正直に書く（完璧を演じない）
+- 読者も参加できる問いかけを入れる
+- シリーズタグ＋関連ハッシュタグ2〜3個を末尾に追加`
+  }
+];
+
+const CHECKS = [
+  { n: "1", title: "Bufferのプランを確認する", body: "APIを使った自動投稿には <code>Essentials以上のプラン</code> が推奨。無料プランはキューへの追加のみ対応。", warn: null },
+  { n: "2", title: "APIキー（アクセストークン）を取得する", body: "Developer Portal → 「My Apps」→「Create an App」→「Access Token」タブからコピー。", warn: "トークンは一度しか表示されません。必ずメモしてください。" },
+  { n: "3", title: "環境変数にAPIキーを保存する", body: "APIキーはコードに直接書かず <code>.env</code> ファイルに保存。<code>.gitignore</code> への追加も忘れずに。", warn: null },
+  { n: "4", title: "プロフィールID（channel_id）を確認する", body: "<code>/profiles.json</code> にGETリクエストを送ると各SNSアカウントのIDを取得できます。ThreadsのIDはInstagramとは別です。", warn: null },
+  { n: "5", title: "APIリクエストの形式を正しく設定する", body: "Content-Typeは <code>application/x-www-form-urlencoded</code> を指定。ここを間違えると400エラーになります。", warn: null },
+  { n: "6", title: "投稿スケジュールはUTCで指定する", body: "Buffer APIのタイムスタンプはUTC基準。日本時間（JST）は <code>UTC+9</code> なので9時間引いた時刻で指定します。", warn: "例）日本時間 9:00 → UTC 0:00 → 2026-04-01T00:00:00Z" },
+  { n: "7", title: "レート制限（Rate Limit）を考慮する", body: "上限は通常 <code>60リクエスト/分</code>。複数投稿の一括送信は1秒ずつ間隔を空けてください。429エラーは指数バックオフでリトライ。", warn: null },
+  { n: "8", title: "Threads専用の文字数制限を確認する", body: "Threadsの文字数上限は <code>500文字</code>。投稿前にバリデーションを入れておくと安全です。", warn: null },
+  { n: "9", title: "投稿がキューに入ったか確認する", body: "APIレスポンスが200でもBuffer管理画面で実際に反映されているか確認。<code>/updates/pending.json</code> で予約済み投稿一覧も確認できます。", warn: null }
+];
+
+// 特典1 レンダリング
+const grid = document.getElementById('patternGrid');
+PATTERNS.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'pattern-card';
+  card.innerHTML = `
+    <div class="pattern-num">${p.num}</div>
+    <div class="pattern-name">${p.name}</div>
+    <div class="pattern-goal">🎯 ${p.goal}</div>
+    <button class="copy-btn" onclick="copyPrompt(this, ${i})">コピーする</button>
+    <button class="toggle-btn" onclick="togglePrompt(this)">プロンプトを見る ▾</button>
+    <div class="prompt-box">${p.prompt}</div>
+  `;
+  grid.appendChild(card);
+});
+
+function copyPrompt(btn, i) {
+  navigator.clipboard.writeText(PATTERNS[i].prompt).then(() => {
+    btn.textContent = 'コピーしました！'; btn.classList.add('copied');
+    showToast();
+    setTimeout(() => { btn.textContent = 'コピーする'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function togglePrompt(btn) {
+  const box = btn.nextElementSibling;
+  box.classList.toggle('open');
+  btn.textContent = box.classList.contains('open') ? 'プロンプトを閉じる ▴' : 'プロンプトを見る ▾';
+}
+
+// 特典2 レンダリング
+const cl = document.getElementById('checklist');
+CHECKS.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'check-item';
+  item.innerHTML = `
+    <div class="check-icon">${c.n}</div>
+    <div class="check-content">
+      <h4>${c.title}</h4>
+      <p>${c.body}</p>
+      ${c.warn ? `<span class="warn">⚠️ ${c.warn}</span>` : ''}
+    </div>
+  `;
+  cl.appendChild(item);
+});
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
