@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Threads投稿を完全自動化！Manus × Buffer API 設定手順</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff;
+      --bg2: #f7f7fb;
+      --bg3: #ebebef;
+      --accent: #6c5ce7;
+      --accent2: #a29bfe;
+      --threads: #000000;
+      --buffer: #168eea;
+      --manus: #e84393;
+      --text: #111111;
+      --muted: #555577;
+      --border: #dddde8;
+      --radius: 14px;
+      --success: #00b894;
+      --warning: #fdcb6e;
+      --danger: #d63031;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      line-height: 1.8;
+    }
+
+    /* ===== HEADER ===== */
+    .hero {
+      background: linear-gradient(135deg, #000000 0%, #1a1a2e 40%, #6c5ce7 100%);
+      color: #fff;
+      padding: 64px 24px 56px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 999px;
+      padding: 4px 16px;
+      font-size: 12px;
+      letter-spacing: .1em;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(22px, 5vw, 36px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--accent2); }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,.75);
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+    .hero-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .tag {
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .tag-threads { background: #fff; color: #000; }
+    .tag-buffer  { background: var(--buffer); color: #fff; }
+    .tag-manus   { background: var(--manus); color: #fff; }
+
+    /* ===== LAYOUT ===== */
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+    .toc-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; margin: 40px 0; }
+    .toc-wrap h2 { font-size: 15px; font-weight: 800; margin-bottom: 14px; color: var(--accent); }
+    .toc ol { padding-left: 20px; }
+    .toc li { font-size: 14px; margin-bottom: 6px; }
+    .toc a { color: var(--muted); text-decoration: none; }
+    .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+    /* ===== SECTIONS ===== */
+    .section { margin-bottom: 56px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-num {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 16px;
+      flex-shrink: 0;
+    }
+    .section h2 { font-size: 20px; font-weight: 800; }
+
+    h3 { font-size: 16px; font-weight: 700; margin: 24px 0 10px; color: var(--text); }
+    p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    ul, ol { padding-left: 20px; margin-bottom: 12px; }
+    li { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    strong { color: var(--text); }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card-accent-threads { border-left: 4px solid var(--threads); }
+    .card-accent-buffer  { border-left: 4px solid var(--buffer); }
+    .card-accent-manus   { border-left: 4px solid var(--manus); }
+
+    .info-box {
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .info-box.tip    { background: #e8f8f5; border: 1px solid #00b894; color: #006a52; }
+    .info-box.warn   { background: #fffbee; border: 1px solid #fdcb6e; color: #7a5c00; }
+    .info-box.danger { background: #fff0f0; border: 1px solid #d63031; color: #8b0000; }
+    .info-box .label { font-weight: 800; margin-bottom: 4px; display: block; }
+
+    /* ===== STEPS ===== */
+    .steps { counter-reset: step; list-style: none; padding-left: 0; }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 18px;
+      color: var(--muted);
+    }
+    .steps li::before {
+      content: counter(step);
+      min-width: 28px; height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .steps li span { font-size: 14px; }
+
+    /* ===== CODE ===== */
+    .code-block {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin: 14px 0;
+      line-height: 1.7;
+    }
+    .code-block .comment { color: #6c7086; }
+    .code-block .key     { color: #89b4fa; }
+    .code-block .val     { color: #a6e3a1; }
+    .code-block .str     { color: #f38ba8; }
+
+    code {
+      background: var(--bg3);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* ===== FLOW DIAGRAM ===== */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 24px 0;
+    }
+    .flow-box {
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      min-width: 100px;
+    }
+    .flow-box.threads { background: #000; }
+    .flow-box.buffer  { background: var(--buffer); }
+    .flow-box.manus   { background: var(--manus); }
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--accent2);
+      padding: 0 8px;
+      font-weight: 900;
+    }
+
+    /* ===== TABLE ===== */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+    th {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); }
+    tr:nth-child(even) td { background: var(--bg2); }
+
+    /* ===== CHECKLIST ===== */
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .checklist li::before {
+      content: "☐";
+      font-size: 16px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ===== FAQ ===== */
+    details {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    summary {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      background: var(--bg2);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    summary::before { content: "Q."; color: var(--accent); font-weight: 900; }
+    details[open] summary { border-bottom: 1px solid var(--border); }
+    .faq-answer { padding: 14px 18px; font-size: 14px; color: var(--muted); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 64px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .flow { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">完全自動化ガイド 2026年版</div>
+  <h1>Threads投稿を<span>完全自動化</span>！<br>Manus × Buffer API<br>設定手順</h1>
+  <p>ManusのAIエージェントとBuffer APIを連携させて、Threadsへの投稿をノーコードで全自動化する手順を丁寧に解説します。</p>
+  <div class="hero-tags">
+    <span class="tag tag-threads">Threads</span>
+    <span class="tag tag-buffer">Buffer API</span>
+    <span class="tag tag-manus">Manus AI</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 目次 -->
+  <div class="toc-wrap">
+    <h2>目次</h2>
+    <nav class="toc">
+      <ol>
+        <li><a href="#overview">仕組みの全体像</a></li>
+        <li><a href="#prereq">事前に用意するもの</a></li>
+        <li><a href="#buffer-setup">Buffer アカウント＆API設定</a></li>
+        <li><a href="#threads-connect">ThreadsをBufferに接続する</a></li>
+        <li><a href="#manus-setup">Manusのセットアップ</a></li>
+        <li><a href="#workflow">自動化ワークフローを構築する</a></li>
+        <li><a href="#test">テスト投稿＆動作確認</a></li>
+        <li><a href="#tips">運用のコツ＆応用例</a></li>
+        <li><a href="#faq">よくある質問</a></li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- 1. 全体像 -->
+  <div class="section" id="overview">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>仕組みの全体像</h2>
+    </div>
+
+    <p>このガイドでは <strong>Manus（AIエージェント）</strong> が文章を自動生成し、<strong>Buffer API</strong> 経由でThreadsへ予約投稿するフローを構築します。一度設定すれば、あとは完全に自動で回り続けます。</p>
+
+    <div class="flow">
+      <div class="flow-box manus">Manus<br><small>文章生成・指示</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box buffer">Buffer API<br><small>スケジュール管理</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box threads">Threads<br><small>自動投稿</small></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>ツール</th><th>役割</th><th>料金</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Manus</strong></td><td>AIエージェント。投稿文の生成・API呼び出しを自動実行</td><td>無料プランあり</td></tr>
+        <tr><td><strong>Buffer</strong></td><td>SNS予約投稿ツール。Threads公式対応済み</td><td>無料プランあり（月10件）</td></tr>
+        <tr><td><strong>Threads</strong></td><td>Metaが運営するSNS。Buffer経由で投稿可能</td><td>無料</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box tip">
+      <span class="label">ポイント</span>
+      Buffer は Threads の公式APIパートナーです。個人トークンを直接扱う必要がないため、設定がシンプルで安全です。
+    </div>
+  </div>
+
+  <!-- 2. 事前準備 -->
+  <div class="section" id="prereq">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>事前に用意するもの</h2>
+    </div>
+
+    <p>作業開始前に以下をすべて準備してください。</p>
+
+    <ul class="checklist">
+      <li>Threads アカウント（Instagramアカウントに紐づいているもの）</li>
+      <li>Buffer アカウント（<strong>buffer.com</strong> で無料作成）</li>
+      <li>Manus アカウント（<strong>manus.im</strong> で無料作成）</li>
+      <li>PCまたはスマホのブラウザ（Chrome推奨）</li>
+    </ul>
+
+    <div class="info-box warn">
+      <span class="label">注意</span>
+      Threadsの自動投稿にはInstagramアカウントとの連携が必須です。Instagramにログインできる状態にしておいてください。
+    </div>
+  </div>
+
+  <!-- 3. Buffer設定 -->
+  <div class="section" id="buffer-setup">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Buffer アカウント＆API設定</h2>
+    </div>
+
+    <h3>3-1. Bufferアカウントを作成する</h3>
+    <ol class="steps">
+      <li><span><strong>buffer.com</strong> にアクセスし「Get started for free」をクリック</span></li>
+      <li><span>メールアドレスとパスワードを入力して登録（Googleアカウント連携も可）</span></li>
+      <li><span>届いた確認メールのリンクをクリックしてアクティベート</span></li>
+      <li><span>ダッシュボードにログインできれば完了</span></li>
+    </ol>
+
+    <h3>3-2. Buffer APIキーを取得する</h3>
+    <ol class="steps">
+      <li><span>Buffer ダッシュボード右上のアバターアイコン →「<strong>Account Settings</strong>」をクリック</span></li>
+      <li><span>左メニューの「<strong>API Access</strong>」を選択</span></li>
+      <li><span>「<strong>Create Token</strong>」ボタンをクリック</span></li>
+      <li><span>トークン名を入力（例：<code>manus-threads-bot</code>）して「Generate」</span></li>
+      <li><span>表示されたトークンを <strong>必ずこの画面でコピー</strong>して保存（再表示不可）</span></li>
+    </ol>
+
+    <div class="card card-accent-buffer">
+      <h3 style="margin-top:0;">コピーしたAPIキーの例</h3>
+      <div class="code-block">
+<span class="comment"># Buffer API Access Token（例）</span>
+<span class="key">BUFFER_TOKEN</span>=<span class="val">1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxx.yyy</span>
+      </div>
+      <p style="margin:0; font-size:12px;">このトークンはパスワードと同等です。絶対に他人に教えないでください。</p>
+    </div>
+
+    <div class="info-box danger">
+      <span class="label">重要</span>
+      APIキーはページを閉じると二度と表示されません。メモ帳やパスワードマネージャーに今すぐ保存してください。
+    </div>
+  </div>
+
+  <!-- 4. Threads接続 -->
+  <div class="section" id="threads-connect">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>ThreadsをBufferに接続する</h2>
+    </div>
+
+    <ol class="steps">
+      <li><span>Buffer ダッシュボードの左サイドバー「<strong>Channels</strong>」→「<strong>Connect a Channel</strong>」</span></li>
+      <li><span>SNS一覧から「<strong>Threads</strong>」を選択</span></li>
+      <li><span>「<strong>Connect Threads</strong>」ボタンをクリックするとMeta/Instagramのログイン画面が開く</span></li>
+      <li><span>Instagramのユーザー名とパスワードを入力してログイン</span></li>
+      <li><span>「Bufferに〇〇へのアクセスを許可しますか？」→「<strong>許可</strong>」をクリック</span></li>
+      <li><span>Bufferダッシュボードに戻り、Threadsアイコンが表示されれば接続完了</span></li>
+    </ol>
+
+    <div class="info-box tip">
+      <span class="label">確認方法</span>
+      左サイドバーの「Channels」にThreadsのアイコンが緑色で表示されていれば正常に接続されています。
+    </div>
+
+    <h3>チャンネルIDを確認する（後で使います）</h3>
+    <ol class="steps">
+      <li><span>Buffer ダッシュボードで Threads チャンネルをクリック</span></li>
+      <li><span>URLを確認：<code>https://publish.buffer.com/profile/<strong>xxxxxxxxxx</strong>/queue</code></span></li>
+      <li><span>この <code>xxxxxxxxxx</code> の部分が <strong>チャンネルID</strong> です。メモしておく</span></li>
+    </ol>
+  </div>
+
+  <!-- 5. Manusセットアップ -->
+  <div class="section" id="manus-setup">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Manusのセットアップ</h2>
+    </div>
+
+    <h3>5-1. Manusアカウント作成</h3>
+    <ol class="steps">
+      <li><span><strong>manus.im</strong> にアクセスし「Get Started」をクリック</span></li>
+      <li><span>Googleアカウントまたはメールアドレスでサインアップ</span></li>
+      <li><span>ダッシュボードにログインし、初回チュートリアルを完了させる</span></li>
+    </ol>
+
+    <h3>5-2. Manus に環境変数（秘密情報）を登録する</h3>
+    <p>ManusエージェントがBuffer APIを呼び出せるよう、APIキーとチャンネルIDを登録します。</p>
+
+    <ol class="steps">
+      <li><span>Manusダッシュボード右上の「<strong>Settings</strong>（⚙）」アイコンをクリック</span></li>
+      <li><span>「<strong>Secrets / Environment Variables</strong>」セクションへ移動</span></li>
+      <li><span>「Add Secret」ボタンをクリックし、以下の2つを登録する</span></li>
+    </ol>
+
+    <div class="card card-accent-manus">
+      <h3 style="margin-top:0;">登録する変数</h3>
+      <div class="code-block">
+<span class="comment"># 変数名          値</span>
+<span class="key">BUFFER_TOKEN</span>    = <span class="val">（手順3-2でコピーしたAPIキー）</span>
+<span class="key">BUFFER_CHANNEL</span>  = <span class="val">（手順4でメモしたチャンネルID）</span>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <span class="label">なぜSecretに登録するの？</span>
+      プロンプトに直接APIキーを書くとログに残る危険があります。Secrets機能を使えば暗号化されて安全に管理できます。
+    </div>
+  </div>
+
+  <!-- 6. ワークフロー構築 -->
+  <div class="section" id="workflow">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>自動化ワークフローを構築する</h2>
+    </div>
+
+    <h3>6-1. Manusでエージェントタスクを作成する</h3>
+    <p>Manusの新規タスク画面を開き、以下のプロンプトをそのままコピー＆ペーストしてください。</p>
+
+    <div class="card card-accent-manus">
+      <h3 style="margin-top:0;">Manus プロンプトテンプレート（コピー用）</h3>
+      <div class="code-block">
+以下の手順を実行してください。
+
+1. 今日のトレンドを参考に、Threads向けの短い投稿文を1件作成する。
+   - 150文字以内
+   - 絵文字を1〜3個含める
+   - ハッシュタグを2〜3個末尾に追加する
+
+2. 作成した投稿文を Buffer API で予約投稿する。
+   - エンドポイント: https://api.bufferapp.com/1/updates/create.json
+   - 認証: Bearer $BUFFER_TOKEN
+   - profile_ids: $BUFFER_CHANNEL
+   - scheduled_at: 今から2時間後のUTC時刻（ISO 8601形式）
+   - text: 手順1で作成した投稿文
+
+3. APIレスポンスを確認し、成功した場合は投稿IDを報告する。
+   失敗した場合はエラー内容を報告する。
+      </div>
+    </div>
+
+    <h3>6-2. Buffer APIのリクエスト仕様（参考）</h3>
+
+    <div class="code-block">
+<span class="comment"># Buffer API — 投稿作成リクエスト例</span>
+<span class="key">POST</span> https://api.bufferapp.com/1/updates/create.json
+
+<span class="comment"># ヘッダー</span>
+Authorization: Bearer <span class="val">${BUFFER_TOKEN}</span>
+Content-Type: application/x-www-form-urlencoded
+
+<span class="comment"># ボディ</span>
+<span class="key">profile_ids[]</span>=<span class="val">${BUFFER_CHANNEL}</span>
+<span class="key">text</span>=<span class="str">今日も一日がんばろう！🌅 #朝活 #Threads</span>
+<span class="key">scheduled_at</span>=<span class="val">2026-03-31T09:00:00+0000</span>
+<span class="key">now</span>=<span class="val">false</span>
+    </div>
+
+    <h3>6-3. 定期実行（スケジュール）の設定</h3>
+    <p>毎日自動で動かすには、Manusのスケジュール機能を使います。</p>
+    <ol class="steps">
+      <li><span>作成したタスクの「<strong>…</strong>」メニュー →「<strong>Schedule</strong>」をクリック</span></li>
+      <li><span>実行頻度を選択（例：毎日 07:00 JST）</span></li>
+      <li><span>「<strong>Save Schedule</strong>」で保存</span></li>
+      <li><span>タスク一覧に時計アイコンが表示されれば設定完了</span></li>
+    </ol>
+
+    <div class="info-box tip">
+      <span class="label">おすすめのスケジュール</span>
+      Threadsのエンゲージメントが高い時間帯は <strong>朝7〜9時</strong> と <strong>夜20〜22時</strong>（JST）です。まずは1日1回から始めてみましょう。
+    </div>
+  </div>
+
+  <!-- 7. テスト -->
+  <div class="section" id="test">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>テスト投稿＆動作確認</h2>
+    </div>
+
+    <h3>手動でテスト実行する</h3>
+    <ol class="steps">
+      <li><span>Manusダッシュボードでタスクを開き「<strong>Run Now</strong>」ボタンをクリック</span></li>
+      <li><span>エージェントのログが流れ始めるのを確認する</span></li>
+      <li><span>ログ末尾に <code>"id": "xxxxxxxxxx", "status": "buffer"</code> と表示されれば成功</span></li>
+      <li><span>Bufferダッシュボード →「<strong>Queue</strong>」タブで予約された投稿を確認する</span></li>
+      <li><span>Threadsアプリで実際に投稿されたか確認する</span></li>
+    </ol>
+
+    <h3>エラーが出た場合のチェックリスト</h3>
+    <ul class="checklist">
+      <li>BUFFER_TOKEN が正しくコピーされているか（前後にスペースがないか）</li>
+      <li>BUFFER_CHANNEL がThreadsチャンネルのIDになっているか</li>
+      <li>BufferのThreadsチャンネルが「接続済み」になっているか</li>
+      <li>Bufferの無料プランの月10件制限に達していないか</li>
+      <li>scheduled_at の時刻が現在より未来になっているか</li>
+    </ul>
+  </div>
+
+  <!-- 8. Tips -->
+  <div class="section" id="tips">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>運用のコツ＆応用例</h2>
+    </div>
+
+    <div class="card card-accent-threads">
+      <h3 style="margin-top:0;">投稿クオリティを上げるプロンプト改善</h3>
+      <p>プロンプトに以下を追加するとよりターゲットに刺さる投稿になります。</p>
+      <ul>
+        <li>「ターゲット読者：30代女性、副業・節約に興味あり」</li>
+        <li>「口調：友達に話しかけるようなフランクな文体」</li>
+        <li>「過去の投稿との重複を避けること」</li>
+      </ul>
+    </div>
+
+    <div class="card card-accent-buffer">
+      <h3 style="margin-top:0;">複数SNSへの同時投稿</h3>
+      <p>Buffer の <code>profile_ids[]</code> に複数のチャンネルIDを渡すと、ThreadsとX（Twitter）、Instagramに同時投稿できます。</p>
+      <div class="code-block">
+<span class="key">profile_ids[]</span>=<span class="val">threads_channel_id</span>
+<span class="key">profile_ids[]</span>=<span class="val">twitter_channel_id</span>
+<span class="key">profile_ids[]</span>=<span class="val">instagram_channel_id</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-manus">
+      <h3 style="margin-top:0;">noteやブログの更新を自動告知</h3>
+      <p>ManusにRSSフィードを監視させ、新記事が公開されたら自動でThreadsに告知投稿することも可能です。プロンプトに以下を追加してください。</p>
+      <div class="code-block">
+<span class="comment"># noteの最新記事を取得して投稿文を生成する</span>
+RSSフィード: https://note.com/<span class="val">あなたのユーザーID</span>/rss
+
+未投稿の最新記事タイトルとURLを取得し、
+「新しい記事を公開しました！」という紹介文と
+一緒にThreadsへ投稿してください。
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. FAQ -->
+  <div class="section" id="faq">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>よくある質問</h2>
+    </div>
+
+    <details>
+      <summary>Bufferの無料プランでは何件まで投稿できますか？</summary>
+      <div class="faq-answer">無料プランでは月10件まで予約投稿できます。毎日投稿したい場合は月$6〜の有料プランへのアップグレードをおすすめします。年払いにするとさらに割安になります。</div>
+    </details>
+
+    <details>
+      <summary>Manusは日本語に対応していますか？</summary>
+      <div class="faq-answer">はい、Manusは日本語のプロンプトに対応しています。プロンプトをそのまま日本語で書いても問題なく動作します。</div>
+    </details>
+
+    <details>
+      <summary>投稿が重複してしまいます。どうすればいいですか？</summary>
+      <div class="faq-answer">Manusのプロンプトに「過去7日間に投稿した内容と重複しないようにすること」と明記してください。また、Bufferの「Sent」タブに蓄積された投稿履歴をManusに読み込ませる仕組みを追加するとより効果的です。</div>
+    </details>
+
+    <details>
+      <summary>Buffer APIのレート制限はありますか？</summary>
+      <div class="faq-answer">Buffer APIには1分あたり約60リクエストのレート制限があります。大量の投稿を一度に作成しようとするとエラーになる場合があります。1リクエストずつ間隔を置いて処理するようManusのプロンプトに指示を追加してください。</div>
+    </details>
+
+    <details>
+      <summary>Threadsのアカウントが凍結されないか心配です。</summary>
+      <div class="faq-answer">Buffer はMeta公認のAPIパートナーであるため、Buffer経由の投稿は規約違反になりません。ただし、1日に大量の投稿（目安：10件以上）を行うとスパム判定されるリスクがあります。1日1〜3件程度の頻度に抑えることをおすすめします。</div>
+    </details>
+
+    <details>
+      <summary>ManusとBufferの料金が気になります。無料で運用できますか？</summary>
+      <div class="faq-answer">Manusの無料プランとBufferの無料プランを組み合わせれば、月10件までは完全無料で運用できます。毎日投稿したい場合はBuffer有料プラン（月$6〜）への移行を検討してください。</div>
+    </details>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p>このガイドは2026年3月時点の情報に基づいています。各サービスのUI・仕様は変更される場合があります。</p>
+  <p style="margin-top:8px;">© 2026 きりんくん</p>
+</footer>
+
+</body>
+</html>
