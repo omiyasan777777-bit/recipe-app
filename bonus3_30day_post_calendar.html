@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>特典3: 30日分投稿カレンダー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 24px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .btn-export { background: #4CAF50; color: white; }
+    .btn-export:hover { background: #43a047; }
+    .btn-import { background: #2196F3; color: white; }
+    .btn-import:hover { background: #1e88e5; }
+    .btn-reset { background: #f44336; color: white; }
+    .btn-reset:hover { background: #e53935; }
+    .btn-help { background: #FF9800; color: white; }
+    .btn-help:hover { background: #fb8c00; }
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .stat-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .chip-total { background: #e3f2fd; color: #1565c0; }
+    .chip-done  { background: #e8f5e9; color: #2e7d32; }
+    .chip-ok    { background: #f3e5f5; color: #6a1b9a; }
+    .chip-ng    { background: #ffebee; color: #b71c1c; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      font-size: 0.82rem;
+    }
+    thead th {
+      background: #1a1a2e;
+      color: white;
+      padding: 10px 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: #fafafa; }
+    tbody tr:hover { background: #e8f4fd; }
+    td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+      text-align: center;
+    }
+    td.day-num {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #555;
+      width: 42px;
+    }
+    td.date-col { white-space: nowrap; color: #666; width: 80px; }
+    td.type-col { width: 90px; }
+    td.text-col { text-align: left; min-width: 160px; }
+    td.status-col { width: 70px; }
+    td.quality-col { width: 70px; }
+    td.note-col { text-align: left; min-width: 120px; }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: transparent;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2196F3;
+      background: white;
+    }
+    textarea { resize: vertical; min-height: 36px; }
+    select.status-select { font-weight: bold; }
+    .status-draft    { color: #888; }
+    .status-scheduled{ color: #1565c0; }
+    .status-posted   { color: #2e7d32; }
+    .status-skip     { color: #b71c1c; }
+    select.quality-select { font-weight: bold; }
+    .quality-ok  { color: #6a1b9a; }
+    .quality-ng  { color: #b71c1c; }
+    .quality-rev { color: #e65100; }
+    .quality-na  { color: #aaa; }
+
+    .legend {
+      margin-top: 20px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .legend h3 { margin-bottom: 10px; font-size: 0.95rem; }
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 { margin-bottom: 12px; font-size: 1.1rem; }
+    .modal p { font-size: 0.85rem; line-height: 1.7; margin-bottom: 8px; color: #444; }
+    .modal .close-btn {
+      margin-top: 16px;
+      padding: 8px 20px;
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      table { font-size: 0.72rem; }
+      .controls { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>📅 30日分 Threads投稿カレンダー</h1>
+<p class="subtitle">特典3 | 投稿の計画・管理・品質チェックに使えるテンプレート</p>
+
+<div class="controls">
+  <button class="btn-export" onclick="exportCSV()">📥 CSVエクスポート</button>
+  <button class="btn-import" onclick="document.getElementById('importFile').click()">📤 CSVインポート</button>
+  <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importCSV(event)" />
+  <button class="btn-export" onclick="saveToLocal()" style="background:#607D8B">💾 ローカル保存</button>
+  <button class="btn-import" onclick="loadFromLocal()" style="background:#795548">📂 ローカル読込</button>
+  <button class="btn-reset" onclick="resetAll()">🔄 リセット</button>
+  <button class="btn-help" onclick="document.getElementById('helpModal').classList.add('active')">❓ 使い方</button>
+</div>
+
+<div class="stats-bar">
+  <span class="stat-chip chip-total" id="stat-total">合計: 30件</span>
+  <span class="stat-chip chip-done" id="stat-posted">投稿済: 0件</span>
+  <span class="stat-chip chip-ok" id="stat-ok">品質OK: 0件</span>
+  <span class="stat-chip chip-ng" id="stat-ng">要修正: 0件</span>
+</div>
+
+<div style="overflow-x:auto;">
+<table id="calTable">
+  <thead>
+    <tr>
+      <th>Day</th>
+      <th>日付</th>
+      <th>投稿タイプ</th>
+      <th>投稿テキスト（概要）</th>
+      <th>ステータス</th>
+      <th>品質チェック</th>
+      <th>メモ・改善点</th>
+    </tr>
+  </thead>
+  <tbody id="calBody"></tbody>
+</table>
+</div>
+
+<div class="legend">
+  <h3>凡例</h3>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#e3f2fd;color:#1565c0">下書き</span>
+      <span>まだ作成中</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#e8eaf6;color:#1a237e">予約済</span>
+      <span>Bufferにキュー追加済</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#e8f5e9;color:#1b5e20">投稿済</span>
+      <span>Threadsに公開済み</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#ffebee;color:#b71c1c">スキップ</span>
+      <span>この日は投稿しない</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#f3e5f5;color:#4a148c">OK</span>
+      <span>品質チェック通過</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#ffebee;color:#b71c1c">NG</span>
+      <span>修正が必要</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#fff3e0;color:#bf360c">要確認</span>
+      <span>あとで再チェック</span>
+    </div>
+  </div>
+</div>
+
+<!-- ヘルプモーダル -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <h2>📖 使い方ガイド</h2>
+    <p><strong>1. 日付を設定</strong><br>「日付」列をクリックしてスタート日を入力。残りの日付は自動で入力してください。</p>
+    <p><strong>2. 投稿タイプを選択</strong><br>気づき型・ストーリー型・リスト型など、特典1のプロンプトに対応したタイプを選びます。</p>
+    <p><strong>3. テキスト概要を記入</strong><br>投稿の要点・ネタをメモしておきます。実際の投稿文はClaudeで生成してください。</p>
+    <p><strong>4. ステータスを更新</strong><br>「下書き→予約済→投稿済」の順にステータスを変えていきます。</p>
+    <p><strong>5. 品質チェック</strong><br>投稿前に自分でチェックし「OK/NG/要確認」を設定します。NGの場合はメモ欄に修正点を記入。</p>
+    <p><strong>6. エクスポート・保存</strong><br>CSVエクスポートでExcel/Googleスプレッドシートに貼り付けられます。「ローカル保存」でブラウザに保存もできます。</p>
+    <button class="close-btn" onclick="document.getElementById('helpModal').classList.remove('active')">閉じる</button>
+  </div>
+</div>
+
+<script>
+const POST_TYPES = [
+  "気づき型",
+  "ストーリー型",
+  "リスト型",
+  "共感型",
+  "問いかけ型",
+  "ノウハウ型",
+  "比較型",
+  "トレンド型",
+  "引用型",
+  "シリーズ型"
+];
+
+const STATUSES = [
+  { value: "draft",     label: "下書き",  cls: "status-draft" },
+  { value: "scheduled", label: "予約済",  cls: "status-scheduled" },
+  { value: "posted",    label: "投稿済",  cls: "status-posted" },
+  { value: "skip",      label: "スキップ",cls: "status-skip" }
+];
+
+const QUALITIES = [
+  { value: "na",  label: "未チェック", cls: "quality-na" },
+  { value: "ok",  label: "OK",         cls: "quality-ok" },
+  { value: "ng",  label: "NG",         cls: "quality-ng" },
+  { value: "rev", label: "要確認",     cls: "quality-rev" }
+];
+
+// デフォルトデータを生成
+function defaultData() {
+  const today = new Date();
+  return Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return {
+      day: i + 1,
+      date: d.toISOString().slice(0, 10),
+      type: POST_TYPES[i % POST_TYPES.length],
+      text: "",
+      status: "draft",
+      quality: "na",
+      note: ""
+    };
+  });
+}
+
+let data = defaultData();
+
+function renderTable() {
+  const tbody = document.getElementById("calBody");
+  tbody.innerHTML = "";
+  data.forEach((row, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="day-num">Day ${row.day}</td>
+      <td class="date-col"><input type="date" value="${row.date}" onchange="update(${idx},'date',this.value)" /></td>
+      <td class="type-col">
+        <select onchange="update(${idx},'type',this.value)">
+          ${POST_TYPES.map(t => `<option value="${t}" ${row.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </td>
+      <td class="text-col"><textarea rows="2" placeholder="投稿のネタ・概要をメモ" onchange="update(${idx},'text',this.value)">${row.text}</textarea></td>
+      <td class="status-col">
+        <select class="status-select ${getStatusClass(row.status)}" onchange="updateStatus(${idx},this.value);this.className='status-select '+getStatusClass(this.value)">
+          ${STATUSES.map(s => `<option value="${s.value}" ${row.status===s.value?'selected':''}>${s.label}</option>`).join('')}
+        </select>
+      </td>
+      <td class="quality-col">
+        <select class="quality-select ${getQualityClass(row.quality)}" onchange="updateQuality(${idx},this.value);this.className='quality-select '+getQualityClass(this.value)">
+          ${QUALITIES.map(q => `<option value="${q.value}" ${row.quality===q.value?'selected':''}>${q.label}</option>`).join('')}
+        </select>
+      </td>
+      <td class="note-col"><textarea rows="2" placeholder="修正点・気づきなど" onchange="update(${idx},'note',this.value)">${row.note}</textarea></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateStats();
+}
+
+function getStatusClass(v) { return (STATUSES.find(s=>s.value===v)||{cls:''}).cls; }
+function getQualityClass(v) { return (QUALITIES.find(q=>q.value===v)||{cls:''}).cls; }
+
+function update(idx, key, val) {
+  data[idx][key] = val;
+  updateStats();
+}
+function updateStatus(idx, val) { data[idx].status = val; updateStats(); }
+function updateQuality(idx, val) { data[idx].quality = val; updateStats(); }
+
+function updateStats() {
+  const posted = data.filter(r => r.status === 'posted').length;
+  const ok     = data.filter(r => r.quality === 'ok').length;
+  const ng     = data.filter(r => r.quality === 'ng').length;
+  document.getElementById('stat-total').textContent  = `合計: ${data.length}件`;
+  document.getElementById('stat-posted').textContent = `投稿済: ${posted}件`;
+  document.getElementById('stat-ok').textContent     = `品質OK: ${ok}件`;
+  document.getElementById('stat-ng').textContent     = `要修正: ${ng}件`;
+}
+
+// CSV エクスポート
+function exportCSV() {
+  const header = ["Day","日付","投稿タイプ","投稿テキスト概要","ステータス","品質チェック","メモ・改善点"];
+  const rows = data.map(r => [
+    `Day ${r.day}`, r.date, r.type,
+    `"${r.text.replace(/"/g,'""')}"`,
+    STATUSES.find(s=>s.value===r.status)?.label || r.status,
+    QUALITIES.find(q=>q.value===r.quality)?.label || r.quality,
+    `"${r.note.replace(/"/g,'""')}"`
+  ]);
+  const csv = [header, ...rows].map(r => r.join(",")).join("\n");
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '30日投稿カレンダー.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// CSV インポート
+function importCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines = e.target.result.replace(/^\uFEFF/, '').split('\n').slice(1);
+    lines.forEach((line, idx) => {
+      if (!line.trim() || idx >= data.length) return;
+      const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+      const clean = v => (v || '').replace(/^"|"$/g,'').replace(/""/g,'"').trim();
+      if (data[idx]) {
+        data[idx].date    = clean(cols[1]) || data[idx].date;
+        data[idx].type    = POST_TYPES.includes(clean(cols[2])) ? clean(cols[2]) : data[idx].type;
+        data[idx].text    = clean(cols[3]);
+        data[idx].status  = STATUSES.find(s=>s.label===clean(cols[4]))?.value || 'draft';
+        data[idx].quality = QUALITIES.find(q=>q.label===clean(cols[5]))?.value || 'na';
+        data[idx].note    = clean(cols[6]);
+      }
+    });
+    renderTable();
+    alert('CSVをインポートしました。');
+  };
+  reader.readAsText(file, 'UTF-8');
+  event.target.value = '';
+}
+
+// ローカルストレージ
+function saveToLocal() {
+  localStorage.setItem('postCalendar30', JSON.stringify(data));
+  alert('ブラウザに保存しました。');
+}
+function loadFromLocal() {
+  const saved = localStorage.getItem('postCalendar30');
+  if (!saved) { alert('保存データが見つかりません。'); return; }
+  data = JSON.parse(saved);
+  renderTable();
+  alert('データを読み込みました。');
+}
+function resetAll() {
+  if (!confirm('全データをリセットしますか？')) return;
+  data = defaultData();
+  renderTable();
+}
+
+// ページ読み込み時
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('postCalendar30');
+  if (saved) {
+    try { data = JSON.parse(saved); } catch(e) { data = defaultData(); }
+  }
+  renderTable();
+});
+</script>
+</body>
+</html>
