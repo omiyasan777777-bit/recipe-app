@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>比喩テンプレート集｜「[現状]は[日常の失敗]と同じだ」型の比喩を作る公式</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6c5ce7; --accent2: #8b7cf8; --bg: #f9f8ff;
+      --border: #dddde8; --text: #111111; --muted: #666688;
+      --green: #00b894; --orange: #e17055; --blue: #0984e3; --pink: #fd79a8;
+      --red: #d63031;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.7; padding: 24px;
+    }
+    .page { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 40px 48px; box-shadow: 0 4px 24px rgba(108,92,231,.1); }
+    .badge { display: inline-block; background: rgba(108,92,231,.1); color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px; }
+    h1 { font-size: 1.7rem; font-weight: 900; margin-bottom: 8px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .intro-box { background: rgba(108,92,231,.05); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 36px; font-size: 14px; color: var(--muted); }
+
+    /* Formula */
+    .formula-box {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border-radius: 14px; padding: 24px 28px; margin-bottom: 36px; text-align: center;
+    }
+    .formula-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; opacity: .8; margin-bottom: 10px; }
+    .formula-text { font-size: 1.4rem; font-weight: 900; line-height: 1.5; }
+    .formula-text span { background: rgba(255,255,255,.2); border-radius: 6px; padding: 2px 10px; margin: 0 4px; }
+
+    /* Pattern sections */
+    .section { margin-bottom: 40px; }
+    .section-title {
+      font-size: 15px; font-weight: 800; padding: 10px 18px; border-radius: 10px;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title.green { background: rgba(0,184,148,.1); color: #00836a; }
+    .section-title.blue { background: rgba(9,132,227,.1); color: #0660a9; }
+    .section-title.orange { background: rgba(225,112,85,.1); color: #b85a40; }
+    .section-title.purple { background: rgba(108,92,231,.1); color: var(--accent); }
+    .section-title.pink { background: rgba(253,121,168,.1); color: #c0395e; }
+
+    /* Example cards */
+    .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .example-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-size: 13px; background: #fafafe; position: relative; }
+    .example-card .label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .05em; margin-bottom: 6px; }
+    .example-card .text { font-weight: 700; color: var(--text); line-height: 1.5; }
+    .example-card .copy-btn { position: absolute; top: 10px; right: 10px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; padding: 3px 10px; cursor: pointer; opacity: 0; transition: opacity .2s; }
+    .example-card:hover .copy-btn { opacity: 1; }
+
+    /* Generator */
+    .generator { border: 2px solid var(--accent); border-radius: 14px; padding: 24px; margin-top: 36px; }
+    .generator-title { font-size: 15px; font-weight: 900; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .gen-row { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+    .gen-row label { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; padding-top: 10px; min-width: 100px; }
+    .gen-row input[type="text"], .gen-row select {
+      flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: #fafafe; transition: border .2s; min-width: 200px;
+    }
+    .gen-row input:focus, .gen-row select:focus { outline: none; border-color: var(--accent); background: #fff; }
+
+    .output-box {
+      margin-top: 20px; background: #f0eeff; border-radius: 10px; padding: 20px 24px;
+      font-size: 15px; font-weight: 800; color: var(--accent); line-height: 1.7; min-height: 60px;
+      border: 2px dashed var(--accent2); display: flex; align-items: center;
+    }
+    .output-placeholder { color: #bbb; font-weight: 400; font-size: 14px; }
+
+    .gen-btn { background: var(--accent); color: #fff; border: none; border-radius: 999px; padding: 12px 28px; font-size: 14px; font-weight: 800; cursor: pointer; transition: all .2s; display: block; margin: 16px auto 0; }
+    .gen-btn:hover { background: var(--accent2); transform: translateY(-2px); }
+
+    /* Patterns reference */
+    .pattern-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    .pattern-table th { background: #f0eeff; color: var(--muted); font-size: 12px; font-weight: 700; padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--border); }
+    .pattern-table td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+    .pattern-table tr:last-child td { border-bottom: none; }
+    .pattern-name { font-weight: 800; color: var(--accent); font-size: 12px; }
+    .pattern-form { font-style: italic; color: var(--muted); font-size: 12px; }
+    .pattern-example { color: var(--text); }
+
+    .work-section { margin-top: 36px; border-top: 2px solid var(--border); padding-top: 28px; }
+    .work-title { font-size: 15px; font-weight: 900; margin-bottom: 16px; }
+    textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 12px 14px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: #fafafe; resize: vertical; min-height: 80px; transition: border .2s;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .work-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .work-block { margin-bottom: 20px; }
+
+    .action-bar { margin-top: 28px; display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap; }
+    .btn { padding: 10px 24px; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all .2s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(108,92,231,.05); }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 600px) { .page { padding: 24px 16px; } .example-grid { grid-template-columns: 1fr; } .gen-row { flex-direction: column; } .gen-row label { padding-top: 0; } }
+    @media print { body { padding: 0; background: #fff; } .page { box-shadow: none; } .action-bar, .gen-btn, .copy-btn { display: none; } }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">比喩テンプレート集</div>
+  <h1>比喩テンプレート集<br>「[現状]は[日常の失敗]と同じだ」公式</h1>
+  <p class="subtitle">抽象的な概念を日常のシーンで例えるだけで、読者の「わかる！」が爆発的に増える。</p>
+
+  <div class="intro-box">
+    💡 <strong>比喩の力：</strong>比喩は「説明」ではなく「映像」を作る。読者の頭に映像が浮かぶ瞬間、言葉は記憶に残る。難しいことを難しいまま書くより、「あの日常のアレ」で例える方が100倍伝わる。
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">THE FORMULA / 基本公式</div>
+    <div class="formula-text">
+      <span>[現状・問題]</span> は <span>[日常の失敗シーン]</span> と同じだ
+    </div>
+  </div>
+
+  <!-- Pattern 1 -->
+  <div class="section">
+    <div class="section-title green">📦 パターン1「同じだ」型（最も基本）</div>
+    <div class="example-grid">
+      <div class="example-card">
+        <div class="label">ビジネス・副業</div>
+        <div class="text">「戦略なしに努力するのは、地図なしに山登りするのと同じだ」</div>
+        <button class="copy-btn" onclick="copyText(this, '戦略なしに努力するのは、地図なしに山登りするのと同じだ')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">SNS発信</div>
+        <div class="text">「ターゲットを決めずに発信するのは、宛名なしで手紙を出すのと同じだ」</div>
+        <button class="copy-btn" onclick="copyText(this, 'ターゲットを決めずに発信するのは、宛名なしで手紙を出すのと同じだ')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">ダイエット・健康</div>
+        <div class="text">「週1の筋トレだけで体を変えようとするのは、週1で歯を磨くのと同じだ」</div>
+        <button class="copy-btn" onclick="copyText(this, '週1の筋トレだけで体を変えようとするのは、週1で歯を磨くのと同じだ')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">お金・節約</div>
+        <div class="text">「収入を増やさずに節約だけするのは、穴の開いたバケツに水を足し続けるのと同じだ」</div>
+        <button class="copy-btn" onclick="copyText(this, '収入を増やさずに節約だけするのは、穴の開いたバケツに水を足し続けるのと同じだ')">コピー</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern 2 -->
+  <div class="section">
+    <div class="section-title blue">🪞 パターン2「〜しているようなもの」型（読者を鏡で映す）</div>
+    <div class="example-grid">
+      <div class="example-card">
+        <div class="label">学習・スキルアップ</div>
+        <div class="text">「読んだだけでアウトプットしないのは、食べたものを全部吐き出しているようなもの」</div>
+        <button class="copy-btn" onclick="copyText(this, '読んだだけでアウトプットしないのは、食べたものを全部吐き出しているようなもの')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">継続・習慣</div>
+        <div class="text">「毎日気分でやったりやらなかったりするのは、シャワーを毎日浴びて週3回だけ石鹸使うようなもの」</div>
+        <button class="copy-btn" onclick="copyText(this, '毎日気分でやったりやらなかったりするのは、シャワーを毎日浴びて週3回だけ石鹸使うようなもの')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">準備・計画</div>
+        <div class="text">「準備せずにやり始めるのは、材料も確認せずにレシピ通り料理し始めるようなもの」</div>
+        <button class="copy-btn" onclick="copyText(this, '準備せずにやり始めるのは、材料も確認せずにレシピ通り料理し始めるようなもの')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">マーケティング</div>
+        <div class="text">「フォロワーだけ増やして関係性を作らないのは、名刺を配り続けて一度も話しかけないようなもの」</div>
+        <button class="copy-btn" onclick="copyText(this, 'フォロワーだけ増やして関係性を作らないのは、名刺を配り続けて一度も話しかけないようなもの')">コピー</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern 3 -->
+  <div class="section">
+    <div class="section-title orange">🎭 パターン3「〜に似ている」型（柔らかく共感を誘う）</div>
+    <div class="example-grid">
+      <div class="example-card">
+        <div class="label">人間関係</div>
+        <div class="text">「結果が出ないのに発信を続けることへの不安は、料理を出す前から「おいしくないかも」と謝るのに似ている」</div>
+        <button class="copy-btn" onclick="copyText(this, '結果が出ないのに発信を続けることへの不安は、料理を出す前から「おいしくないかも」と謝るのに似ている')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">完璧主義</div>
+        <div class="text">「完璧になってから公開しようとするのは、字が綺麗になってから日記をつけようとするのに似ている」</div>
+        <button class="copy-btn" onclick="copyText(this, '完璧になってから公開しようとするのは、字が綺麗になってから日記をつけようとするのに似ている')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">比較・焦り</div>
+        <div class="text">「他人と自分を比べて焦るのは、隣の車線がいつも速く見えるのに似ている」</div>
+        <button class="copy-btn" onclick="copyText(this, '他人と自分を比べて焦るのは、隣の車線がいつも速く見えるのに似ている')">コピー</button>
+      </div>
+      <div class="example-card">
+        <div class="label">先延ばし</div>
+        <div class="text">「気が向いたらやろうという姿勢は、気が向いたら体調を整えようとするのに似ている」</div>
+        <button class="copy-btn" onclick="copyText(this, '気が向いたらやろうという姿勢は、気が向いたら体調を整えようとするのに似ている')">コピー</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern reference table -->
+  <div class="section">
+    <div class="section-title purple">📋 比喩パターン早見表</div>
+    <table class="pattern-table">
+      <thead>
+        <tr><th>パターン名</th><th>公式</th><th>効果</th><th>使いどころ</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pattern-name">同じだ型</span></td>
+          <td><span class="pattern-form">[A]は[B]と同じだ</span></td>
+          <td>明確・断言</td>
+          <td>問題提起、冒頭インパクト</td>
+        </tr>
+        <tr>
+          <td><span class="pattern-name">ようなもの型</span></td>
+          <td><span class="pattern-form">[A]は[B]しているようなもの</span></td>
+          <td>行動が見える、共感</td>
+          <td>読者の現状を映す</td>
+        </tr>
+        <tr>
+          <td><span class="pattern-name">に似ている型</span></td>
+          <td><span class="pattern-form">[A]は[B]に似ている</span></td>
+          <td>柔らかい・親しみやすい</td>
+          <td>心理・感情の話</td>
+        </tr>
+        <tr>
+          <td><span class="pattern-name">ようだ型</span></td>
+          <td><span class="pattern-form">[A]するのは[B]のようだ</span></td>
+          <td>詩的・印象的</td>
+          <td>記憶に残させたいとき</td>
+        </tr>
+        <tr>
+          <td><span class="pattern-name">逆説型</span></td>
+          <td><span class="pattern-form">[A]しない方が、むしろ[B]だ</span></td>
+          <td>反直感・気づき</td>
+          <td>固定観念を壊したいとき</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Generator -->
+  <div class="generator">
+    <div class="generator-title">⚡ 比喩ジェネレーター — あなたの比喩を作る</div>
+
+    <div class="gen-row">
+      <label>テーマ・問題</label>
+      <input type="text" id="genA" placeholder="例）努力しているのに結果が出ない状態" oninput="generateMetaphor()">
+    </div>
+    <div class="gen-row">
+      <label>日常のシーン</label>
+      <input type="text" id="genB" placeholder="例）水の入っていないやかんを火にかける" oninput="generateMetaphor()">
+    </div>
+    <div class="gen-row">
+      <label>パターン</label>
+      <select id="genPattern" onchange="generateMetaphor()">
+        <option value="1">同じだ型</option>
+        <option value="2">ようなもの型</option>
+        <option value="3">に似ている型</option>
+        <option value="4">ようだ型</option>
+        <option value="5">逆説型</option>
+      </select>
+    </div>
+
+    <div class="output-box" id="genOutput">
+      <span class="output-placeholder">上に入力すると比喩文が自動生成されます</span>
+    </div>
+    <button class="gen-btn" onclick="copyGenOutput()">生成された比喩をコピー</button>
+  </div>
+
+  <!-- Work section -->
+  <div class="work-section">
+    <div class="work-title">✍️ 自分の比喩を作るワーク</div>
+
+    <div class="work-block">
+      <div class="work-label">あなたの発信テーマで「日常シーン」を3つ思い浮かべる（料理・通勤・掃除・育児など）</div>
+      <textarea placeholder="日常シーン①：&#10;日常シーン②：&#10;日常シーン③：" style="min-height:90px;"></textarea>
+    </div>
+
+    <div class="work-block">
+      <div class="work-label">各テンプレートを使って比喩を3つ作ってみる</div>
+      <textarea placeholder="比喩①：&#10;&#10;比喩②：&#10;&#10;比喩③：" style="min-height:120px;"></textarea>
+    </div>
+
+    <div class="work-block">
+      <div class="work-label">作った比喩を声に出して読んで、最も「映像が浮かんだ」ものを1つ選んで次の投稿に使う</div>
+      <textarea placeholder="選んだ比喩：" style="min-height:60px;"></textarea>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷 / PDF保存</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">コピーしました！</div>
+
+<script>
+  function generateMetaphor() {
+    const a = document.getElementById('genA').value.trim();
+    const b = document.getElementById('genB').value.trim();
+    const pattern = document.getElementById('genPattern').value;
+    const output = document.getElementById('genOutput');
+
+    if (!a && !b) { output.innerHTML = '<span class="output-placeholder">上に入力すると比喩文が自動生成されます</span>'; return; }
+    const A = a || '【テーマ・問題】';
+    const B = b || '【日常のシーン】';
+
+    const templates = {
+      '1': `${A}は、${B}と同じだ。`,
+      '2': `${A}のは、${B}しているようなものだ。`,
+      '3': `${A}のは、${B}に似ている。`,
+      '4': `${A}するのは、まるで${B}のようだ。`,
+      '5': `${A}しようとするほど、かえって${B}になる。`
+    };
+    output.textContent = templates[pattern];
+  }
+
+  function copyGenOutput() {
+    const text = document.getElementById('genOutput').textContent;
+    if (!text || text.includes('上に入力')) { showToast('先に入力してください'); return; }
+    navigator.clipboard.writeText(text).then(() => showToast('コピーしました！'));
+  }
+
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => showToast('コピーしました！'));
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+</script>
+</body>
+</html>

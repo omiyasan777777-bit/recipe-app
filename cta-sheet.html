@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CTA設計シート｜4要素で完成するCTA文テンプレート</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6c5ce7; --accent2: #8b7cf8; --bg: #f9f8ff;
+      --border: #dddde8; --text: #111111; --muted: #666688;
+      --green: #00b894; --orange: #e17055; --blue: #0984e3; --pink: #fd79a8;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.7; padding: 24px;
+    }
+    .page { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 40px 48px; box-shadow: 0 4px 24px rgba(108,92,231,.1); }
+    .badge { display: inline-block; background: rgba(108,92,231,.1); color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px; }
+    h1 { font-size: 1.7rem; font-weight: 900; margin-bottom: 8px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .intro-box { background: rgba(108,92,231,.05); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 36px; font-size: 14px; color: var(--muted); }
+
+    /* 4 elements overview */
+    .elements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 36px; }
+    .element-card { border-radius: 12px; padding: 16px 14px; text-align: center; }
+    .element-card.e1 { background: rgba(0,184,148,.08); border: 2px solid rgba(0,184,148,.3); }
+    .element-card.e2 { background: rgba(9,132,227,.08); border: 2px solid rgba(9,132,227,.3); }
+    .element-card.e3 { background: rgba(225,112,85,.08); border: 2px solid rgba(225,112,85,.3); }
+    .element-card.e4 { background: rgba(253,121,168,.08); border: 2px solid rgba(253,121,168,.3); }
+    .element-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #fff; margin: 0 auto 8px; }
+    .e1 .element-num { background: var(--green); }
+    .e2 .element-num { background: var(--blue); }
+    .e3 .element-num { background: var(--orange); }
+    .e4 .element-num { background: var(--pink); }
+    .element-name { font-weight: 800; font-size: 13px; margin-bottom: 4px; }
+    .element-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* Input section */
+    .section { margin-bottom: 36px; }
+    .section-title {
+      font-size: 15px; font-weight: 800; padding: 10px 18px; border-radius: 10px;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title.green { background: rgba(0,184,148,.1); color: #00836a; }
+    .section-title.blue { background: rgba(9,132,227,.1); color: #0660a9; }
+    .section-title.orange { background: rgba(225,112,85,.1); color: #b85a40; }
+    .section-title.pink { background: rgba(253,121,168,.1); color: #c0395e; }
+    .section-title.purple { background: rgba(108,92,231,.1); color: var(--accent); }
+
+    .field-block { margin-bottom: 20px; }
+    .field-label { font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .field-label .num-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
+    .field-label .nb-green { background: var(--green); }
+    .field-label .nb-blue { background: var(--blue); }
+    .field-label .nb-orange { background: var(--orange); }
+    .field-label .nb-pink { background: var(--pink); }
+
+    input[type="text"], select, textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: #fafafe; transition: border .2s;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .hint { font-size: 11px; color: #aaa; font-style: italic; margin-top: 4px; }
+
+    .options-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .opt-btn { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--muted); transition: all .15s; }
+    .opt-btn:hover, .opt-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* Preview */
+    .preview-section { border: 2px solid var(--accent); border-radius: 14px; padding: 24px; margin-bottom: 36px; }
+    .preview-title { font-size: 15px; font-weight: 900; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .preview-box {
+      background: #f0eeff; border-radius: 10px; padding: 20px 24px;
+      font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.8; min-height: 80px;
+      border: 2px dashed var(--accent2); white-space: pre-wrap; word-break: break-all;
+    }
+    .preview-placeholder { color: #bbb; font-weight: 400; font-size: 14px; }
+    .preview-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { padding: 10px 24px; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all .2s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(108,92,231,.05); }
+    .btn-sm { padding: 8px 18px; font-size: 13px; }
+
+    /* Examples */
+    .example-list { display: flex; flex-direction: column; gap: 12px; }
+    .example-item { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; position: relative; background: #fafafe; }
+    .example-item .ex-tag { font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 999px; margin-bottom: 8px; display: inline-block; }
+    .ex-tag.sns { background: rgba(108,92,231,.1); color: var(--accent); }
+    .ex-tag.dm { background: rgba(0,184,148,.1); color: #00836a; }
+    .ex-tag.email { background: rgba(9,132,227,.1); color: #0660a9; }
+    .ex-tag.lp { background: rgba(225,112,85,.1); color: #b85a40; }
+    .example-item .ex-text { font-size: 13px; font-weight: 700; line-height: 1.7; }
+    .example-item .ex-parts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .ex-part { font-size: 11px; padding: 2px 10px; border-radius: 999px; }
+    .ex-part.p1 { background: rgba(0,184,148,.1); color: #00836a; }
+    .ex-part.p2 { background: rgba(9,132,227,.1); color: #0660a9; }
+    .ex-part.p3 { background: rgba(225,112,85,.1); color: #b85a40; }
+    .ex-part.p4 { background: rgba(253,121,168,.1); color: #c0395e; }
+    .copy-btn { position: absolute; top: 12px; right: 12px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; padding: 4px 12px; cursor: pointer; opacity: 0; transition: opacity .2s; }
+    .example-item:hover .copy-btn { opacity: 1; }
+
+    /* Checklist */
+    .checklist { background: #fffdf0; border: 1px solid #f0d97a; border-radius: 10px; padding: 16px 20px; }
+    .checklist-title { font-size: 13px; font-weight: 800; color: #5c4e00; margin-bottom: 12px; }
+    .check-row { display: flex; flex-direction: column; gap: 8px; }
+    .check-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #7a6a10; }
+    .check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); margin-top: 3px; flex-shrink: 0; }
+
+    /* Work section */
+    .work-section { border-top: 2px solid var(--border); padding-top: 28px; margin-top: 8px; }
+    .work-title { font-size: 15px; font-weight: 900; margin-bottom: 16px; }
+    .work-block { margin-bottom: 20px; }
+    .work-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+    .action-bar { margin-top: 28px; display: flex; gap: 14px; justify-content: flex-end; flex-wrap: wrap; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 700px) { .page { padding: 24px 16px; } .elements-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .elements-grid { grid-template-columns: 1fr; } }
+    @media print { body { padding: 0; background: #fff; } .page { box-shadow: none; } .action-bar, .copy-btn { display: none; } }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">CTA設計シート</div>
+  <h1>CTA設計シート<br>4要素で完成するCTA文テンプレート</h1>
+  <p class="subtitle">「なんとなく最後に書く一文」から卒業。4つの要素を埋めるだけで、読者が動くCTAが完成します。</p>
+
+  <div class="intro-box">
+    🎯 <strong>CTAとは：</strong>Call To Action（行動喚起）。投稿の最後に読者に「次の一歩」を促す文章。この一文があるかないかで、フォロー・保存・DM・購入の数が大きく変わります。
+  </div>
+
+  <!-- 4 elements -->
+  <div class="elements-grid">
+    <div class="element-card e1">
+      <div class="element-num">1</div>
+      <div class="element-name">行動の指示</div>
+      <div class="element-desc">何をしてほしいか<br>（フォロー・保存・DM など）</div>
+    </div>
+    <div class="element-card e2">
+      <div class="element-num">2</div>
+      <div class="element-name">得られるもの</div>
+      <div class="element-desc">行動した後に<br>何を手に入れられるか</div>
+    </div>
+    <div class="element-card e3">
+      <div class="element-num">3</div>
+      <div class="element-name">条件</div>
+      <div class="element-desc">誰に向けたものか<br>（対象者の絞り込み）</div>
+    </div>
+    <div class="element-card e4">
+      <div class="element-num">4</div>
+      <div class="element-name">緊急性</div>
+      <div class="element-desc">なぜ今やるべきか<br>（期限・限定・損失）</div>
+    </div>
+  </div>
+
+  <!-- Input fields -->
+  <div class="section">
+    <div class="section-title green">① 行動の指示 — 何をしてほしいか</div>
+
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-green">1</span>読者に取ってほしい行動を選ぶ</div>
+      <div class="options-row" id="actionOpts">
+        <button class="opt-btn" onclick="selectOpt(this,'action','フォローする')">フォローする</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','保存する')">保存する</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','DMを送る')">DMを送る</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','コメントする')">コメントする</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','プロフィールを見る')">プロフィールを見る</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','リンクをタップする')">リンクをタップする</button>
+        <button class="opt-btn" onclick="selectOpt(this,'action','シェアする')">シェアする</button>
+      </div>
+    </div>
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-green">1</span>または自由記入</div>
+      <input type="text" id="f_action" placeholder="例）今すぐ登録する、無料で試す" oninput="buildCTA()">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title blue">② 得られるもの — 行動した後に何が手に入るか</div>
+
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-blue">2</span>行動後のベネフィットを書く</div>
+      <input type="text" id="f_benefit" placeholder="例）月3万円の副収入のつくり方が分かる、毎朝すっきり起きられる" oninput="buildCTA()">
+      <div class="hint">「〜ができる」「〜が分かる」「〜が手に入る」の形で書くと伝わりやすい</div>
+    </div>
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-blue">2</span>ベネフィットの種類（参考）</div>
+      <div class="options-row" id="benefitOpts">
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','悩みが解決する')">悩みが解決する</button>
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','時間が節約できる')">時間が節約できる</button>
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','お金が増える')">お金が増える</button>
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','知識・スキルが身に付く')">知識・スキルが身に付く</button>
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','不安が消える')">不安が消える</button>
+        <button class="opt-btn" onclick="selectOpt(this,'benefit','人間関係が改善する')">人間関係が改善する</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title orange">③ 条件 — 誰に向けたものか</div>
+
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-orange">3</span>対象者を絞り込む（〜な人・〜で悩む人）</div>
+      <input type="text" id="f_condition" placeholder="例）副業を始めたいのに何から始めればいいか分からない人、毎朝疲れたまま起きている人" oninput="buildCTA()">
+      <div class="hint">絞れば絞るほど「自分のことだ」と感じてもらえる。欲張って広げない。</div>
+    </div>
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-orange">3</span>よく使われる条件フレーズ（クリックで入力）</div>
+      <div class="options-row">
+        <button class="opt-btn" onclick="appendCondition('〜で悩んでいる人')">〜で悩んでいる人</button>
+        <button class="opt-btn" onclick="appendCondition('〜を始めたい人')">〜を始めたい人</button>
+        <button class="opt-btn" onclick="appendCondition('〜がうまくいかない人')">〜がうまくいかない人</button>
+        <button class="opt-btn" onclick="appendCondition('〜したいのに動けない人')">〜したいのに動けない人</button>
+        <button class="opt-btn" onclick="appendCondition('〜を変えたい人')">〜を変えたい人</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title pink">④ 緊急性 — なぜ今やるべきか</div>
+
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-pink">4</span>今すぐ行動する理由を書く（任意）</div>
+      <input type="text" id="f_urgency" placeholder="例）先着10名まで、今週末で締め切り、明日から値上がり" oninput="buildCTA()">
+      <div class="hint">緊急性は強制ではないが、あるだけで行動率が上がる。嘘はNG。</div>
+    </div>
+    <div class="field-block">
+      <div class="field-label"><span class="num-badge nb-pink">4</span>緊急性の種類（クリックで選択）</div>
+      <div class="options-row" id="urgencyOpts">
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','期間限定')">期間限定</button>
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','先着限定')">先着限定</button>
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','今だけ無料')">今だけ無料</button>
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','〇日で締め切り')">〇日で締め切り</button>
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','今始めないと損')">今始めないと損</button>
+        <button class="opt-btn" onclick="selectOpt(this,'urgency','なし')">なし（緊急性不要）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-section">
+    <div class="preview-title">⚡ CTA プレビュー — リアルタイム生成</div>
+    <div class="preview-box" id="previewBox">
+      <span class="preview-placeholder">上の4つの要素を入力するとCTAが自動生成されます</span>
+    </div>
+    <div class="preview-actions">
+      <button class="btn btn-primary btn-sm" onclick="copyPreview()">CTAをコピー</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearAll()">リセット</button>
+    </div>
+  </div>
+
+  <!-- Quality checklist -->
+  <div class="section">
+    <div class="section-title purple">✅ CTA品質チェックリスト</div>
+    <div class="checklist">
+      <div class="checklist-title">生成したCTAに当てはまるか確認する</div>
+      <div class="check-row">
+        <label class="check-item"><input type="checkbox"> 行動が1つに絞られている（「フォローして保存して」は2つでNG）</label>
+        <label class="check-item"><input type="checkbox"> 「なぜその行動をするのか」理由が含まれている</label>
+        <label class="check-item"><input type="checkbox"> 「誰のためか」が分かる（対象者が明確）</label>
+        <label class="check-item"><input type="checkbox"> ベネフィットが具体的（「役に立つ」ではなく何が得られるか）</label>
+        <label class="check-item"><input type="checkbox"> 20〜60文字前後に収まっている</label>
+        <label class="check-item"><input type="checkbox"> 声に出して読んで自然（押しつけがましくない）</label>
+        <label class="check-item"><input type="checkbox"> 嘘・誇張がない（緊急性が本物）</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Examples -->
+  <div class="section">
+    <div class="section-title purple">📚 CTA 実例集（コピーして使える）</div>
+    <div class="example-list">
+
+      <div class="example-item">
+        <span class="ex-tag sns">SNS投稿</span>
+        <button class="copy-btn" onclick="copyEx(this)">コピー</button>
+        <div class="ex-text">副業を始めたいけど何から手をつければいいか分からない人は、今すぐプロフィールをタップ。スマホ1台で月3万円を作る5ステップを無料で公開中です。</div>
+        <div class="ex-parts">
+          <span class="ex-part p1">① プロフィールをタップ</span>
+          <span class="ex-part p2">② 月3万円を作る5ステップ</span>
+          <span class="ex-part p3">③ 副業を始めたい人</span>
+          <span class="ex-part p4">④ 無料で公開中</span>
+        </div>
+      </div>
+
+      <div class="example-item">
+        <span class="ex-tag dm">DM誘導</span>
+        <button class="copy-btn" onclick="copyEx(this)">コピー</button>
+        <div class="ex-text">毎朝ぐったりで仕事に行っている人へ。「朝」とDMしてください。睡眠を変えずに朝の疲れを8割減らした習慣を、今週中に5人限定でシェアします。</div>
+        <div class="ex-parts">
+          <span class="ex-part p1">① 「朝」とDM</span>
+          <span class="ex-part p2">② 朝の疲れを8割減らす習慣</span>
+          <span class="ex-part p3">③ 毎朝ぐったりな人</span>
+          <span class="ex-part p4">④ 今週中・5人限定</span>
+        </div>
+      </div>
+
+      <div class="example-item">
+        <span class="ex-tag email">メルマガ</span>
+        <button class="copy-btn" onclick="copyEx(this)">コピー</button>
+        <div class="ex-text">節約しているのに一向にお金が貯まらない方は、下のボタンから無料診断を受けてみてください。3分で「あなたのお金が消える理由」が分かります。</div>
+        <div class="ex-parts">
+          <span class="ex-part p1">① 無料診断を受ける</span>
+          <span class="ex-part p2">② お金が消える理由が分かる</span>
+          <span class="ex-part p3">③ 節約してもお金が貯まらない人</span>
+          <span class="ex-part p4">④ 3分で（時間的手軽さ）</span>
+        </div>
+      </div>
+
+      <div class="example-item">
+        <span class="ex-tag lp">LP・セールス</span>
+        <button class="copy-btn" onclick="copyEx(this)">コピー</button>
+        <div class="ex-text">「発信を続けているのに全然伸びない」と感じているあなた。今月末で受付終了の無料相談に申し込んでください。伸びない本当の原因を一緒に特定します。</div>
+        <div class="ex-parts">
+          <span class="ex-part p1">① 無料相談に申し込む</span>
+          <span class="ex-part p2">② 伸びない原因を特定できる</span>
+          <span class="ex-part p3">③ 発信が伸びない人</span>
+          <span class="ex-part p4">④ 今月末で受付終了</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Work section -->
+  <div class="work-section">
+    <div class="work-title">✍️ あなた専用CTA量産ワーク</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:20px;">上のジェネレーターで作ったCTAをベースに、バリエーションを3パターン書いてみましょう。</p>
+
+    <div class="work-block">
+      <div class="work-label">パターンA：行動をフォローにしたバージョン</div>
+      <textarea placeholder="〜な人は → フォロー → 〜が手に入る → （緊急性）"></textarea>
+    </div>
+    <div class="work-block">
+      <div class="work-label">パターンB：行動をDM・コメントにしたバージョン</div>
+      <textarea placeholder="〜な人は → 「〇〇」とDM → 〜が手に入る → （緊急性）"></textarea>
+    </div>
+    <div class="work-block">
+      <div class="work-label">パターンC：行動を保存・シェアにしたバージョン</div>
+      <textarea placeholder="〜な人は → 保存しておく → 〜な時に役立つ → （緊急性）"></textarea>
+    </div>
+    <div class="work-block">
+      <div class="work-label">3つを声に出して読んで、最も自然なものを1つ選んで丸をつける（A / B / C）</div>
+      <input type="text" placeholder="選んだパターン：　　　理由：">
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="window.print()">印刷 / PDF保存</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">コピーしました！</div>
+
+<script>
+  const selected = { action: '', benefit: '', urgency: '' };
+
+  function selectOpt(btn, key, val) {
+    // toggle active in group
+    const row = btn.parentElement;
+    row.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selected[key] = val;
+
+    // fill input if exists
+    const inputId = { action: 'f_action', benefit: 'f_benefit', urgency: 'f_urgency' }[key];
+    if (inputId) {
+      const inp = document.getElementById(inputId);
+      if (inp && (key !== 'benefit' || val.length < 20)) {
+        // only for short preset values; don't overwrite for benefit hints
+      }
+    }
+    buildCTA();
+  }
+
+  function appendCondition(text) {
+    const inp = document.getElementById('f_condition');
+    if (!inp.value) inp.value = text;
+    buildCTA();
+  }
+
+  function buildCTA() {
+    const action    = document.getElementById('f_action').value.trim()    || selected.action    || '';
+    const benefit   = document.getElementById('f_benefit').value.trim()   || selected.benefit   || '';
+    const condition = document.getElementById('f_condition').value.trim() || '';
+    const urgency   = document.getElementById('f_urgency').value.trim()   || selected.urgency   || '';
+
+    const box = document.getElementById('previewBox');
+    if (!action && !benefit && !condition) {
+      box.innerHTML = '<span class="preview-placeholder">上の4つの要素を入力するとCTAが自動生成されます</span>';
+      return;
+    }
+
+    let parts = [];
+    if (condition) parts.push(condition + 'は、');
+    if (action)    parts.push(action === 'なし（緊急性不要）' ? '' : (action.endsWith('する') ? '今すぐ' + action : action) + 'してください。');
+    if (benefit)   parts.push(benefit + (benefit.endsWith('。') ? '' : '。'));
+    if (urgency && urgency !== 'なし（緊急性不要）') parts.push('【' + urgency + '】');
+
+    const cta = parts.filter(p => p).join('');
+    box.textContent = cta || '（もう少し入力してください）';
+  }
+
+  function copyPreview() {
+    const text = document.getElementById('previewBox').textContent;
+    if (!text || text.includes('入力すると')) { showToast('先に入力してください'); return; }
+    navigator.clipboard.writeText(text).then(() => showToast('コピーしました！'));
+  }
+
+  function copyEx(btn) {
+    const text = btn.nextElementSibling.textContent;
+    navigator.clipboard.writeText(text).then(() => showToast('コピーしました！'));
+  }
+
+  function clearAll() {
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    Object.keys(selected).forEach(k => selected[k] = '');
+    buildCTA();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+</script>
+</body>
+</html>
