@@ -25,7 +25,7 @@ from flask import (
 from dotenv import load_dotenv, set_key
 
 from bluesky_scheduler.config import get_db_path, get_credentials
-from bluesky_scheduler.storage import Storage, Template
+from bluesky_scheduler.storage import Storage, Template, Note
 
 load_dotenv()
 
@@ -470,6 +470,64 @@ def newsletter_smtp_settings():
 
     cfg = get_smtp_config()
     return render_template("newsletter_smtp_settings.html", cfg=cfg)
+
+
+# ── ノート ────────────────────────────────────────────────────────
+
+@app.route("/notes")
+def notes_list():
+    storage = get_storage()
+    notes = storage.list_notes()
+    return render_template("notes_list.html", notes=notes)
+
+
+@app.route("/notes/new", methods=["GET", "POST"])
+def note_new():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        body = request.form.get("body", "").strip()
+
+        if not title and not body:
+            flash("タイトルまたは本文を入力してください。", "danger")
+            return render_template("note_detail.html", note=None, form=request.form)
+
+        storage = get_storage()
+        note = storage.add_note(title, body)
+        flash("✅ ノートを保存しました。", "success")
+        return redirect(url_for("note_detail", note_id=note.id))
+
+    return render_template("note_detail.html", note=None, form={})
+
+
+@app.route("/notes/<int:note_id>", methods=["GET", "POST"])
+def note_detail(note_id: int):
+    storage = get_storage()
+    note = storage.get_note(note_id)
+    if not note:
+        flash("ノートが見つかりませんでした。", "danger")
+        return redirect(url_for("notes_list"))
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        body = request.form.get("body", "").strip()
+
+        if not title and not body:
+            flash("タイトルまたは本文を入力してください。", "danger")
+            return render_template("note_detail.html", note=note, form=request.form)
+
+        storage.update_note(note_id, title, body)
+        flash("✅ ノートを更新しました。", "success")
+        return redirect(url_for("note_detail", note_id=note_id))
+
+    return render_template("note_detail.html", note=note, form={})
+
+
+@app.route("/notes/<int:note_id>/delete", methods=["POST"])
+def note_delete(note_id: int):
+    storage = get_storage()
+    storage.delete_note(note_id)
+    flash("ノートを削除しました。", "success")
+    return redirect(url_for("notes_list"))
 
 
 # ── バックグラウンドスケジューラー ────────────────────────────────

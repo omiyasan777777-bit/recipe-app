@@ -5,6 +5,22 @@ from pathlib import Path
 from typing import Optional
 
 
+class Note:
+    def __init__(
+        self,
+        id: int,
+        title: str,
+        body: str,
+        created_at: datetime,
+        updated_at: datetime,
+    ):
+        self.id = id
+        self.title = title
+        self.body = body
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+
 class Subscriber:
     def __init__(self, id: int, email: str, name: str, created_at: datetime):
         self.id = id
@@ -134,6 +150,15 @@ class Storage:
                     body       TEXT NOT NULL,
                     hashtags   TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL
+                )
+            """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS notes (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title      TEXT NOT NULL DEFAULT '',
+                    body       TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
                 )
             """)
             conn.commit()
@@ -372,6 +397,57 @@ class Storage:
             created_at=self._str_to_dt(row["created_at"]),
             sent_at=self._str_to_dt(row["sent_at"]) if row["sent_at"] else None,
             recipient_count=row["recipient_count"],
+        )
+
+    # ── Note methods ─────────────────────────────────────────────────
+
+    def add_note(self, title: str, body: str) -> "Note":
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            cur = conn.execute(
+                "INSERT INTO notes (title, body, created_at, updated_at) VALUES (?, ?, ?, ?)",
+                (title, body, now, now),
+            )
+            conn.commit()
+            return self.get_note(cur.lastrowid)
+
+    def get_note(self, note_id: int) -> Optional["Note"]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM notes WHERE id = ?", (note_id,)
+            ).fetchone()
+        return self._row_to_note(row) if row else None
+
+    def list_notes(self) -> list["Note"]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM notes ORDER BY updated_at DESC"
+            ).fetchall()
+        return [self._row_to_note(r) for r in rows]
+
+    def update_note(self, note_id: int, title: str, body: str) -> bool:
+        now = self._dt_to_str(datetime.now().astimezone())
+        with self._connect() as conn:
+            cur = conn.execute(
+                "UPDATE notes SET title=?, body=?, updated_at=? WHERE id=?",
+                (title, body, now, note_id),
+            )
+            conn.commit()
+        return cur.rowcount > 0
+
+    def delete_note(self, note_id: int) -> bool:
+        with self._connect() as conn:
+            cur = conn.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+            conn.commit()
+        return cur.rowcount > 0
+
+    def _row_to_note(self, row: sqlite3.Row) -> "Note":
+        return Note(
+            id=row["id"],
+            title=row["title"],
+            body=row["body"],
+            created_at=self._str_to_dt(row["created_at"]),
+            updated_at=self._str_to_dt(row["updated_at"]),
         )
 
     def _row_to_post(self, row: sqlite3.Row) -> Post:
