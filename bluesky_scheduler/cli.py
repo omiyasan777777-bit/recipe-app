@@ -181,6 +181,36 @@ def send_due():
     post_once()
 
 
+@cli.command("note")
+def note_menu():
+    """Display the AUTO-content-system main menu."""
+    menu = """
+[bold cyan]============================================================[/bold cyan]
+[bold]  AUTO-content-system メインメニュー[/bold]
+[bold cyan]============================================================[/bold cyan]
+
+  [bold yellow]\[コンテンツ制作][/bold yellow]
+  [bold]1.[/bold]  自己分析 ⚡簡易     （Phase 0 / 約1分）
+  [bold]2.[/bold]  自己分析 📝詳細     （Phase 0 / 約10〜15分）
+  [bold]3.[/bold]  競合リサーチ        （Phase 1）
+  [bold]4.[/bold]  ペルソナ設計        （Phase 0+2）
+  [bold]5.[/bold]  章構成・カリキュラム  （Phase 3）
+  [bold]6.[/bold]  タイトル生成
+  [bold]7.[/bold]  本文執筆            （Phase 4）
+  [bold]8.[/bold]  校正チェック
+  [bold]9.[/bold]  セールスレター       （Phase 5）
+
+  [bold yellow]\[noteアカウント][/bold yellow]
+  [bold]10.[/bold] アカウント切り替え / 追加
+  [bold]11.[/bold] 追加コンテンツ（新規制作）
+
+[bold cyan]------------------------------------------------------------[/bold cyan]
+  💡 番号を入力してください！初めての方は 1 or 2 のヒアリングから！
+[bold cyan]============================================================[/bold cyan]
+"""
+    console.print(menu)
+
+
 @cli.command("verify")
 def verify():
     """Verify Bluesky credentials."""
