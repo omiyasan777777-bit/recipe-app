@@ -1,0 +1,32 @@
+{
+  "spreadsheet_url": "",
+  "webapp_url": "",
+  "webapp_key": "",
+  "schedule": {
+    "start_date": "",
+    "posting_hours": [7, 9, 12, 15, 19, 21],
+    "random_minutes": true
+  },
+  "cta": {
+    "type": "",
+    "max_per_batch": 2,
+    "tree_cta_delay_hours_min": 2,
+    "tree_cta_delay_hours_max": 6,
+    "profile_links": [],
+    "pinned_post_strategy": ""
+  },
+  "links": {
+    "enabled": false,
+    "per_day": 2,
+    "delay_min": 30,
+    "delay_max": 60
+  },
+  "batch": {
+    "posts_per_batch": 10,
+    "platform": "Threads"
+  },
+  "browser": {
+    "data_dir": "browser_data",
+    "profile": "Default"
+  }
+}
