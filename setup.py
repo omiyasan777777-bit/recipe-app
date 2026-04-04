@@ -14,6 +14,7 @@ setup(
     entry_points={
         "console_scripts": [
             "bluesky-scheduler=bluesky_scheduler.cli:cli",
+            "note=bluesky_scheduler.cli:note_menu",
         ],
     },
     python_requires=">=3.11",

@@ -181,9 +181,8 @@ def send_due():
     post_once()
 
 
-@cli.command("note")
-def note_menu():
-    """Display the AUTO-content-system main menu."""
+def _print_note_menu():
+    """Print the AUTO-content-system main menu."""
     menu = """
 [bold cyan]============================================================[/bold cyan]
 [bold]  AUTO-content-system メインメニュー[/bold]
@@ -209,6 +208,17 @@ def note_menu():
 [bold cyan]============================================================[/bold cyan]
 """
     console.print(menu)
+
+
+def note_menu():
+    """Entry point for the standalone 'note' command."""
+    _print_note_menu()
+
+
+@cli.command("note")
+def note_menu_cmd():
+    """Display the AUTO-content-system main menu."""
+    _print_note_menu()
 
 
 @cli.command("verify")
