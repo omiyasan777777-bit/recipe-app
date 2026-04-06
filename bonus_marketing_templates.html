@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特典｜マーケティングテンプレート集【深掘り版】</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #6c5ce7; --accent2: #8b7cf8; --bg: #f9f8ff;
+      --border: #dddde8; --text: #111111; --muted: #666688;
+      --green: #00b894; --orange: #e17055; --blue: #0984e3;
+    }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text); line-height: 1.7;
+      padding: 24px;
+    }
+    .page {
+      max-width: 900px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      padding: 40px 48px;
+      box-shadow: 0 4px 24px rgba(108,92,231,.1);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(108,92,231,.1); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .1em;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;
+    }
+    h1 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+    .intro-box {
+      background: rgba(108,92,231,.05); border-left: 4px solid var(--accent);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 36px;
+      font-size: 14px; color: var(--muted); line-height: 1.6;
+    }
+    .template-map {
+      background: rgba(108,92,231,.05); border-radius: 12px;
+      padding: 24px; margin-bottom: 40px;
+    }
+    .template-map-row {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px;
+      align-items: center; margin-bottom: 14px;
+    }
+    .template-map-row:last-child { margin-bottom: 0; }
+    .template-map-pain { text-align: right; color: var(--muted); font-size: 14px; }
+    .template-map-arrow { color: var(--accent); font-weight: 800; }
+    .template-map-solution { color: var(--accent); font-weight: 700; font-size: 14px; }
+    .section { margin-bottom: 48px; }
+    .template-container {
+      background: #fff; border: 2px solid var(--border);
+      border-radius: 12px; padding: 32px;
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-size: 20px; font-weight: 800;
+      padding: 12px 16px; border-radius: 8px;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title.purple { background: rgba(108,92,231,.1); color: var(--accent); }
+    .section-title.green { background: rgba(0,184,148,.1); color: #00836a; }
+    .section-title.orange { background: rgba(225,112,85,.1); color: #b85a40; }
+    .section-title.blue { background: rgba(9,132,227,.1); color: #0660a9; }
+    .subsection {
+      margin-top: 24px; margin-bottom: 24px;
+    }
+    .subsection-title {
+      font-size: 16px; font-weight: 700;
+      margin-bottom: 12px; color: var(--text);
+    }
+    .highlight-box {
+      background: rgba(108,92,231,.08); border-left: 4px solid var(--accent);
+      padding: 14px 18px; border-radius: 0 6px 6px 0;
+      margin: 16px 0; font-size: 14px;
+    }
+    .code-block {
+      background: #f5f4ff; border: 1px solid var(--border);
+      padding: 16px; border-radius: 8px; margin: 16px 0;
+      font-family: 'Courier New', monospace; font-size: 13px;
+      line-height: 1.6; overflow-x: auto;
+      color: #333;
+    }
+    .pattern-box {
+      background: #fafafe; border-left: 3px solid var(--green);
+      padding: 12px 16px; margin: 12px 0; border-radius: 0 4px 4px 0;
+      font-size: 13px;
+    }
+    .pattern-box.bad { border-left-color: var(--orange); }
+    .pattern-box.good { border-left-color: var(--green); }
+    .bad-label { color: var(--orange); font-weight: 700; }
+    .good-label { color: var(--green); font-weight: 700; }
+    .table-wrapper {
+      overflow-x: auto; margin: 20px 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      background: #f0eeff; color: var(--muted);
+      font-size: 12px; font-weight: 700; letter-spacing: .05em;
+      padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid #eeeeee; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+    .checklist {
+      list-style: none; padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0; padding-left: 24px; position: relative;
+      font-size: 14px; line-height: 1.5;
+    }
+    .checklist li::before {
+      content: '✓'; position: absolute; left: 0;
+      color: var(--green); font-weight: 700; font-size: 16px;
+    }
+    .warning-box {
+      background: rgba(225,112,85,.08); border-left: 4px solid var(--orange);
+      padding: 14px 18px; border-radius: 0 6px 6px 0;
+      margin: 16px 0; font-size: 14px;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px; padding: 32px; color: #fff; text-align: center;
+      margin-top: 48px;
+    }
+    .cta-box h3 { font-size: 20px; margin-bottom: 8px; }
+    .cta-box p { font-size: 14px; margin-bottom: 20px; opacity: .9; }
+    .btn {
+      display: inline-block;
+      padding: 12px 32px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      background: #fff; color: var(--accent);
+      text-decoration: none; transition: all .2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(108,92,231,.3); }
+    .footer {
+      text-align: center; color: var(--muted); font-size: 13px;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border);
+    }
+    @media (max-width: 768px) {
+      .page { padding: 24px 20px; }
+      h1 { font-size: 1.5rem; }
+      .section-title { font-size: 18px; }
+      .template-map-row { grid-template-columns: 1fr; gap: 8px; }
+      .template-map-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <span class="badge">マーケティング特典</span>
+  <h1>SNS投稿・note・メルマガ成約率UP<br>テンプレート集【深掘り版】</h1>
+  <p class="subtitle">コピペOK・心理学ベース・3つのパターン完全ガイド</p>
+
+  <div class="intro-box">
+    📌 本テンプレートは「情報過多で動けない人」「AI文章が冷たいと感じる人」「副業初期費用が不安な人」という3つのペインに直結したものです。心理学・行動経済学に基づいた設計になっており、コピペするだけで反応率が上がります。
+  </div>
+
+  <!-- テンプレートマップ -->
+  <div class="template-map">
+    <strong style="color: var(--accent); display: block; margin-bottom: 20px;">読者が抱えるペイン → 対応テンプレート</strong>
+    <div class="template-map-row">
+      <div class="template-map-pain">情報が多すぎて動けない</div>
+      <div class="template-map-arrow">→</div>
+      <div class="template-map-solution">「最初の3日間プラン」</div>
+    </div>
+    <div class="template-map-row">
+      <div class="template-map-pain">AI文章が冷たくて響かない</div>
+      <div class="template-map-arrow">→</div>
+      <div class="template-map-solution">「温もりプラス」</div>
+    </div>
+    <div class="template-map-row">
+      <div class="template-map-pain">初期費用があって不安</div>
+      <div class="template-map-arrow">→</div>
+      <div class="template-map-solution">「完全無料ツール」</div>
+    </div>
+  </div>
+
+  <!-- テンプレート1 -->
+  <div class="section">
+    <div class="template-container">
+      <div class="section-title purple">
+        <span>01</span> 「最初の3日間」超圧縮アクションプラン
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🧠 なぜ効くのか：心理学的背景</div>
+
+        <div class="highlight-box">
+          <strong>① 判断回数削減（意思決定疲労）</strong><br>
+          人間は1日に約35,000の意思決定をしています。フォロワーは「何をやるか」「どう始めるか」で判断疲れしている。判断肢を3つに絞ると、実行率が2倍以上になります。
+        </div>
+
+        <div class="highlight-box">
+          <strong>② スモールステップの力</strong><br>
+          「3日続く人は30日続く」という格言があります。最初のハードルが低いほど、初期モメンタムが生まれやすい。Day 1→ Day 2→ Day 3という段階的成功体験が「自分もできるかも」を生みます。
+        </div>
+
+        <div class="highlight-box">
+          <strong>③ 締め切り効果</strong><br>
+          無期限だと決して始まりません。「3日間」という期限があると行動に移りやすく、特に「たった3日」は心理的抵抗が最小化されます。
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📋 テンプレート詳細版</div>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 16px;">使用変数の具体例：</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>変数</th>
+                <th>説明</th>
+                <th>例（副業系）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>{ジャンル}</strong></td>
+                <td>読者が始めたい分野</td>
+                <td>「副業・SNS運用・ライティング」</td>
+              </tr>
+              <tr>
+                <td><strong>{ツール名}</strong></td>
+                <td>最初に触るべき単一ツール</td>
+                <td>「Canva」「ChatGPT」「Notion」</td>
+              </tr>
+              <tr>
+                <td><strong>{最初のアクション}</strong></td>
+                <td>Day 2で完結する行動</td>
+                <td>「Canvaで1枚の画像作成」</td>
+              </tr>
+              <tr>
+                <td><strong>{call_to_action}</strong></td>
+                <td>テンプレート配布者への流入</td>
+                <td>「プロフのリンクから無料配布」</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">📣 情報多すぎて何から始めればいいかわからない人へ
+
+「{ジャンル}」を始めたいなら、最初の3日間だけこれをやれ。
+
+━━━━━━━━━━━━━━━━━━
+✅ Day 1：インプット断ち
+・ノウハウ本・YouTube動画は一切見ない
+・{ツール名}だけ登録して5分触る
+・「完璧に理解してから始める」は永遠に始まらない呪い
+
+✅ Day 2：最小単位で1回だけやる
+・クオリティは問わない、完成させることが目的
+・{最初のアクション}を1つだけ完了させる
+・「やった」という事実だけが翌日の自分を動かす
+
+✅ Day 3：記録して1人に見せる
+・スクショ・メモ・どんな形でも構わない
+・SNSに投稿するか、誰か1人に送る
+・「公開した」という事実がモチベーションの燃料になる
+━━━━━━━━━━━━━━━━━━</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">❌ よくある失敗パターンと対策</div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗1：</span> 「3日間」を絶対ルール化した<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 目安は3日間。6日以内なら完全OK。心理的ハードルを下げるためのもので、ルール化すると逆効果</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗2：</span> {最初のアクション}が大きすぎた<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ Day 2で「1時間以内に完結する」ものに調整。小さすぎる≠失敗、大きすぎる=失敗</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗3：</span> Day 3の「公開」が任意だった<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 「公開」という外部コミットメントがあると実行率が3倍。「できれば」はNG</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚀 応用バリエーション</div>
+        <ul class="checklist">
+          <li>「○日間チャレンジ」シリーズ化：1週目→3日で〇〇、2週目→3日で△△...</li>
+          <li>顧客成功事例を組み込む：「実は、私のクライアントも...」で共感を高める</li>
+          <li>連続投稿で期待感演出：フォロワーがシリーズを待つようになる</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- テンプレート2 -->
+  <div class="section">
+    <div class="template-container">
+      <div class="section-title purple">
+        <span>02</span> 「温もりプラス」冷たいAI文章に血を通わせる
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🧠 なぜ効くのか：心理学的背景</div>
+
+        <div class="highlight-box">
+          <strong>① 無機質さへの不信感（アンバレイ効果）</strong><br>
+          AI生成文は「完璧すぎて」読者に不信感を与えます。パターン化された文 ≠ 信頼できる人間。小さな不完全さ（人間らしさ）があると、むしろ信頼が上がります。
+        </div>
+
+        <div class="highlight-box">
+          <strong>② 感情の同調（ミラーニューロン）</strong><br>
+          脳は「感情を読み取る」ことで初めて行動します。「その時どう感じたのか」を描写すると、読者も同じ感情を体験する。これが「感情の同調」です。
+        </div>
+
+        <div class="highlight-box">
+          <strong>③ 体験の具体化（シミュレーション効果）</strong><br>
+          「〇〇がUPした」より「その日、私は...という感覚を感じた」の方が記憶に残ります。
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🎯 3つのプロンプト詳細版</div>
+
+        <div style="background: #f5f4ff; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <strong style="color: var(--accent);">プロンプト①：感情温度を上げる（基本版）</strong>
+          <div class="code-block">このAI文章を以下の条件で書き直してください。
+
+【条件】
+1. {ターゲット読者}が読んだときに「あるある」と共感する瞬間を3箇所作る
+2. その瞬間に「その時の感覚・感情」を追加する（例：「胸が高鳴った」「肩の力が抜けた」）
+3. 数字や事実は変えず、描写だけを追加する
+4. 全体の文字数は±10%以内</div>
+        </div>
+
+        <div style="background: #f5f4ff; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <strong style="color: var(--accent);">プロンプト②：体験談を自然に混ぜる（応用版）</strong>
+          <div class="code-block">この情報記事に、以下の体験談を自然に織り込んでください。
+
+【条件】
+1. 「私は」「あのとき」など1人称・会話口調を混ぜる
+2. 体験を「一般論に挿入」するのではなく「一般論の中に自分の場面を埋め込む」
+3. 失敗の詳細（数字・日時・具体場面）を入れる
+4. 作り話に見えないよう、矛盾がないか確認する</div>
+        </div>
+
+        <div style="background: #f5f4ff; padding: 16px; border-radius: 8px;">
+          <strong style="color: var(--accent);">プロンプト③：結末の温度を上げる（最重要）</strong>
+          <div class="code-block">この投稿の最後の2〜3文を書き直してください。
+
+【条件】
+1. {ベネフィット}を読者が「自分ごと」として頭でシミュレーションできる表現
+2. 背中を押す一言で締めくくること（命令形は避ける）
+3. {実体験の変化}を参考に、「あなたもこうなる可能性がある」と匂わせる</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📊 寒暖差の実例対比</div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">❄️ 修正前（AI生成そのまま）</span><br>
+          「この方法を実践することで、成果が期待できます。」
+        </div>
+
+        <div class="pattern-box good">
+          <span class="good-label">🧡 修正後（プロンプト適用後）</span><br>
+          「半信半疑で3日だけ試したら、売上が3倍に。あのとき動いた自分を、今は心から褒めてあげたい。」
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">❌ よくある失敗パターンと対策</div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗1：</span> 「感情表現」が過剰演技になった<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 「小さな感覚」の方が「本当の話」に聞こえる。「涙が...」より「肩の力が抜けた」</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗2：</span> プロンプトを「順番に実行」した<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 元の文章に対して、3本を「並列実行」。最も良い結果を選ぶ or 3つから1文ずつ抽出</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗3：</span> 事実と感情の混同<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 「売上10倍だから喜んだ」より「むしろ不安が大きかった」の方が信頼度UP</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚀 応用バリエーション</div>
+        <ul class="checklist">
+          <li>「修正前・修正後」を並べた投稿：寒暖差を視覚的に見せる</li>
+          <li>「ジャンル別プロンプト集」を特典化：副業系・恋愛系・ビジネス系で言語化を変える</li>
+          <li>5日連続シリーズ：毎日1つのプロンプトで、段階的に文章品質を上げる</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- テンプレート3 -->
+  <div class="section">
+    <div class="template-container">
+      <div class="section-title purple">
+        <span>03</span> 「完全無料ツール」代替リスト
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🧠 なぜ効くのか：行動経済学的背景</div>
+
+        <div class="highlight-box">
+          <strong>① 損失回避バイアス</strong><br>
+          人間は「得する」より「損を避ける」に動きます。月980円は「毎月コスト」ではなく「毎月の損失」と認知されます。年11,760円は「痛い額」に感じられ、その損失が無駄になってると気づくと行動します。
+        </div>
+
+        <div class="highlight-box">
+          <strong>② 機会費用の可視化</strong><br>
+          「その額で何ができたか」を見せることが重要です。980円 × 12 = 11,760円。具体的な「他の使途」（高級ディナー2回分、書籍12冊など）を見せると説得力が上がります。
+        </div>
+
+        <div class="highlight-box">
+          <strong>③ 社会的証明（バンドワゴン効果）</strong><br>
+          「無料ツールでいい」という「標準」を提示することで、読者も同じ判断をしたくなります。
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">💡 テンプレート実装パターン</div>
+
+        <div class="code-block">💸 「{有料ツール名}」に月{有料金額}円払ってる人、
+ちょっと待ってください。
+
+無料で同じことができるツールがあります。
+
+【完全無料の代替ツール5選】
+
+❌ 有料 → ✅ 無料でOK
+
+📝 文章生成・AI
+ 有料AIツール → Claude(無料枠) / ChatGPT(無料枠)
+
+🖼️ 画像編集・デザイン
+ Adobe Photoshop → Canva(無料) / GIMP
+
+📊 データ管理
+ 有料SaaS → Googleスプレッドシート
+
+📬 メルマガ配信
+ 有料メール配信ツール → Substack / Brevo(無料1万通/月)
+
+🗓️ SNS予約投稿
+ 有料スケジューラー → Buffer無料版 / Later無料枠
+
+━━━━━━━━━━━━━━━━━━
+
+月{有料金額}円 × 12ヶ月 ＝ 年間{年間節約額}円
+
+この金額、広告費や有料コンテンツへの投資に
+回した方が圧倒的にリターンが大きい。
+
+【正しい順番】
+① 無料ツールで稼ぐ仕組みを作る
+② 売上が出てから必要な機能だけ課金する
+③ それまでは1円も払う必要はない</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">❌ よくある失敗パターンと対策</div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗1：</span> 「年間節約額」を計算せず提示した<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 月額は「大した額に見えない」が、年間額だと「価値の大きさ」が可視化される</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗2：</span> 「無料版は劣るが我慢しろ」という言い方<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 「初心者段階なら無料版の方が学習コストが低くておすすめです」という視点転換</span>
+        </div>
+
+        <div class="pattern-box bad">
+          <span class="bad-label">✗ 失敗3：</span> ジャンルが多すぎて選べなくなった<br>
+          <span style="font-size: 12px; color: var(--muted); margin-top: 4px; display: block;">→ 目安は5個以下に絞る。多すぎると「選択肢の多さ」がストレスになる</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚀 応用バリエーション</div>
+        <ul class="checklist">
+          <li>「無料ツール講座」シリーズ化：初日→紹介、2日目→操作、3日目→応用、4日目→実例</li>
+          <li>「実装済み実績」を組み込む：「私も1年は無料版だけで月50万円売上ました」</li>
+          <li>「競争力は有料版より無料版」の逆転発想：スキルアップを促進</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- セット運用 -->
+  <div class="section">
+    <div class="section-title green">3つのテンプレートのセット運用</div>
+
+    <div class="highlight-box">
+      <strong>セット運用での相乗効果</strong><br>
+      単独より、3つを組み合わせ運用すると相乗効果が生まれます。
+      <br><br>
+      Week 1：「最初の3日間」で「行動の最初のハードル」を下げる<br>
+      Week 2：「温もりプラス」で「自分の体験」に血を通わせる手法を提示<br>
+      Week 3：「完全無料ツール」で「実装のコスト不安」を除去<br>
+      <br>
+      3週間で読者は「小さく始める」「本当に聞こえる」「コスト不安なく実装」の3つを習得します。
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📅 Threads/X特化の配信パターン</div>
+      <div class="code-block">【1日1投稿 × 2週間パターン】
+
+Day 1-4：「最初の3日間」を分割投稿
+Day 5-8：「温もりプラス」プロンプト①②③＋修正事例
+Day 9-13：「完全無料ツール」カテゴリ別＋節約額シミュレーション
+Day 14：「3週間の学習を1つのnoteにまとめた」という上位互換への導線</div>
+    </div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="section">
+    <div class="section-title orange">最後に：テンプレート活用の禁止事項</div>
+
+    <div class="warning-box">
+      <strong>❌ これだけは絶対にやるな</strong>
+      <ul style="margin-left: 20px; margin-top: 8px;">
+        <li style="margin-bottom: 8px;">コンテンツIDの盗用：出典を明記すること（信頼性が上がる）</li>
+        <li style="margin-bottom: 8px;">無限増殖：3つを極めた上で、別のテンプレートを作る方が強い</li>
+        <li>CTA無視：テンプレートは「あなたのビジネスに読者を流す」ためのもの</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <h3>型を習得すれば、投稿時間が1/3に短縮される</h3>
+    <p>次は、これらのテンプレートを組み合わせて、あなた自身のコンテンツを「型化」してみましょう。</p>
+  </div>
+
+  <div class="footer">
+    <p>マーケティングテンプレート集【深掘り版】</p>
+    <p>心理学・行動経済学ベースの実践テンプレート</p>
+  </div>
+
+</div>
+</body>
+</html>
