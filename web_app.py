@@ -57,9 +57,11 @@ def credentials_set() -> bool:
 
 @app.route("/")
 def index():
-    if not credentials_set():
-        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
-        return redirect(url_for("settings"))
+    return redirect(url_for("templates_list"))
+
+
+@app.route("/posts")
+def posts():
     storage = get_storage()
     status_filter = request.args.get("status")
     posts = storage.list_posts(status_filter)
@@ -69,10 +71,6 @@ def index():
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
-    if not credentials_set():
-        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
-        return redirect(url_for("settings"))
-
     if request.method == "POST":
         text = request.form.get("text", "").strip()
         scheduled_at_str = request.form.get("scheduled_at", "").strip()
