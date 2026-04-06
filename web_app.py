@@ -21,6 +21,7 @@ from flask import (
     redirect,
     url_for,
     flash,
+    send_file,
 )
 from dotenv import load_dotenv, set_key
 
@@ -286,6 +287,12 @@ def thumbnail_generator():
 @app.route("/bonus")
 def bonus():
     return render_template("bonus.html")
+
+
+@app.route("/bonus/download")
+def bonus_download():
+    pdf_path = Path(__file__).parent / "docs" / "購入者特典3点セット.pdf"
+    return send_file(str(pdf_path), as_attachment=True, download_name="購入者特典3点セット.pdf")
 
 
 # ── メルマガ ────────────────────────────────────────────────────────
