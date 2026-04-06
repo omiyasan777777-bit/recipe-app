@@ -150,7 +150,7 @@ class Storage:
         self,
         text: str,
         scheduled_at: datetime,
-        image_paths: Optional[list[str]] = None,
+        image_paths: Optional[List[str]] = None,
     ) -> Post:
         now = datetime.now().astimezone()
         images_str = ",".join(image_paths) if image_paths else None

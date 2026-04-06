@@ -14,6 +14,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 from pathlib import Path
 
+from typing import Dict, List
 from flask import (
     Flask,
     render_template,
@@ -302,7 +303,7 @@ def smtp_configured() -> bool:
     return bool(cfg["host"] and cfg["user"] and cfg["password"] and cfg["from_email"])
 
 
-def send_newsletter_email(subject: str, body: str, recipients: list[dict]) -> int:
+def send_newsletter_email(subject: str, body: str, recipients: List[Dict]) -> int:
     """指定の宛先リストにメルマガを送信し、送信件数を返す。"""
     cfg = get_smtp_config()
     sent = 0

@@ -1,6 +1,6 @@
 import mimetypes
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from atproto import Client
 from atproto_client.models.app.bsky.embed.images import Image, Main as ImagesEmbed
@@ -40,7 +40,7 @@ class BlueskyClient:
 
         return response.uri
 
-    def _build_image_embed(self, paths: list[str]) -> ImagesEmbed:
+    def _build_image_embed(self, paths: List[str]) -> ImagesEmbed:
         images = []
         for path_str in paths[:4]:  # Bluesky allows up to 4 images
             path = Path(path_str)
