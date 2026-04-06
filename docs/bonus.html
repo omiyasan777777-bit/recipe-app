@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>購入者特典 3点セット</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f8fafc;color:#1e293b;padding:16px;max-width:640px;margin:0 auto}
+h1{font-size:20px;font-weight:800;text-align:center;padding:20px;background:linear-gradient(135deg,#0085ff,#0050cc);color:#fff;border-radius:12px;margin-bottom:16px}
+h1 small{display:block;font-size:13px;font-weight:400;opacity:.85;margin-top:6px}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:flex-start;gap:10px}
+.num{background:#0085ff;color:#fff;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap;margin-top:2px}
+.card-title{font-size:15px;font-weight:700;line-height:1.5}
+.card-sub{font-size:13px;color:#475569;margin-top:3px}
+.card-body{padding:16px 20px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;font-weight:600;color:#475569;cursor:pointer}
+.tabs button.on{background:#0085ff;color:#fff;border-color:#0085ff}
+.panel{display:none}
+.panel.on{display:block}
+.label{font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+pre{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto;font-family:inherit;color:#1e293b}
+.copy-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 18px;border-radius:12px;border:none;background:#0085ff;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.copy-btn:active{opacity:.8}
+.copy-btn.done{background:#22c55e}
+</style>
+</head>
+<body>
+<h1>購入者特典 3点セット<small>テキストボックスの内容をコピーしてClaudeに貼り付けて使ってください</small></h1>
+
+<!-- 特典① -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">特典①</span>
+    <div>
+      <div class="card-title">CLAUDE.mdカスタマイズ用ワークシート</div>
+      <div class="card-sub">「テーマ」「文体」「禁止ワード」を整理 → CLAUDE.mdを即完成</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="tabs">
+      <button class="on" onclick="tab(this,'a1')">ワークシート</button>
+      <button onclick="tab(this,'a2')">生成プロンプト</button>
+    </div>
+    <div id="a1" class="panel on">
+      <div class="label">記入シート（コピー → メモ帳に貼り付けて記入）</div>
+      <pre id="a1t">【CLAUDE.mdワークシート】
+
+■ STEP 1｜基本情報
+アカウント名：
+発信ジャンル：
+ターゲット読者：
+読者の悩み：
+あなたの強み：
+
+■ STEP 2｜テーマ設定
+メインテーマ：
+サブテーマ①：
+サブテーマ②：
+サブテーマ③：
+投稿の目的：
+
+■ STEP 3｜文体・トーン
+話し方：（です・ます／だ・である／タメ口寄り）
+キャラクター像：
+文章の長さ：（短め100〜200字／中程度300〜500字／長め600字〜）
+絵文字：（積極的に使う／要所だけ／ほとんど使わない）
+
+■ STEP 4｜口ぐせ・よく使う表現
+よく使うフレーズ①：
+よく使うフレーズ②：
+よく使うフレーズ③：
+締めの言葉：
+
+■ STEP 5｜禁止ワード・NG表現
+NGワード①：
+NGワード②：
+NGワード③：
+避けたいトーン：
+
+■ STEP 6｜投稿フォーマット
+よく使う構成：
+ハッシュタグ方針：
+
+■ STEP 7｜参考アカウント
+参考①（アカウント名）：　好きな点：
+参考②（アカウント名）：　好きな点：</pre>
+      <button class="copy-btn" onclick="cp('a1t',this)">📋 ワークシートをコピー</button>
+    </div>
+    <div id="a2" class="panel">
+      <div class="label">CLAUDE.md生成プロンプト（ワークシート記入後に使用）</div>
+      <pre id="a2t">以下のワークシートの内容をもとに、私のSNS投稿専用のCLAUDE.mdファイルを作成してください。
+
+【ワークシートの内容】
+（← ここにワークシートの記入内容を貼り付ける）
+
+CLAUDE.mdには以下を含めてください：
+1. アカウントの基本方針（ジャンル・ターゲット・目的）
+2. 文体・トーンのルール
+3. よく使うフレーズ・締めの言葉
+4. 禁止ワード・NG表現のリスト
+5. 投稿フォーマットのテンプレート
+6. Claudeへの具体的な指示文（「投稿を作るときは必ず〜してください」形式）
+
+マークダウン形式で出力してください。</pre>
+      <button class="copy-btn" onclick="cp('a2t',this)">📋 プロンプトをコピー</button>
+    </div>
+  </div>
+</div>
+
+<!-- 特典② -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">特典②</span>
+    <div>
+      <div class="card-title">月初「ネタ30本出し」専用テンプレート</div>
+      <div class="card-sub">毎月1回これを実行するだけで1ヶ月分のネタが揃う</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="tabs">
+      <button class="on" onclick="tab(this,'b1')">入力フォーム</button>
+      <button onclick="tab(this,'b2')">実行プロンプト</button>
+      <button onclick="tab(this,'b3')">管理シート</button>
+    </div>
+    <div id="b1" class="panel on">
+      <div class="label">月初に記入するフォーム</div>
+      <pre id="b1t">【月初ネタ30本出しフォーム】
+
+■ 今月の基本情報
+今月：　　月（　　　　シーズン）
+今月のイベント①：
+今月のイベント②：
+今月のテーマメッセージ：
+先月うまくいったジャンル：
+先月うまくいかなかったジャンル：
+
+■ ターゲット読者の今月の状態
+今月の悩み①：
+今月の悩み②：
+今月のニーズ①：
+今月のニーズ②：
+
+■ 投稿カテゴリ配分（合計30本）
+ノウハウ・How to系：　本
+体験談・ストーリー系：　本
+リスト・まとめ系：　本
+Q&A系：　本
+季節・トレンド系：　本
+商品・サービス紹介：　本
+読者交流系：　本
+その他：　本</pre>
+      <button class="copy-btn" onclick="cp('b1t',this)">📋 フォームをコピー</button>
+    </div>
+    <div id="b2" class="panel">
+      <div class="label">ネタ30本出し実行プロンプト</div>
+      <pre id="b2t">あなたは私のSNS投稿のネタ出しを手伝うアシスタントです。
+以下の条件をもとに、今月投稿する30本分のネタタイトルを考えてください。
+
+【今月の基本情報】
+・月・季節：
+・今月のイベント：
+・今月のテーマメッセージ：
+・先月うまくいったジャンル：
+・先月うまくいかなかったジャンル：
+
+【ターゲット読者の状態】
+・今月の悩み：
+・今月のニーズ：
+
+【投稿カテゴリと本数配分】
+・ノウハウ・How to系：　本
+・体験談・ストーリー系：　本
+・リスト・まとめ系：　本
+・Q&A系：　本
+・季節・トレンド系：　本
+・商品・サービス紹介：　本
+・読者交流系：　本
+
+【出力形式】
+以下の形式で30本分出力してください：
+
+No.01 [カテゴリ] タイトル案
+No.02 [カテゴリ] タイトル案
+…（30本まで）
+
+タイトルは投稿の1行目として使えるレベルに具体的に書いてください。
+抽象的なタイトルは禁止。読者が「自分のことだ」と感じる表現にしてください。</pre>
+      <button class="copy-btn" onclick="cp('b2t',this)">📋 プロンプトをコピー</button>
+    </div>
+    <div id="b3" class="panel">
+      <div class="label">ネタ管理シート（Googleスプレッドシートに貼り付けて使用）</div>
+      <pre id="b3t">No.	タイトル	カテゴリ	投稿予定日	ステータス	メモ
+01				未着手
+02				未着手
+03				未着手
+04				未着手
+05				未着手
+06				未着手
+07				未着手
+08				未着手
+09				未着手
+10				未着手
+11				未着手
+12				未着手
+13				未着手
+14				未着手
+15				未着手
+16				未着手
+17				未着手
+18				未着手
+19				未着手
+20				未着手
+21				未着手
+22				未着手
+23				未着手
+24				未着手
+25				未着手
+26				未着手
+27				未着手
+28				未着手
+29				未着手
+30				未着手	</pre>
+      <button class="copy-btn" onclick="cp('b3t',this)">📋 管理シートをコピー</button>
+    </div>
+  </div>
+</div>
+
+<!-- 特典③ -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">特典③</span>
+    <div>
+      <div class="card-title">6ヶ月収益化ロードマップ・入力フォーム</div>
+      <div class="card-sub">プロンプト⑲を使う前に現状を整理 → 精度が格段に上がる</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="tabs">
+      <button class="on" onclick="tab(this,'c1')">入力フォーム</button>
+      <button onclick="tab(this,'c2')">実行プロンプト</button>
+    </div>
+    <div id="c1" class="panel on">
+      <div class="label">プロンプト⑲を使う前に記入するフォーム</div>
+      <pre id="c1t">【6ヶ月収益化ロードマップ入力フォーム】
+
+■ PART A｜現在地の確認
+メインプラットフォーム：
+フォロワー数：
+月間投稿数：
+現在の月収（SNS関連）：　　円/月
+これまで試した収益化方法：
+1日に使える時間：　　時間/日
+使える予算：　　円/月
+自分のスキル・強み①：
+自分のスキル・強み②：
+
+■ PART B｜ゴール設定
+6ヶ月後の収益目標：月　　　　円
+6ヶ月後のフォロワー目標：　　　人
+6ヶ月後になりたい状態：
+絶対にやりたくないこと①：
+絶対にやりたくないこと②：
+
+■ PART C｜ビジネスモデル
+販売したい商品・サービス：
+価格イメージ：　　円
+誰向け：
+解決できる悩み：
+顧客獲得フロー：
+　SNS投稿 →
+　↓
+　↓（最終：購入 or 問い合わせ）
+
+■ PART D｜障壁・不安
+収益化への不安①：
+収益化への不安②：
+過去に挫折した理由：
+今一番困っていること：
+
+■ PART E｜競合・差別化
+参考アカウント①：　好きな点：
+参考アカウント②：　好きな点：
+自分が勝てるポイント①：
+自分が勝てるポイント②：</pre>
+      <button class="copy-btn" onclick="cp('c1t',this)">📋 フォームをコピー</button>
+    </div>
+    <div id="c2" class="panel">
+      <div class="label">6ヶ月ロードマップ生成プロンプト（フォーム記入後に使用）</div>
+      <pre id="c2t">あなたはSNSを活用した収益化のプロフェッショナルです。
+以下の入力フォームの内容をもとに、私専用の「6ヶ月収益化ロードマップ」を作成してください。
+
+【入力フォームの内容】
+（← ここにフォームの記入内容をすべて貼り付ける）
+
+【ロードマップの出力形式】
+■ 現状分析と勝ち筋
+（強み・課題・最短ルートの見立て）
+
+■ 月別アクションプラン
+▼ 1ヶ月目：基盤づくり
+- 目標：
+- 主なアクション（3〜5個）：
+- 月末チェックポイント：
+
+▼ 2ヶ月目：露出拡大
+▼ 3ヶ月目：初収益化
+▼ 4ヶ月目：仕組み化
+▼ 5ヶ月目：スケールアップ
+▼ 6ヶ月目：安定化・再現性
+
+■ 収益化タイムライン予測
+（月別の想定収益と根拠）
+
+■ 最初の7日間でやること
+（今日から始められる具体的アクション5つ）
+
+■ 注意点・落とし穴
+
+現実的かつ具体的に、私の状況に合わせて作成してください。</pre>
+      <button class="copy-btn" onclick="cp('c2t',this)">📋 プロンプトをコピー</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function tab(btn, id) {
+  const body = btn.closest('.card-body');
+  body.querySelectorAll('.tabs button').forEach(b => b.classList.remove('on'));
+  body.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
+function cp(id, btn) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+    const t = btn.textContent;
+    btn.textContent = '✅ コピーしました';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = t; btn.classList.remove('done'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
