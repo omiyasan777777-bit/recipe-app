@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .bonus-hero {
+    background: linear-gradient(135deg, #0085ff 0%, #0050cc 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .bonus-hero h1 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .bonus-hero p  { font-size: 14px; opacity: .85; line-height: 1.6; }
+
+  .bonus-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .bonus-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .bonus-num {
+    background: var(--blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .bonus-title { font-size: 16px; font-weight: 700; line-height: 1.5; }
+  .bonus-subtitle { font-size: 13px; color: var(--gray-600); margin-top: 4px; line-height: 1.5; }
+
+  .bonus-body {
+    padding: 20px;
+  }
+
+  /* テキストエリア風の表示 */
+  .content-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow-y: auto;
+    font-family: inherit;
+    color: var(--gray-800);
+  }
+
+  .copy-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-copy {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--blue);
+    color: #fff;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn-copy:active { transform: scale(.97); }
+  .btn-copy.copied { background: var(--green); }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 8px;
+  }
+
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .tab-nav button {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--gray-200);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .tab-nav button.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+
+<div class="bonus-hero">
+  <h1>購入者特典 3点セット</h1>
+  <p>各特典のプロンプトをコピーして<br>そのままClaudeに貼り付けて使ってください</p>
+</div>
+
+<!-- 特典① -->
+<div class="bonus-card">
+  <div class="bonus-card-header">
+    <span class="bonus-num">特典①</span>
+    <div>
+      <div class="bonus-title">CLAUDE.mdカスタマイズ用ワークシート</div>
+      <div class="bonus-subtitle">「テーマ」「文体」「禁止ワード」を整理 → CLAUDE.mdを即完成</div>
+    </div>
+  </div>
+  <div class="bonus-body">
+    <div class="tab-nav">
+      <button class="active" onclick="switchTab(this,'b1-step')">ワークシート</button>
+      <button onclick="switchTab(this,'b1-prompt')">生成プロンプト</button>
+    </div>
+
+    <div id="b1-step" class="tab-panel active">
+      <div class="section-label">記入シート（コピーしてメモ帳等に貼り付け）</div>
+      <div class="content-box" id="b1-step-text">【CLAUDE.mdワークシート】
+
+■ STEP 1｜基本情報
+アカウント名：
+発信ジャンル：
+ターゲット読者：
+読者の悩み：
+あなたの強み：
+
+■ STEP 2｜テーマ設定
+メインテーマ：
+サブテーマ①：
+サブテーマ②：
+サブテーマ③：
+投稿の目的：
+
+■ STEP 3｜文体・トーン
+話し方：（です・ます／だ・である／タメ口寄り）
+キャラクター像：
+文章の長さ：（短め100〜200字／中程度300〜500字／長め600字〜）
+絵文字：（積極的に使う／要所だけ／ほとんど使わない）
+
+■ STEP 4｜口ぐせ・表現
+よく使うフレーズ①：
+よく使うフレーズ②：
+よく使うフレーズ③：
+締めの言葉：
+
+■ STEP 5｜禁止ワード・NG表現
+NGワード①：
+NGワード②：
+NGワード③：
+避けたいトーン：
+
+■ STEP 6｜投稿フォーマット
+よく使う構成：
+ハッシュタグ方針：
+
+■ STEP 7｜参考アカウント
+参考①（アカウント名）：好きな点：
+参考②（アカウント名）：好きな点：</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b1-step-text', this)">📋 ワークシートをコピー</button>
+      </div>
+    </div>
+
+    <div id="b1-prompt" class="tab-panel">
+      <div class="section-label">CLAUDE.md生成プロンプト（ワークシート記入後に使用）</div>
+      <div class="content-box" id="b1-prompt-text">以下のワークシートの内容をもとに、私のSNS投稿専用のCLAUDE.mdファイルを作成してください。
+
+【ワークシートの内容】
+（← ここにワークシートの記入内容を貼り付ける）
+
+CLAUDE.mdには以下を含めてください：
+1. アカウントの基本方針（ジャンル・ターゲット・目的）
+2. 文体・トーンのルール
+3. よく使うフレーズ・締めの言葉
+4. 禁止ワード・NG表現のリスト
+5. 投稿フォーマットのテンプレート
+6. Claudeへの具体的な指示文（「投稿を作るときは必ず〜してください」形式）
+
+マークダウン形式で出力してください。</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b1-prompt-text', this)">📋 プロンプトをコピー</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 特典② -->
+<div class="bonus-card">
+  <div class="bonus-card-header">
+    <span class="bonus-num">特典②</span>
+    <div>
+      <div class="bonus-title">月初「ネタ30本出し」専用テンプレート</div>
+      <div class="bonus-subtitle">毎月1回これを実行するだけで1ヶ月分のネタが揃う</div>
+    </div>
+  </div>
+  <div class="bonus-body">
+    <div class="tab-nav">
+      <button class="active" onclick="switchTab(this,'b2-form')">入力フォーム</button>
+      <button onclick="switchTab(this,'b2-prompt')">実行プロンプト</button>
+      <button onclick="switchTab(this,'b2-sheet')">管理シート</button>
+    </div>
+
+    <div id="b2-form" class="tab-panel active">
+      <div class="section-label">月初に記入するフォーム</div>
+      <div class="content-box" id="b2-form-text">【月初ネタ30本出しフォーム】
+
+■ 今月の基本情報
+今月：　　月（　　　　シーズン）
+今月のイベント①：
+今月のイベント②：
+今月のテーマメッセージ：
+先月うまくいったジャンル：
+先月うまくいかなかったジャンル：
+
+■ ターゲット読者の今月の状態
+今月の悩み①：
+今月の悩み②：
+今月のニーズ①：
+今月のニーズ②：
+
+■ 投稿カテゴリ配分（合計30本）
+ノウハウ・How to系：　本
+体験談・ストーリー系：　本
+リスト・まとめ系：　本
+Q&A系：　本
+季節・トレンド系：　本
+商品・サービス紹介：　本
+読者交流系：　本
+その他：　本</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b2-form-text', this)">📋 フォームをコピー</button>
+      </div>
+    </div>
+
+    <div id="b2-prompt" class="tab-panel">
+      <div class="section-label">ネタ30本出し実行プロンプト</div>
+      <div class="content-box" id="b2-prompt-text">あなたは私のSNS投稿のネタ出しを手伝うアシスタントです。
+以下の条件をもとに、今月投稿する30本分のネタタイトルを考えてください。
+
+【今月の基本情報】
+・月・季節：
+・今月のイベント：
+・今月のテーマメッセージ：
+・先月うまくいったジャンル：
+・先月うまくいかなかったジャンル：
+
+【ターゲット読者の状態】
+・今月の悩み：
+・今月のニーズ：
+
+【投稿カテゴリと本数配分】
+・ノウハウ・How to系：　本
+・体験談・ストーリー系：　本
+・リスト・まとめ系：　本
+・Q&A系：　本
+・季節・トレンド系：　本
+・商品・サービス紹介：　本
+・読者交流系：　本
+
+【出力形式】
+以下の形式で30本分出力してください：
+
+No.01 [カテゴリ] タイトル案
+No.02 [カテゴリ] タイトル案
+…（30本まで）
+
+タイトルは投稿の1行目として使えるレベルに具体的に書いてください。
+抽象的なタイトルは禁止。読者が「自分のことだ」と感じる表現にしてください。</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b2-prompt-text', this)">📋 プロンプトをコピー</button>
+      </div>
+    </div>
+
+    <div id="b2-sheet" class="tab-panel">
+      <div class="section-label">ネタ管理シート（スプレッドシートに貼り付けて使用）</div>
+      <div class="content-box" id="b2-sheet-text">No.	タイトル	カテゴリ	投稿予定日	ステータス	メモ
+01			未着手
+02			未着手
+03			未着手
+04			未着手
+05			未着手
+06			未着手
+07			未着手
+08			未着手
+09			未着手
+10			未着手
+11			未着手
+12			未着手
+13			未着手
+14			未着手
+15			未着手
+16			未着手
+17			未着手
+18			未着手
+19			未着手
+20			未着手
+21			未着手
+22			未着手
+23			未着手
+24			未着手
+25			未着手
+26			未着手
+27			未着手
+28			未着手
+29			未着手
+30			未着手	</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b2-sheet-text', this)">📋 管理シートをコピー</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 特典③ -->
+<div class="bonus-card">
+  <div class="bonus-card-header">
+    <span class="bonus-num">特典③</span>
+    <div>
+      <div class="bonus-title">6ヶ月収益化ロードマップ・入力フォーム</div>
+      <div class="bonus-subtitle">プロンプト⑲を使う前に現状を整理 → 精度が格段に上がる</div>
+    </div>
+  </div>
+  <div class="bonus-body">
+    <div class="tab-nav">
+      <button class="active" onclick="switchTab(this,'b3-form')">入力フォーム</button>
+      <button onclick="switchTab(this,'b3-prompt')">実行プロンプト</button>
+    </div>
+
+    <div id="b3-form" class="tab-panel active">
+      <div class="section-label">プロンプト⑲を使う前に記入するフォーム</div>
+      <div class="content-box" id="b3-form-text">【6ヶ月収益化ロードマップ入力フォーム】
+
+■ PART A｜現在地の確認
+メインプラットフォーム：
+フォロワー数：
+月間投稿数：
+現在の月収（SNS関連）：　　円/月
+これまで試した収益化方法：
+1日に使える時間：　　時間/日
+使える予算：　　円/月
+自分のスキル・強み①：
+自分のスキル・強み②：
+
+■ PART B｜ゴール設定
+6ヶ月後の収益目標：月　　　　円
+6ヶ月後のフォロワー目標：　　　人
+6ヶ月後になりたい状態：
+絶対にやりたくないこと①：
+絶対にやりたくないこと②：
+
+■ PART C｜ビジネスモデル
+販売したい商品・サービス：
+価格イメージ：　　円
+誰向け：
+解決できる悩み：
+想定する顧客獲得フロー：
+　SNS投稿 →
+　↓
+　↓
+　↓（最終：購入 or 問い合わせ）
+
+■ PART D｜障壁・不安
+収益化への不安①：
+収益化への不安②：
+過去に挫折した理由：
+今一番困っていること：
+
+■ PART E｜競合・差別化
+参考アカウント①：参考にしたい点：
+参考アカウント②：参考にしたい点：
+自分が勝てるポイント①：
+自分が勝てるポイント②：</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b3-form-text', this)">📋 フォームをコピー</button>
+      </div>
+    </div>
+
+    <div id="b3-prompt" class="tab-panel">
+      <div class="section-label">6ヶ月ロードマップ生成プロンプト（フォーム記入後に使用）</div>
+      <div class="content-box" id="b3-prompt-text">あなたはSNSを活用した収益化のプロフェッショナルです。
+以下の入力フォームの内容をもとに、私専用の「6ヶ月収益化ロードマップ」を作成してください。
+
+【入力フォームの内容】
+（← ここにフォームの記入内容をすべて貼り付ける）
+
+【ロードマップの出力形式】
+以下の構成で作成してください：
+
+■ 現状分析と勝ち筋
+（強み・課題・最短ルートの見立て）
+
+■ 月別アクションプラン
+
+▼ 1ヶ月目：基盤づくり
+- 目標：
+- 主なアクション（3〜5個）：
+- 月末チェックポイント：
+
+▼ 2ヶ月目：露出拡大
+▼ 3ヶ月目：初収益化
+▼ 4ヶ月目：仕組み化
+▼ 5ヶ月目：スケールアップ
+▼ 6ヶ月目：安定化・再現性
+
+■ 収益化タイムライン予測
+（月別の想定収益と根拠）
+
+■ 最初の7日間でやること
+（今日から始められる具体的アクション5つ）
+
+■ 注意点・落とし穴
+
+現実的かつ具体的に、私の状況に合わせて作成してください。</div>
+      <div class="copy-row">
+        <button class="btn-copy" onclick="copyText('b3-prompt-text', this)">📋 プロンプトをコピー</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  const card = btn.closest('.bonus-body');
+  card.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function copyText(elementId, btn) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.innerHTML;
+    btn.innerHTML = '✅ コピーしました';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // フォールバック
+    const el = document.getElementById(elementId);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    btn.innerHTML = '✅ コピーしました';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '📋 コピー'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+{% endblock %}

@@ -283,6 +283,11 @@ def thumbnail_generator():
     return render_template("thumbnail_generator.html")
 
 
+@app.route("/bonus")
+def bonus():
+    return render_template("bonus.html")
+
+
 # ── メルマガ ────────────────────────────────────────────────────────
 
 def get_smtp_config():
