@@ -174,9 +174,6 @@ def settings():
 
 @app.route("/templates")
 def templates_list():
-    if not credentials_set():
-        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
-        return redirect(url_for("settings"))
     storage = get_storage()
     templates = storage.list_templates()
     return render_template("templates_list.html", templates=templates)
@@ -184,9 +181,6 @@ def templates_list():
 
 @app.route("/templates/new", methods=["GET", "POST"])
 def template_new():
-    if not credentials_set():
-        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
-        return redirect(url_for("settings"))
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -222,10 +216,6 @@ def template_delete(template_id: int):
 
 @app.route("/templates/<int:template_id>/use", methods=["GET", "POST"])
 def template_use(template_id: int):
-    if not credentials_set():
-        flash("まず設定画面でBlueskyのIDとパスワードを入力してください。", "warning")
-        return redirect(url_for("settings"))
-
     storage = get_storage()
     tmpl = storage.get_template(template_id)
     if not tmpl:
