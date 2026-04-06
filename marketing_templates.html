@@ -5,161 +5,399 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マーケティングテンプレート集</title>
   <style>
+    :root {
+      --blue: #2563eb; --blue-light: #dbeafe; --blue-dark: #1d4ed8;
+      --pink: #db2777; --pink-light: #fce7f3;
+      --green: #059669; --green-light: #d1fae5;
+      --gray: #64748b; --bg: #f1f5f9; --white: #fff;
+      --radius: 16px; --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif; background: #f8fafc; color: #1e293b; padding: 24px 16px; }
-    h1 { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-    .subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 32px; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 24px; margin-bottom: 24px; max-width: 720px; margin-left: auto; margin-right: auto; }
-    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-    .badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-    .badge-1 { background: #dbeafe; color: #1d4ed8; }
-    .badge-2 { background: #fce7f3; color: #be185d; }
-    .badge-3 { background: #d1fae5; color: #065f46; }
-    h2 { font-size: 17px; font-weight: 700; }
-    .desc { font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.6; }
-    .template-body { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; font-size: 14px; line-height: 1.9; white-space: pre-wrap; word-break: break-word; }
-    .var { background: #fef3c7; color: #92400e; border-radius: 4px; padding: 1px 4px; font-weight: 600; }
-    .hashtags { margin-top: 12px; font-size: 13px; color: #3b82f6; }
-    .copy-btn { margin-top: 12px; padding: 8px 20px; background: #3b82f6; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .copy-btn:active { background: #2563eb; }
-    .copied { background: #10b981 !important; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif; background: var(--bg); color: #0f172a; min-height: 100vh; }
+
+    /* ヘッダー */
+    header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #7c3aed 100%); color: #fff; padding: 48px 20px 36px; text-align: center; }
+    header h1 { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 10px; }
+    header p { font-size: 15px; opacity: 0.85; line-height: 1.7; }
+    .header-badges { display: flex; justify-content: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+    .header-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 600; }
+
+    /* ナビ */
+    nav { background: #fff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; }
+    nav a { display: block; padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--gray); text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent; transition: all .2s; }
+    nav a:hover { color: var(--blue); }
+    nav a.nav-1:hover, nav a.nav-1.active { color: var(--blue); border-color: var(--blue); }
+    nav a.nav-2:hover, nav a.nav-2.active { color: var(--pink); border-color: var(--pink); }
+    nav a.nav-3:hover, nav a.nav-3.active { color: var(--green); border-color: var(--green); }
+
+    /* メイン */
+    main { max-width: 780px; margin: 0 auto; padding: 32px 16px 64px; }
+
+    /* セクション */
+    .section { margin-bottom: 48px; }
+    .section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+    .num { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; flex-shrink: 0; }
+    .num-1 { background: var(--blue-light); color: var(--blue-dark); }
+    .num-2 { background: var(--pink-light); color: var(--pink); }
+    .num-3 { background: var(--green-light); color: var(--green); }
+    .section-title h2 { font-size: 19px; font-weight: 800; line-height: 1.4; margin-bottom: 4px; }
+    .section-title p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+
+    /* 使い方ガイド */
+    .guide { border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; font-size: 13px; line-height: 1.8; }
+    .guide-1 { background: var(--blue-light); border-left: 4px solid var(--blue); }
+    .guide-2 { background: var(--pink-light); border-left: 4px solid var(--pink); }
+    .guide-3 { background: var(--green-light); border-left: 4px solid var(--green); }
+    .guide strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+
+    /* 変数説明 */
+    .vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .var-chip { display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; font-size: 12px; min-width: 140px; flex: 1; }
+    .var-chip .var-name { font-weight: 700; color: #92400e; background: #fef3c7; border-radius: 4px; padding: 2px 6px; margin-bottom: 4px; display: inline-block; }
+    .var-chip .var-desc { color: var(--gray); line-height: 1.5; }
+
+    /* テンプレートカード */
+    .template-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .template-card-header { padding: 14px 20px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .header-1 { background: var(--blue-light); color: var(--blue-dark); }
+    .header-2 { background: var(--pink-light); color: var(--pink); }
+    .header-3 { background: var(--green-light); color: var(--green); }
+    .template-body { padding: 20px; font-size: 14px; line-height: 2; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid #f1f5f9; }
+    .v { background: #fef3c7; color: #92400e; border-radius: 4px; padding: 1px 5px; font-weight: 700; font-size: 13px; }
+    .template-footer { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .hashtags { font-size: 12px; color: var(--blue); line-height: 1.8; }
+    .copy-btn { padding: 9px 22px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .btn-1 { background: var(--blue); color: #fff; }
+    .btn-2 { background: var(--pink); color: #fff; }
+    .btn-3 { background: var(--green); color: #fff; }
+    .copy-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .copy-btn.done { background: #10b981 !important; }
+
+    /* 効果メモ */
+    .effect-box { background: #fff; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 16px 20px; margin-top: 16px; }
+    .effect-box h4 { font-size: 13px; font-weight: 700; color: var(--gray); margin-bottom: 10px; }
+    .effect-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .effect-list li { font-size: 13px; line-height: 1.6; display: flex; gap: 8px; }
+    .effect-list li::before { content: "→"; color: var(--blue); font-weight: 700; flex-shrink: 0; }
+
+    /* 区切り */
+    .divider { border: none; border-top: 2px dashed #e2e8f0; margin: 40px 0; }
+
+    /* フッター */
+    footer { text-align: center; padding: 24px; font-size: 12px; color: var(--gray); }
   </style>
 </head>
 <body>
 
-<h1>📋 マーケティングテンプレート集</h1>
-<p class="subtitle">{ } 内を書き換えてそのまま使えます</p>
-
-<!-- テンプレート1 -->
-<div class="card">
-  <div class="card-header">
-    <span class="badge badge-1">01</span>
-    <h2>【最初の3日間】超圧縮アクションプラン</h2>
+<header>
+  <h1>📋 マーケティングテンプレート集</h1>
+  <p>SNS投稿・note・メルマガにそのまま使える<br>コピペOKの実践テンプレート3本</p>
+  <div class="header-badges">
+    <span class="header-badge">✅ 変数を埋めるだけ</span>
+    <span class="header-badge">✅ ペイン訴求済み</span>
+    <span class="header-badge">✅ ハッシュタグ付き</span>
   </div>
-  <p class="desc">情報過多で動けない人向け。Day1〜3に絞った最小アクションを提示するテンプレート。</p>
-  <div class="template-body" id="body1">📣 情報多すぎて何から始めればいいかわからない人へ
+</header>
 
-「<span class="var">{ジャンル}</span>」を始めたいなら、最初の3日間だけこれをやれ。
+<nav>
+  <a href="#t1" class="nav-1">01 最初の3日間プラン</a>
+  <a href="#t2" class="nav-2">02 温もりプラス</a>
+  <a href="#t3" class="nav-3">03 完全無料ツール</a>
+</nav>
 
-━━━━━━━━━━━━
+<main>
+
+  <!-- ========== テンプレート1 ========== -->
+  <div class="section" id="t1">
+    <div class="section-header">
+      <div class="num num-1">01</div>
+      <div class="section-title">
+        <h2>「最初の3日間」専用<br>超圧縮アクションプラン</h2>
+        <p>情報過多のペインを解消する・初心者向け行動促進テンプレート</p>
+      </div>
+    </div>
+
+    <div class="guide guide-1">
+      <strong>🎯 このテンプレートの狙い</strong>
+      情報収集ばかりして一向に動き出せないフォロワーに「3日間だけ」という心理的ハードルの低い約束をさせ、最初の行動を引き出す。「判断回数を減らす」という視点が差別化ポイント。
+    </div>
+
+    <div class="vars">
+      <div class="var-chip"><span class="var-name">{ジャンル}</span><span class="var-desc">副業・SNS運用・ライティングなど読者が始めたいこと</span></div>
+      <div class="var-chip"><span class="var-name">{ツール名}</span><span class="var-desc">最初に触るべきツール（Canva・ChatGPT・Notionなど）</span></div>
+      <div class="var-chip"><span class="var-name">{最初のアクション}</span><span class="var-desc">1つだけやる行動（記事1本・投稿1回・商品登録1件など）</span></div>
+      <div class="var-chip"><span class="var-name">{call_to_action}</span><span class="var-desc">誘導先（プロフのリンク・無料配布・コメント誘導など）</span></div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-card-header header-1">📄 テンプレート本文</div>
+      <div class="template-body" id="body1">📣 情報多すぎて何から始めればいいかわからない人へ
+
+「<span class="v">{ジャンル}</span>」を始めたいなら、最初の3日間だけこれをやれ。
+
+━━━━━━━━━━━━━━━━━━
 ✅ Day 1：インプット断ち
-・ノウハウ本・動画は一切見ない
-・<span class="var">{ツール名}</span>だけ登録して触る（5分でOK）
+・ノウハウ本・YouTube動画は一切見ない
+・<span class="v">{ツール名}</span>だけ登録して5分触る（それだけでいい）
+・「完璧に理解してから始める」は永遠に始まらない呪い
 
-✅ Day 2：最小単位で1回やる
-・完璧じゃなくていい
-・<span class="var">{最初のアクション}</span>を1つだけ完了させる
+✅ Day 2：最小単位で1回だけやる
+・クオリティは問わない、完成させることが目的
+・<span class="v">{最初のアクション}</span>を1つだけ完了させる
+・「やった」という事実だけが翌日の自分を動かす
 
-✅ Day 3：記録して人に見せる
-・スクショでもメモでも何でもいい
-・「やった」という事実を残す
-━━━━━━━━━━━━
+✅ Day 3：記録して1人に見せる
+・スクショ・メモ・どんな形でも構わない
+・SNSに投稿するか、誰か1人に送る
+・「公開した」という事実がモチベーションの燃料になる
+━━━━━━━━━━━━━━━━━━
 
 情報過多で動けない人ほど、
-行動量ではなく「判断回数」を減らすことが先決。
+「行動量を増やす」より「判断回数を減らす」が先決。
 
-3日後の自分が変わってるかどうか、試してみて。
+やることを3日間・1日1個に絞るだけで
+頭の中の霧が晴れる。
 
-<span class="var">{call_to_action}</span></div>
-  <div class="hashtags">#副業 #行動力 #初心者向け #アクションプラン #情報過多</div>
-  <button class="copy-btn" onclick="copyText('body1', this)">📋 コピー</button>
-</div>
+3日後の自分が変わってるかどうか——
+まずそれだけを試してみて。
 
-<!-- テンプレート2 -->
-<div class="card">
-  <div class="card-header">
-    <span class="badge badge-2">02</span>
-    <h2>【温もりプラス】AIの冷たい文章を人間らしくするプロンプト集</h2>
+<span class="v">{call_to_action}</span></div>
+      <div class="template-footer">
+        <div class="hashtags">#副業 #行動力 #初心者向け #アクションプラン #情報過多 #副業初心者 #在宅ワーク</div>
+        <button class="copy-btn btn-1" onclick="copyText('body1', this)">📋 コピーする</button>
+      </div>
+    </div>
+
+    <div class="effect-box">
+      <h4>💡 効果を高める使い方</h4>
+      <ul class="effect-list">
+        <li>Day2の「最初のアクション」を自分の商品・サービスに直結させると自然な誘導になる</li>
+        <li>「3日間」という限定性が読者の「やってみよう」を引き出す。期間は変えないこと</li>
+        <li>自分が実際に3日間でやったことを{ジャンル}に入れると体験談として信頼度UP</li>
+      </ul>
+    </div>
   </div>
-  <p class="desc">❄️修正前 → 🧡修正後 の寒暖差でベネフィットを体感させるテンプレート。</p>
-  <div class="template-body" id="body2">🤖❄️→🧡 AIが書いた文章、「なんか冷たいな」と感じたことない？
 
-そのまま投稿すると読者がスルーします。
-使えば一瞬で「血の通った文章」に変わるプロンプト集、配ります。
+  <hr class="divider">
 
-━━━━━━━━━━━━
-▼ 【感情温度を上げる】プロンプト
-「この文章を、<span class="var">{ターゲット読者}</span>が読んだときに
- 思わず共感してしまうよう、感情表現を3箇所加えて。」
+  <!-- ========== テンプレート2 ========== -->
+  <div class="section" id="t2">
+    <div class="section-header">
+      <div class="num num-2">02</div>
+      <div class="section-title">
+        <h2>冷たいAI文章に血を通わせる<br>「温もりプラス」プロンプト集</h2>
+        <p>寒暖差の強調・ベネフィット訴求で「刺さる文章」に変換するテンプレート</p>
+      </div>
+    </div>
 
-▼ 【体験談を混ぜる】プロンプト
-「この内容に、<span class="var">{具体的な失敗談または成功談}</span>を
- 1人称で自然に織り込んで書き直して。」
+    <div class="guide guide-2">
+      <strong>🎯 このテンプレートの狙い</strong>
+      AIで量産された文章の「無機質さ」に悩む読者に刺さるコンテンツ。❄️冷たい文章 → 🧡温かい文章 という寒暖差の対比で変化を体感させ、プロンプトを実際に試してもらう行動を引き出す。
+    </div>
 
-▼ 【結末の温度を上げる】プロンプト
-「最後の一文を、読者が<span class="var">{ベネフィット}</span>を
- リアルにイメージできる表現に変えて。」
-━━━━━━━━━━━━
+    <div class="vars">
+      <div class="var-chip"><span class="var-name">{ターゲット読者}</span><span class="var-desc">副業初心者の主婦・フリーランス駆け出しなど具体的な像</span></div>
+      <div class="var-chip"><span class="var-name">{失敗談または成功談}</span><span class="var-desc">自分の実体験（「最初の投稿が全くバズらなかった話」など）</span></div>
+      <div class="var-chip"><span class="var-name">{ベネフィット}</span><span class="var-desc">読者が得たい結果（フォロワー増・売上UP・時短など）</span></div>
+      <div class="var-chip"><span class="var-name">{実体験の変化}</span><span class="var-desc">自分に起きた変化（「いいねが3倍になった」など）</span></div>
+      <div class="var-chip"><span class="var-name">{call_to_action}</span><span class="var-desc">誘導先（無料PDF・フォロー・コメント依頼など）</span></div>
+    </div>
 
-❄️ 修正前：「この方法を実践すれば成果が出ます。」
-🧡 修正後：「3日試しただけで、<span class="var">{実体験の変化}</span>を感じました。」
+    <div class="template-card">
+      <div class="template-card-header header-2">📄 テンプレート本文</div>
+      <div class="template-body" id="body2">🤖❄️→🧡 AIが書いた文章、「なんか冷たいな」と感じたことない？
 
-AIはスタートライン。
-あなたの「体温」を乗せて初めて刺さる文章になる。
+そのまま投稿すると読者はスクロールして通り過ぎます。
+使えば一瞬で「血の通った文章」に変わる——
+プロンプト3本、無料で配ります。
 
-<span class="var">{call_to_action}</span></div>
-  <div class="hashtags">#AI活用 #ChatGPT #プロンプト #ライティング #副業</div>
-  <button class="copy-btn" onclick="copyText('body2', this)">📋 コピー</button>
-</div>
+━━━━━━━━━━━━━━━━━━
+▼ プロンプト① 【感情温度を上げる】
+「この文章を、<span class="v">{ターゲット読者}</span>が読んだときに
+ 思わず『あるある』と共感してしまうよう、
+ 感情表現・情景描写を3箇所加えて書き直して。」
 
-<!-- テンプレート3 -->
-<div class="card">
-  <div class="card-header">
-    <span class="badge badge-3">03</span>
-    <h2>【完全無料】初期費用ゼロで始める代替ツールリスト</h2>
+▼ プロンプト② 【体験談を自然に混ぜる】
+「この内容に、<span class="v">{失敗談または成功談}</span>を
+ 1人称・会話口調で自然に織り込んで書き直して。
+ 作り話っぽくならないよう具体的な数字や場面を入れて。」
+
+▼ プロンプト③ 【結末の温度を上げる】
+「最後の2〜3文を、読者が<span class="v">{ベネフィット}</span>を
+ リアルに頭でイメージできるような表現に変えて。
+ 背中を押す一言で締めくくること。」
+━━━━━━━━━━━━━━━━━━
+
+【体感してほしい寒暖差】
+
+❄️ 修正前（AI生成そのまま）
+「この方法を実践することで、成果が期待できます。」
+
+🧡 修正後（プロンプト適用後）
+「半信半疑で3日だけ試したら、<span class="v">{実体験の変化}</span>。
+ あのとき動いた自分を、今は心から褒めてあげたい。」
+
+———
+
+AIはあくまでスタートライン。
+3本のプロンプトで「あなたの体温」を乗せれば
+フォロワーの心に届く文章になる。
+
+今すぐコピーして使ってみて。
+
+<span class="v">{call_to_action}</span></div>
+      <div class="template-footer">
+        <div class="hashtags">#AI活用 #ChatGPT #プロンプト #ライティング #副業 #SNS運用 #文章術</div>
+        <button class="copy-btn btn-2" onclick="copyText('body2', this)">📋 コピーする</button>
+      </div>
+    </div>
+
+    <div class="effect-box">
+      <h4>💡 効果を高める使い方</h4>
+      <ul class="effect-list">
+        <li>「❄️修正前→🧡修正後」の対比に自分の実際の文章を使うと読者が変化をリアルに体感できる</li>
+        <li>{ターゲット読者}はできる限り具体的に（「育児中の30代主婦」など）すると共感率UP</li>
+        <li>プロンプトを実際に試してスクショを次の投稿にすると続きを読みたくなるシリーズになる</li>
+      </ul>
+    </div>
   </div>
-  <p class="desc">有料ツールとの価格差・希少性を提示して読者の損失回避心理を刺激するテンプレート。</p>
-  <div class="template-body" id="body3">💸 「<span class="var">{有料ツール名}</span>」に月<span class="var">{有料金額}</span>円払ってる人、ちょっと待って。
+
+  <hr class="divider">
+
+  <!-- ========== テンプレート3 ========== -->
+  <div class="section" id="t3">
+    <div class="section-header">
+      <div class="num num-3">03</div>
+      <div class="section-title">
+        <h2>初期費用ゼロの<br>「完全無料ツール」代替リスト</h2>
+        <p>価格差・希少性の提示で損失回避心理を刺激する保存必須テンプレート</p>
+      </div>
+    </div>
+
+    <div class="guide guide-3">
+      <strong>🎯 このテンプレートの狙い</strong>
+      有料ツールに月額を払い続けているフォロワーの「損してるかも」という感情を刺激。無料代替を5カテゴリで一覧提示することで「保存・シェアされやすい」お役立ちコンテンツに仕上げる。年間節約額を計算させることで損失回避バイアスを最大化する。
+    </div>
+
+    <div class="vars">
+      <div class="var-chip"><span class="var-name">{有料ツール名}</span><span class="var-desc">読者が使っている有料ツール（Notion AI・Adobe・Canva Proなど）</span></div>
+      <div class="var-chip"><span class="var-name">{有料金額}</span><span class="var-desc">月額料金（数字のみ：980・2,980など）</span></div>
+      <div class="var-chip"><span class="var-name">{代替ツール名}</span><span class="var-desc">無料の代替ツール名（Buffer無料版・Later無料枠など）</span></div>
+      <div class="var-chip"><span class="var-name">{年間節約額}</span><span class="var-desc">有料金額×12の計算結果（例：有料金額980なら11,760）</span></div>
+      <div class="var-chip"><span class="var-name">{call_to_action}</span><span class="var-desc">誘導先（保存依頼・フォロー・LINE・無料配布など）</span></div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-card-header header-3">📄 テンプレート本文</div>
+      <div class="template-body" id="body3">💸 「<span class="v">{有料ツール名}</span>」に月<span class="v">{有料金額}</span>円払ってる人、
+ちょっと待ってください。
 
 無料で同じことができるツールがあります。
-しかも今日から使える。
+しかも今日からすぐ使える。
 
-━━━━━━━━━━━━
-❌ 有料 → ✅ 無料代替
+━━━━━━━━━━━━━━━━━━
+【完全無料の代替ツール5選】
 
-📝 文章生成
- <span class="var">{有料ツール名}</span> → Claude(無料枠) / ChatGPT(無料枠)
+❌ 有料 → ✅ 無料でOK
+
+📝 文章生成・AI
+ 有料AIツール → Claude(無料枠) / ChatGPT(無料枠)
+ ※日常的な文章生成なら無料枠で十分足ります
 
 🖼️ 画像編集・デザイン
- Adobe系 → Canva(無料) / GIMP
+ Adobe Photoshop / Illustrator → Canva(無料) / GIMP
+ ※SNS画像・サムネなら無料Canvaで全部作れます
 
-📊 分析・スプレッドシート
- 有料SaaS → Googleスプレッドシート
+📊 データ管理・スプレッドシート
+ 有料SaaS管理ツール → Googleスプレッドシート
+ ※関数・グラフ・共同編集まで完全無料
 
-📬 メルマガ・ニュースレター
- 有料ESP → Substack / Brevo(無料プラン)
+📬 メルマガ・ニュースレター配信
+ 有料メール配信ツール → Substack / Brevo(無料1万通/月)
+ ※月1万通まで無料。個人規模なら余裕で足ります
 
-🗓️ 予約投稿・スケジュール
- 有料ツール → <span class="var">{代替ツール名}</span>
-━━━━━━━━━━━━
+🗓️ SNS予約投稿・スケジュール管理
+ 有料スケジューラー → <span class="v">{代替ツール名}</span>
+━━━━━━━━━━━━━━━━━━
 
-⚠️ 注意：無料ツールは「機能制限あり」ではなく
-「今の自分に不要な機能がないだけ」。
+⚠️ よくある勘違いを1つ直させてください。
 
-月<span class="var">{有料金額}</span>円 × 12ヶ月 = 年間<span class="var">{年間節約額}</span>円の節約。
-その分を広告費か学習費に回す方が先。
+無料ツールは「機能が制限されている」のではなく、
+「今のあなたに必要ない機能がないだけ」です。
 
-まず無料で稼いでから、必要なら課金する。
-これが正しい順番。
+月<span class="v">{有料金額}</span>円 × 12ヶ月 ＝ 年間<span class="v">{年間節約額}</span>円
 
-<span class="var">{call_to_action}</span></div>
-  <div class="hashtags">#無料ツール #副業 #節約 #初期費用ゼロ #起業</div>
-  <button class="copy-btn" onclick="copyText('body3', this)">📋 コピー</button>
-</div>
+この金額、広告費や有料コンテンツへの投資に
+回した方が圧倒的にリターンが大きい。
+
+——正しい順番——
+① まず無料ツールで稼ぐ仕組みを作る
+② 売上が出てから必要な機能だけ課金する
+③ それまでは1円も払う必要はない
+
+「お金がないから副業できない」は
+思い込みです。
+
+<span class="v">{call_to_action}</span></div>
+      <div class="template-footer">
+        <div class="hashtags">#無料ツール #副業 #節約 #初期費用ゼロ #起業 #副業初心者 #在宅副業</div>
+        <button class="copy-btn btn-3" onclick="copyText('body3', this)">📋 コピーする</button>
+      </div>
+    </div>
+
+    <div class="effect-box">
+      <h4>💡 効果を高める使い方</h4>
+      <ul class="effect-list">
+        <li>「年間{年間節約額}円の節約」は必ず計算して入れる。数字が大きいほど保存率・シェア率UP</li>
+        <li>5カテゴリのうち自分が実際に使っている無料ツールに入れ替えると信頼感が増す</li>
+        <li>最後の「正しい順番」3ステップは自分のサービスへの誘導に書き換えると導線になる</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  📋 マーケティングテンプレート集 ・ { } 内の変数を書き換えてご使用ください
+</footer>
 
 <script>
-function copyText(id, btn) {
-  const el = document.getElementById(id);
-  const text = el.innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = '✅ コピーしました';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = '📋 コピー';
-      btn.classList.remove('copied');
-    }, 2000);
+  // コピー機能
+  function copyText(id, btn) {
+    const el = document.getElementById(id);
+    // spanタグを除いてテキストだけ取得
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✅ コピーしました！';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 2500);
+    }).catch(() => {
+      // フォールバック
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      btn.textContent = '✅ コピーしました！';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = '📋 コピーする'; btn.classList.remove('done'); }, 2500);
+    });
+  }
+
+  // ナビのアクティブ制御
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
   });
-}
 </script>
 </body>
 </html>
