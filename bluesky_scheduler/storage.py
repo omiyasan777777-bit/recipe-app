@@ -2,7 +2,7 @@ import re
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional
 
 
 class Subscriber:
@@ -48,11 +48,11 @@ class Template:
         self.hashtags = hashtags  # hashtags to append (e.g. "#料理 #レシピ")
         self.created_at = created_at
 
-    def variables(self) -> list[str]:
+    def variables(self) -> List[str]:
         """Extract unique variable names from template body."""
         return list(dict.fromkeys(re.findall(r'\{(\w+)\}', self.body)))
 
-    def render(self, values: dict[str, str]) -> str:
+    def render(self, values: Dict[str, str]) -> str:
         """Render template by substituting variables."""
         text = self.body
         for key, value in values.items():
@@ -177,7 +177,7 @@ class Storage:
             ).fetchone()
         return self._row_to_post(row) if row else None
 
-    def list_posts(self, status: Optional[str] = None) -> list[Post]:
+    def list_posts(self, status: Optional[str] = None) -> List[Post]:
         with self._connect() as conn:
             if status:
                 rows = conn.execute(
@@ -190,7 +190,7 @@ class Storage:
                 ).fetchall()
         return [self._row_to_post(r) for r in rows]
 
-    def get_pending_due(self) -> list[Post]:
+    def get_pending_due(self) -> List[Post]:
         now = self._dt_to_str(datetime.now().astimezone())
         with self._connect() as conn:
             rows = conn.execute(
@@ -247,7 +247,7 @@ class Storage:
             ).fetchone()
         return self._row_to_template(row) if row else None
 
-    def list_templates(self) -> list[Template]:
+    def list_templates(self) -> List[Template]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM post_templates ORDER BY created_at DESC"
@@ -290,7 +290,7 @@ class Storage:
             ).fetchone()
         return self._row_to_subscriber(row) if row else None
 
-    def list_subscribers(self) -> list[Subscriber]:
+    def list_subscribers(self) -> List[Subscriber]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM newsletter_subscribers ORDER BY created_at DESC"
@@ -331,7 +331,7 @@ class Storage:
             ).fetchone()
         return self._row_to_newsletter(row) if row else None
 
-    def list_newsletters(self) -> list[Newsletter]:
+    def list_newsletters(self) -> List[Newsletter]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM newsletters ORDER BY created_at DESC"

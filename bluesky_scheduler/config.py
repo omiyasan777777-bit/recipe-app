@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Tuple
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +15,7 @@ def get_db_path() -> Path:
     return default_dir / "posts.db"
 
 
-def get_credentials() -> tuple[str, str]:
+def get_credentials() -> Tuple[str, str]:
     handle = os.getenv("BLUESKY_HANDLE", "")
     password = os.getenv("BLUESKY_APP_PASSWORD", "")
     return handle, password
