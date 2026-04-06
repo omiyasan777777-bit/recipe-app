@@ -283,6 +283,11 @@ def thumbnail_generator():
     return render_template("thumbnail_generator.html")
 
 
+@app.route("/marketing-templates")
+def marketing_templates():
+    return render_template("marketing_templates.html")
+
+
 # ── メルマガ ────────────────────────────────────────────────────────
 
 def get_smtp_config():
