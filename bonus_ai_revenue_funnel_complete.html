@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI副業の完全ロードマップ 実践版 - 24時間自動収益ファネル</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
+            line-height: 1.9;
+            color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        header .highlight-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.95em;
+            margin: 10px 5px;
+        }
+
+        .container {
+            padding: 50px 40px;
+        }
+
+        .toc-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 50px;
+        }
+
+        .toc-box h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toc-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .toc-item strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-number {
+            background: #667eea;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .card li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }
+
+        .timeline-item {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .timeline-item p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #f0f4ff;
+        }
+
+        .action-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 4px solid #4caf50;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .action-box h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            padding-left: 35px;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .formula {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .tip-box strong {
+            display: block;
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .step-process {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .step-process h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .step-process h3:first-child {
+            margin-top: 0;
+        }
+
+        .revenue-forecast {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .revenue-forecast .amount {
+            font-size: 2.5em;
+            color: #e65100;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .revenue-forecast .timeline-text {
+            font-size: 1.1em;
+            color: #d84315;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .feature-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #34495e;
+        }
+
+        .resource-box {
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .resource-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .resource-list {
+            list-style: none;
+        }
+
+        .resource-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        .resource-list li:last-child {
+            border-bottom: none;
+        }
+
+        .resource-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>AI副業の完全ロードマップ</h1>
+            <p class="subtitle">実践版：24時間自動化で月収30万円を実現する具体的戦略</p>
+            <div>
+                <span class="highlight-tag">🤖 AI完全自動化</span>
+                <span class="highlight-tag">💰 月額490,000円</span>
+                <span class="highlight-tag">📅 6ヶ月実装</span>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 目次 -->
+            <div class="toc-box">
+                <h2>📑 このガイドの構成</h2>
+                <div class="toc-grid">
+                    <div class="toc-item">
+                        <strong>STEP1 集客</strong>
+                        <p>SNSの自動化システム構築</p>
+                    </div>
+                    <div class="toc-item">
+                        <strong>STEP2 リード獲得</strong>
+                        <p>無料特典で信頼を構築</p>
+                    </div>
+                    <div class="toc-item">
+                        <strong>STEP3 コミュニティ</strong>
+                        <p>Discordで熱狂ファン化</p>
+                    </div>
+                    <div class="toc-item">
+                        <strong>STEP4 教育</strong>
+                        <p>深い価値提供で信用UP</p>
+                    </div>
+                    <div class="toc-item">
+                        <strong>STEP5 販売</strong>
+                        <p>高単価・低単価商品展開</p>
+                    </div>
+                    <div class="toc-item">
+                        <strong>STEP6 安定化</strong>
+                        <p>サブスク化で継続収入</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP1 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">1</div>
+                    <h2 class="section-title">集客：SNS自動化システム</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> 毎月の新規流入を自動化し、認知を獲得。手作業0で投稿を継続。
+                </p>
+
+                <div class="two-column">
+                    <div class="card">
+                        <h4>🎯 対象プラットフォーム</h4>
+                        <ul>
+                            <li><strong>Threads</strong> - 伸びやすい（優先度：高）</li>
+                            <li><strong>X（Twitter）</strong> - 根強い層（優先度：高）</li>
+                            <li><strong>TikTok</strong> - 若年層（優先度：中）</li>
+                            <li><strong>Lemon8</strong> - 女性層（優先度：中）</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🤖 活用AI・ツール</h4>
+                        <ul>
+                            <li><strong>Claude</strong> - 投稿文生成</li>
+                            <li><strong>Buffer / Later</strong> - スケジュール管理</li>
+                            <li><strong>Canva</strong> - 画像自動生成</li>
+                            <li><strong>Zapier</strong> - 連携自動化</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="action-box">
+                    <h4>📋 実行チェックリスト（Week 1-2）</h4>
+                    <ul class="checklist">
+                        <li>コンセプト決定（ジャンル・ペルソナ決定）</li>
+                        <li>Threads / X アカウント作成 + プロフィール設定</li>
+                        <li>投稿テーマ集 30個を Notion にまとめる</li>
+                        <li>Claude プロンプト作成（投稿文生成用）</li>
+                        <li>Buffer に登録 + アカウント連携</li>
+                        <li>1週間分の投稿を事前生成 + スケジュール設定</li>
+                        <li>毎日の投稿時間を固定（朝7時・昼12時・夜19時）</li>
+                    </ul>
+                </div>
+
+                <div class="step-process">
+                    <h3>📌 投稿文生成のプロセス（毎日30分）</h3>
+                    <p><strong>1. テーマ選定（3分）</strong></p>
+                    <p>テーマリストから「今日のテーマ」を選ぶ</p>
+
+                    <p style="margin-top: 20px;"><strong>2. Claudeプロンプト実行（10分）</strong></p>
+                    <div class="code-block">
+あなたはThreadsのバイラルコンテンツ専門家です。
+
+【テーマ】AI×〇〇で月収30万円
+
+【条件】
+- 文字数：250-350字
+- トーン：親近感のある日常会話
+- 構成：問題提起 → 解決策 → 実例
+- 絵文字：1-2個
+- リンク：なし
+
+【例】
+"SNS副業、やってみたけど毎日が地獄だった。
+朝5時起床→投稿→返信対応→記事執筆...
+
+それが、AIに投稿文を任せたら？
+毎朝30分でOK。
+
+今では投稿は自動、自分は戦略に集中。
+月収30万到達まで3ヶ月。"
+
+上記の例のようなリアルな投稿を5つ生成してください。
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>3. Bufferにスケジュール（10分）</strong></p>
+                    <p>生成した5投稿を5日分のタイムラインに登録</p>
+
+                    <p style="margin-top: 20px;"><strong>4. 定期確認（7分）</strong></p>
+                    <p>反応が良かった投稿をパターン化 → テーマリストに追加</p>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Month 1の目標数値</strong><br>
+                    フォロワー数：500+ | 月間インプレッション：50,000+
+                </div>
+            </div>
+
+            <!-- STEP2 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">2</div>
+                    <h2 class="section-title">リード獲得：無料特典で信頼構築</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> フォロワーをメールリスト化。一生顧客になる可能性を広げる。
+                </p>
+
+                <div class="warning-box">
+                    <h4>⚠️ 必須理解</h4>
+                    <p>フォロワー = 受動的（Threads見てるだけ）<br>
+                    リスト = 能動的（メール受信許可 = 購買意欲高い）<br><br>
+                    <strong>フォロワー100人 < リスト10人の価値</strong></p>
+                </div>
+
+                <div class="two-column">
+                    <div class="card">
+                        <h4>📦 特典コンテンツ例</h4>
+                        <ul>
+                            <li>✓ AI完全ガイド PDF（15ページ）</li>
+                            <li>✓ プロンプト集 50個</li>
+                            <li>✓ 投稿テンプレ 30個</li>
+                            <li>✓ 自動化ツール比較表</li>
+                            <li>✓ 30日ロードマップ</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>💻 ランディングページ作成</h4>
+                        <ul>
+                            <li>✓ Canva LP テンプレート</li>
+                            <li>✓ Mailchimp 連携</li>
+                            <li>✓ Google Form + Zapier</li>
+                            <li>✓ ConvertKit（有料）</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="action-box">
+                    <h4>📋 実行チェックリスト（Week 2-3）</h4>
+                    <ul class="checklist">
+                        <li>特典テーマ決定（顧客が解決したい問題）</li>
+                        <li>特典コンテンツ作成（Claude + Google Docs）</li>
+                        <li>ランディングページ作成（Canva で1時間）</li>
+                        <li>Mailchimp アカウント作成 + LP 連携</li>
+                        <li>自動返信メール設定（特典のダウンロードリンク）</li>
+                        <li>Threads / X に「無料ガイド配布中」を投稿</li>
+                        <li>3日おきに特典告知を定期投稿</li>
+                    </ul>
+                </div>
+
+                <div class="formula">
+                    月間獲得リスト = フォロワー数 × 3% × 投稿数
+                </div>
+
+                <p style="margin-top: 20px;">
+                    例）フォロワー500人 × 3% × 20投稿 = <strong>月300リスト</strong>
+                </p>
+
+                <div class="success-box">
+                    <strong>✅ Month 2の目標数値</strong><br>
+                    リスト数：700+ | メール開封率：25%+
+                </div>
+            </div>
+
+            <!-- STEP3 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">3</div>
+                    <h2 class="section-title">コミュニティ：Discordで熱狂ファン化</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> 購買意欲の高い見込み客をクローズドコミュニティに集約。信用構築加速。
+                </p>
+
+                <div class="tip-box">
+                    <strong>🎯 なぜDiscord？</strong>
+                    メールリストだけでは「一方通行」。Discordなら「対話」が生まれ、ファンダムが形成される。
+                </div>
+
+                <div class="code-block">
+Discord サーバー構成例
+
+Threads-AI-Community/
+├── 📌 #announcements
+│   └── 新機能・セール告知のみ
+├── 🎓 #basics
+│   └── AI基礎知識（ピン留め）
+├── 🚀 #advanced
+│   └── プロンプト設計の深い話
+├── 💬 #general
+│   └── 雑談・交流スペース
+├── 🎉 #wins
+│   └── 成功事例シェア
+├── ❓ #questions
+│   └── FAQ自動回答BOT
+└── 🔒 #premium（有料会員のみ）
+                </div>
+
+                <div class="action-box">
+                    <h4>📋 実行チェックリスト（Week 3-4）</h4>
+                    <ul class="checklist">
+                        <li>Discord サーバー作成</li>
+                        <li>チャンネル構成の設定</li>
+                        <li>Dyno BOT 導入（自動歓迎メッセージ）</li>
+                        <li>MEE6 BOT 導入（ロール自動割り当て）</li>
+                        <li>ウェルカムメッセージ作成</li>
+                        <li>自動化ルール設定（スパム対策）</li>
+                        <li>ピン留めコンテンツ作成（基礎情報）</li>
+                        <li>Threads / メール に招待リンク掲載</li>
+                        <li>初期メンバー50人獲得目標</li>
+                    </ul>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">🤖</div>
+                        <h4>自動歓迎</h4>
+                        <p>新規参加者に自動メッセージ + ルール案内</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📚</div>
+                        <h4>ナレッジ整理</h4>
+                        <p>よくある質問をスレッド化 + ピン留め</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h4>成長可視化</h4>
+                        <p>メンバーの活動度をレベル表示</p>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Month 3の目標数値</strong><br>
+                    コミュニティメンバー：1,000+ | 日別アクティブ率：30%+
+                </div>
+            </div>
+
+            <!-- STEP4 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">4</div>
+                    <h2 class="section-title">教育：深い価値提供で信用UP</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> 顧客を「初心者」から「実践者」へ段階的に育成。購買準備完了状態に。
+                </p>
+
+                <div class="step-process">
+                    <h3>📈 3段階の教育ファネル</h3>
+
+                    <p style="margin-top: 20px;"><strong>✓ レベル1: 基礎知識（Week 1-2）</strong></p>
+                    <p>配信：毎日 #basics で解説投稿</p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        • 「AIツール」の選び方<br>
+                        • 「プロンプト」の基本<br>
+                        • 「自動化」のメリット<br>
+                        • 失敗パターン5選
+                    </p>
+
+                    <p style="margin-top: 25px;"><strong>✓ レベル2: 実践スキル（Week 3-6）</strong></p>
+                    <p>配信：週2回 #advanced で詳細解説</p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        • Claude の全機能解説<br>
+                        • プロンプト設計の実践<br>
+                        • Buffer での自動投稿設定<br>
+                        • 反応が取れる投稿の型
+                    </p>
+
+                    <p style="margin-top: 25px;"><strong>✓ レベル3: ビジネス設計（Week 7+）</strong></p>
+                    <p>配信：月1回 ライブセッション</p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        • ファネル設計（自分だけのカスタマイズ）<br>
+                        • LTV 最大化戦略<br>
+                        • 成功事例の詳細分析<br>
+                        • メンバー個別相談（15分/月）
+                    </p>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th>配信内容</th>
+                            <th>頻度</th>
+                            <th>形式</th>
+                            <th>期待効果</th>
+                        </tr>
+                        <tr>
+                            <td><strong>朝07:00 Tips投稿</strong></td>
+                            <td>毎日</td>
+                            <td>テキスト + 画像</td>
+                            <td>習慣化、エンゲージ向上</td>
+                        </tr>
+                        <tr>
+                            <td><strong>週1回 深掘り解説</strong></td>
+                            <td>水曜20:00</td>
+                            <td>スレッド（5投稿）</td>
+                            <td>信用構築、実践スキル</td>
+                        </tr>
+                        <tr>
+                            <td><strong>月1回 ライブ Q&A</strong></td>
+                            <td>日曜19:00</td>
+                            <td>ボイスチャット</td>
+                            <td>最高の信用（人間関係）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>成功事例シェア</strong></td>
+                            <td>月2回</td>
+                            <td>インタビュー記事</td>
+                            <td>希望・購買意欲向上</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Month 4-5の目標数値</strong><br>
+                    コミュニティ活動度：50%+ | 「商品欲しい」の相談：月10件+
+                </div>
+            </div>
+
+            <!-- STEP5 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">5</div>
+                    <h2 class="section-title">販売：高単価・低単価の2層戦略</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> 十分な信用を積み重ねた後、顧客の購買意欲に合わせた商品を提案。月収30万円突破。
+                </p>
+
+                <div class="two-column">
+                    <div class="card">
+                        <h4>🔴 高単価（19,800-49,800円）</h4>
+                        <p style="font-size: 0.95em; margin-bottom: 15px;">
+                            <strong>対象：</strong> 本気で実装したい起業家・経営者
+                        </p>
+                        <ul>
+                            <li><strong>SNS自動化構築</strong><br>29,800円<br><span style="font-size: 0.9em; color: #666;">✓3ヶ月伴走<br>✓カスタム設計</span></li>
+                            <li style="margin-top: 15px;"><strong>Claude マスター講座</strong><br>19,800円<br><span style="font-size: 0.9em; color: #666;">✓全機能解説<br>✓プロンプト設計</span></li>
+                            <li style="margin-top: 15px;"><strong>API連携実装</strong><br>39,800円<br><span style="font-size: 0.9em; color: #666;">✓完全自動化<br>✓継続サポート</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🟢 低単価（980-4,980円）</h4>
+                        <p style="font-size: 0.95em; margin-bottom: 15px;">
+                            <strong>対象：</strong> すぐに使えるものを探す初心者
+                        </p>
+                        <ul>
+                            <li><strong>プロンプト集300個</strong><br>2,980円<br><span style="font-size: 0.9em; color: #666;">✓即座に使用可<br>✓20カテゴリ</span></li>
+                            <li style="margin-top: 15px;"><strong>投稿テンプレ100個</strong><br>1,980円<br><span style="font-size: 0.9em; color: #666;">✓コピペで完成<br>✓30テーマ別</span></li>
+                            <li style="margin-top: 15px;"><strong>BOT設定ガイド</strong><br>980円<br><span style="font-size: 0.9em; color: #666;">✓3ステップ<br>✓サポート付き</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="formula" style="margin: 40px 0;">
+                    月収 = (高単価 × 成約数) + (低単価 × 成約数)
+                </div>
+
+                <div class="step-process">
+                    <h3>💰 販売フロー（Month 5-6）</h3>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4>Week 1: 高単価の告知開始</h4>
+                            <p>Discord #announcements で「コンサル枠3名限定」と予告</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>Week 2: 体験セッション（無料）</h4>
+                            <p>30分 Zoom コール → ニーズ確認 → 成約（3件目標）</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>Week 3: 低単価の販売ページ作成</h4>
+                            <p>Gumroad / Note で販売開始</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>Week 4: セール企画</h4>
+                            <p>「今月限定：まとめ買い3個で30%OFF」など</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th>商品タイプ</th>
+                            <th>単価</th>
+                            <th>月成約数</th>
+                            <th>月収</th>
+                        </tr>
+                        <tr>
+                            <td>高単価コンサル</td>
+                            <td>29,800円</td>
+                            <td>3件</td>
+                            <td>89,400円</td>
+                        </tr>
+                        <tr>
+                            <td>低単価テンプレ（平均）</td>
+                            <td>2,500円</td>
+                            <td>30件</td>
+                            <td>75,000円</td>
+                        </tr>
+                        <tr style="background: #fff3cd; font-weight: bold;">
+                            <td colspan="3">小計</td>
+                            <td>164,400円</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Month 5-6の目標数値</strong><br>
+                    月収：164,400円+ | 顧客満足度：4.5/5.0以上
+                </div>
+            </div>
+
+            <!-- STEP6 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">6</div>
+                    <h2 class="section-title">安定化：サブスク化で継続収入を確保</h2>
+                </div>
+
+                <p style="font-size: 1.1em; margin-bottom: 25px;">
+                    <strong>目的：</strong> 単発収入から「毎月確定収入」へ転換。月500,000円以上の安定基盤完成。
+                </p>
+
+                <div class="warning-box">
+                    <h4>⚠️ なぜサブスク化が必須か</h4>
+                    <p>単発商品だけでは「毎月新規顧客獲得→販売」の疲弊サイクル。<br>
+                    サブスクなら「一度来たら毎月課金」で経営が安定化。<br><br>
+                    <strong>例：30人が月9,800円のVIPメンバー = 月294,000円（放置でOK）</strong></p>
+                </div>
+
+                <div class="step-process">
+                    <h3>📦 3層有料コミュニティ構造</h3>
+
+                    <p style="margin-top: 20px;"><strong>▼ Layer 1: 無料コミュニティ</strong></p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        <strong>メンバー数：</strong> 500-1000人<br>
+                        <strong>提供内容：</strong> 基礎知識、FAQ、テンプレ<br>
+                        <strong>目的：</strong> 有料層への入口・ファンネル最上部
+                    </p>
+
+                    <p style="margin-top: 25px;"><strong>▼ Layer 2: 有料Discordコース（月980-2,980円）</strong></p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        <strong>メンバー数：</strong> 200人が目標<br>
+                        <strong>提供内容：</strong><br>
+                        • 限定プロンプト集（毎週更新）<br>
+                        • ライブQ&A（月2回）<br>
+                        • 成功事例の詳細シェア<br>
+                        • 個別コンサル枠（月1回15分）<br>
+                        <strong>月収：</strong> 196,000〜594,000円
+                    </p>
+
+                    <p style="margin-top: 25px;"><strong>▼ Layer 3: VIPコース（月9,800円）</strong></p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        <strong>メンバー数：</strong> 30人が目標<br>
+                        <strong>提供内容：</strong><br>
+                        • グループコンサル（月2回）<br>
+                        • Slack個別チャネル（質問し放題）<br>
+                        • カスタムプロンプト作成<br>
+                        • 四半期戦略セッション<br>
+                        <strong>月収：</strong> 294,000円
+                    </p>
+                </div>
+
+                <div class="revenue-forecast">
+                    <h3 style="color: #e65100; margin-top: 0;">📊 サブスク化後の月収シミュレーション</h3>
+                    <div class="amount">660,000円/月</div>
+                    <p class="timeline-text">
+                        Layer2（平均1,500円×200人）: 300,000円<br>
+                        Layer3（9,800円×30人）: 294,000円<br>
+                        +単発商品: 66,000円<br>
+                        = <strong>月額660,000円</strong>
+                    </p>
+                </div>
+
+                <div class="action-box">
+                    <h4>📋 サブスク化への移行ステップ</h4>
+                    <ul class="checklist">
+                        <li><strong>Month 3-4：</strong> 無料コミュニティを1,000人まで拡大</li>
+                        <li><strong>Month 4：</strong> 有料化の予告を開始（「今月末から有料版開設」）</li>
+                        <li><strong>Month 5初旬：</strong> 有料コース（Layer2）をローンチ</li>
+                        <li><strong>Month 5中旬：</strong> 無料メンバーに「月980円で限定版」オファー</li>
+                        <li><strong>Month 6：</strong> VIPコース（Layer3）を招待制でローンチ</li>
+                        <li><strong>Month 6中盤：</strong> チャーン対策（メール・ボーナス特典）開始</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Month 6以降の目標</strong><br>
+                    有料メンバー：230人 | 月収：660,000円 | チャーン率：5%以下
+                </div>
+            </div>
+
+            <!-- 重要：人間とAIの役割分担 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-number">⚙️</div>
+                    <h2 class="section-title">人間とAIの役割分担（最重要）</h2>
+                </div>
+
+                <div class="two-column">
+                    <div class="card" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: none;">
+                        <h4 style="color: #1565c0;">🤖 AIに完全に任せる領域</h4>
+                        <ul style="margin-top: 20px;">
+                            <li>✓ 投稿文生成（毎日）</li>
+                            <li>✓ ブログ記事執筆（週3本）</li>
+                            <li>✓ メールコピー作成</li>
+                            <li>✓ 画像生成（Midjourney）</li>
+                            <li>✓ FAQ自動回答（BOT）</li>
+                            <li>✓ スケジュール管理</li>
+                            <li>✓ ニュース要約</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-size: 0.9em; color: #1565c0; font-weight: bold;">
+                            → 時間換算：週40時間が週2時間に短縮
+                        </p>
+                    </div>
+
+                    <div class="card" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border: none;">
+                        <h4 style="color: #7b1fa2;">👤 人間が絶対にやるべき領域</h4>
+                        <ul style="margin-top: 20px;">
+                            <li>✓ Discord での対話</li>
+                            <li>✓ ライブ配信（顔出し）</li>
+                            <li>✓ コミュニティ文化作り</li>
+                            <li>✓ ストーリーテリング</li>
+                            <li>✓ 複雑な相談対応</li>
+                            <li>✓ ビジネス方針決定</li>
+                            <li>✓ 新規アイデア発想</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-size: 0.9em; color: #7b1fa2; font-weight: bold;">
+                            → これが「あなたにしかできない仕事」
+                        </p>
+                    </div>
+                </div>
+
+                <div class="success-box" style="margin-top: 30px;">
+                    <strong>🎯 最適な配分</strong><br>
+                    人間：週10時間（Discord・ライブ・コンサル） | AI：週30時間（すべての事務作業）
+                </div>
+            </div>
+
+            <!-- 実装タイムライン -->
+            <div class="section">
+                <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2.2em;">📅 6ヶ月実装タイムライン</h2>
+
+                <div class="step-process">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4>🎯 Month 1: 基盤構築</h4>
+                            <p><strong>やること：</strong> SNS自動化 × 無料特典の仕組み化</p>
+                            <p style="margin-top: 10px; color: #666;">
+                                ✓ SNSアカウント3個開設（Threads / X / TikTok）<br>
+                                ✓ Bufferで投稿自動スケジュール<br>
+                                ✓ 無料特典PDF作成<br>
+                                ✓ Canvaで LP 作成
+                            </p>
+                            <p style="margin-top: 10px; color: #e65100; font-weight: bold;">
+                                📊 目標：フォロワー500人、リスト300人
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>🏘️ Month 2: コミュニティ立ち上げ</h4>
+                            <p><strong>やること：</strong> Discord構築 × 教育開始</p>
+                            <p style="margin-top: 10px; color: #666;">
+                                ✓ Discordサーバー構築<br>
+                                ✓ BOT導入 + 自動化設定<br>
+                                ✓ 毎日Tips配信開始<br>
+                                ✓ メンバー500人達成
+                            </p>
+                            <p style="margin-top: 10px; color: #e65100; font-weight: bold;">
+                                📊 目標：Discordメンバー500人、日別アクティブ30%
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>🎓 Month 3: 信用強化</h4>
+                            <p><strong>やること：</strong> 深い教育コンテンツ × 初商品販売</p>
+                            <p style="margin-top: 10px; color: #666;">
+                                ✓ 週1回の深掘り解説開始<br>
+                                ✓ 月1回ライブセッション開始<br>
+                                ✓ 初の高単価商品販売<br>
+                                ✓ 成功事例シェア開始
+                            </p>
+                            <p style="margin-top: 10px; color: #e65100; font-weight: bold;">
+                                📊 目標：月収30,000円、コース成約3件
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>💰 Month 4-5: スケール期</h4>
+                            <p><strong>やること：</strong> 商品ラインアップ拡充 × 販売最適化</p>
+                            <p style="margin-top: 10px; color: #666;">
+                                ✓ 低単価テンプレ販売開始<br>
+                                ✓ セール企画を月1回実施<br>
+                                ✓ 顧客評判を5段階で追跡<br>
+                                ✓ 有料化の準備（予告開始）
+                            </p>
+                            <p style="margin-top: 10px; color: #e65100; font-weight: bold;">
+                                📊 目標：月収150,000円、顧客満足度4.5/5.0
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h4>🚀 Month 6: サブスク化</h4>
+                            <p><strong>やること：</strong> 有料化 × 安定化フェーズ開始</p>
+                            <p style="margin-top: 10px; color: #666;">
+                                ✓ 有料Discord（Layer2）ローンチ<br>
+                                ✓ VIPコース（Layer3）招待制で開設<br>
+                                ✓ チャーン対策の自動化<br>
+                                ✓ 6ヶ月目から「放置でもOK」体制に
+                            </p>
+                            <p style="margin-top: 10px; color: #e65100; font-weight: bold;">
+                                📊 目標：月収660,000円、有料メンバー230人
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- よくある質問 -->
+            <div class="section">
+                <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2.2em;">❓ よくある質問 FAQ</h2>
+
+                <div class="resource-box">
+                    <h4>Q1: 本当に「放置」で収入が入りますか？</h4>
+                    <p><strong>A:</strong> Month 6以降は「ほぼ放置」です。ただし初期6ヶ月は週10-15時間の作業が必須。その投資があれば、その後の資産が生まれます。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q2: Discordのメンバーが集まりませんが？</h4>
+                    <p><strong>A:</strong> リンクを「毎日投稿に含める」のが重要。告知だけでなく、投稿内容の最後に「詳しくはDiscordで」と自然に誘導。成功確度は20倍変わります。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q3: 特典を作る時間がありません</h4>
+                    <p><strong>A:</strong> Claudeに「15ページのAI完全ガイドを作成してPDF形式で出力」と指示すれば、2時間で完成。人間は「編集・チェック」だけでOK。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q4: SNSで毎日投稿は続きません</h4>
+                    <p><strong>A:</strong> 「自分で毎日投稿する」という発想が間違い。Buffer に1週間分まとめてスケジュール登録すれば、あとは自動。毎週日曜30分だけ作業すればOK。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q5: 1番最初に何をすべき？</h4>
+                    <p><strong>A:</strong> <strong>SNSアカウント開設 + 初投稿まで</strong>を「今日中」にやる。これだけ。完璧を目指さない。とりあえず1投稿することが全てのスタート。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q6: 投稿ネタが思いつきません</h4>
+                    <p><strong>A:</strong> 「AI × 〇〇」「自動化 × 〇〇」「月10万 × 〇〇」のテンプレートを30個用意する。毎日1つ選んで、Claudeに詳細を膨らませる。ネタ切れはもう起きません。</p>
+                </div>
+
+                <div class="resource-box">
+                    <h4>Q7: ステップ1で躓いたらどうする？</h4>
+                    <p><strong>A:</strong> 躓いたら、そこから進まない。「フォロワー500人」が来るまで、ここに3ヶ月いてもOK。基盤がなければ後が全て繋がりません。</p>
+                </div>
+            </div>
+
+            <!-- 実行開始ガイド -->
+            <div class="section">
+                <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2.2em;">🚀 実行開始ガイド</h2>
+
+                <div class="action-box">
+                    <h4>📌 今日やること（2時間で完了）</h4>
+                    <ul class="checklist" style="margin: 0;">
+                        <li>Threads アカウント作成 + プロフィール設定</li>
+                        <li>X（Twitter）アカウント作成 + プロフィール設定</li>
+                        <li>「自分が解決したい顧客の悩み」を紙に書く</li>
+                        <li>その悩みに対する「自分の経験」をメモ</li>
+                        <li>Claude に「Threads投稿を5つ生成」と指示</li>
+                        <li>生成した投稿を Threads に投稿（1投稿だけでOK）</li>
+                    </ul>
+                </div>
+
+                <div class="action-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: #2e7d32;">
+                    <h4>📌 今週末までにやること</h4>
+                    <ul class="checklist" style="margin: 0;">
+                        <li>Buffer に登録 + SNSアカウントを連携</li>
+                        <li>投稿テーマ（20個）を Notion にリスト化</li>
+                        <li>「無料ガイド」のコンセプトを決定</li>
+                        <li>Claudeに「AI完全ガイドPDF 目次」を作成させる</li>
+                        <li>1週間分の投稿をClaudeで生成 → Bufferに登録</li>
+                        <li>Canvaで「無料ガイド紹介LP」を作成開始</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <strong>✨ 重要な心構え</strong><br><br>
+                    完璧を目指さない。「今週500人フォロワー」「完璧な投稿」を求めていたら、永遠に最初の一歩が踏み出せません。<br><br>
+                    「50点の実装」を「今日から」始めることが、「100点の計画」を永遠に温めるより100倍大事です。<br><br>
+                    <strong>今この瞬間から、SNSアカウント作成を開始してください。</strong>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-section">
+                <h2>この6ヶ月で、あなたの人生は変わります</h2>
+                <p>
+                    Month 1から Month 6 まで、一直線に実行すれば、<br>
+                    「月収660,000円の自動化ビジネス」が完成します。<br><br>
+                    それは「未来の夢」ではなく、<br>
+                    <strong>「実現可能な現実」です。</strong>
+                </p>
+                <p style="font-size: 1.3em; margin-top: 30px; font-weight: bold;">
+                    最初の一歩は、今この瞬間。<br>
+                    SNSアカウントを開設し、初投稿をしてください。
+                </p>
+            </div>
+
+            <div class="resource-box" style="margin: 50px 0; text-align: center; background: white; border: 2px solid #667eea;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">📚 このロードマップで使うAI・ツール</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div><strong>📝 Claude</strong><br>投稿・記事生成</div>
+                    <div><strong>📅 Buffer</strong><br>投稿スケジュール</div>
+                    <div><strong>🎨 Canva</strong><br>LP・画像作成</div>
+                    <div><strong>📧 Mailchimp</strong><br>メール配信</div>
+                    <div><strong>💬 Discord</strong><br>コミュニティ構築</div>
+                    <div><strong>🤖 Dyno / MEE6</strong><br>自動化BOT</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <h3>このロードマップについて</h3>
+            <p>
+                このガイドは、実際のビジネス経験とAI自動化技術を組み合わせた、<br>
+                実行可能な戦略です。<br><br>
+                理論ではなく、<strong>実装</strong>を重視しています。<br>
+                完璧を求めず、まずは実行してください。
+            </p>
+            <p style="margin-top: 30px; color: #999; font-size: 0.9em;">
+                制作日：2026年4月7日 | Version 2.0 (完全実践版)<br>
+                対応ツール：Claude / ChatGPT / Threads / Discord / Buffer
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
