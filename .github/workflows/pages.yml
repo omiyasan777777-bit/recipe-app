@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - claude/ai-revenue-funnel-VXuHj
   workflow_dispatch:
 
 jobs:
