@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threads トレンド 📊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .update-time {
+            color: #ddd;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trending-topic {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: background 0.2s ease;
+        }
+
+        .trending-topic:hover {
+            background: #efefef;
+        }
+
+        .topic-rank {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2rem;
+            min-width: 30px;
+        }
+
+        .topic-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .topic-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .topic-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .growth {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .trending-post {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+            transition: all 0.2s ease;
+        }
+
+        .trending-post:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .post-content {
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .post-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .stats-section {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 Threads トレンド</h1>
+            <p>リアルタイムトレンド分析ダッシュボード</p>
+            <div class="update-time" id="updateTime">読み込み中...</div>
+        </header>
+
+        <div id="content" class="loading">
+            ⏳ データを読み込んでいます...
+        </div>
+
+        <footer>
+            <p>自動更新: 6時間ごと | GitHub Actions + Pages で実現</p>
+        </footer>
+    </div>
+
+    <script>
+        async function loadTrends() {
+            try {
+                const response = await fetch('./trends.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load trends: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                renderTrends(data);
+            } catch (error) {
+                console.error('Error loading trends:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        ⚠️ データの読み込みに失敗しました。<br>
+                        詳細: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderTrends(data) {
+            const content = document.getElementById('content');
+            
+            // Update time
+            document.getElementById('updateTime').textContent = 
+                `最終更新: ${data.last_updated}`;
+            
+            // Render stats
+            let html = `
+                <div class="stats-section">
+                    <div class="stat-box">
+                        <div class="stat-value">${data.stats.trending_topics_count}</div>
+                        <div class="stat-label">トレンドトピック</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${data.stats.trending_posts_count}</div>
+                        <div class="stat-label">トレンド投稿</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${data.stats.total_posts_processed.toLocaleString()}</div>
+                        <div class="stat-label">分析投稿数</div>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="card">
+                        <h2>📈 トレンドトピック</h2>
+            `;
+            
+            // Render trending topics
+            if (data.trending_topics && data.trending_topics.length > 0) {
+                data.trending_topics.forEach(topic => {
+                    html += `
+                        <div class="trending-topic">
+                            <div class="topic-rank">#${topic.rank}</div>
+                            <div class="topic-info">
+                                <div class="topic-name">${topic.topic}</div>
+                                <div class="topic-stats">
+                                    <span class="stat">${topic.count.toLocaleString()} posts</span>
+                                    <span class="stat growth">${topic.growth}</span>
+                                    <span class="stat">${topic.engagement}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `
+                    </div>
+                    
+                    <div class="card">
+                        <h2>⭐ トレンド投稿</h2>
+            `;
+            
+            // Render trending posts
+            if (data.trending_posts && data.trending_posts.length > 0) {
+                data.trending_posts.forEach(post => {
+                    html += `
+                        <div class="trending-post">
+                            <div class="post-author">${post.author}</div>
+                            <div class="post-content">${post.content}</div>
+                            <div class="post-stats">
+                                <span class="post-stat">❤️ ${post.likes.toLocaleString()}</span>
+                                <span class="post-stat">💬 ${post.replies.toLocaleString()}</span>
+                                <span class="post-stat">🔄 ${post.reposts.toLocaleString()}</span>
+                            </div>
+                            <a href="${post.url}" target="_blank" class="post-link">スレッドを見る →</a>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+        }
+
+        // Load trends on page load
+        document.addEventListener('DOMContentLoaded', loadTrends);
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadTrends, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
