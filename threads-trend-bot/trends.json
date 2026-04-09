@@ -4,67 +4,67 @@
   "trending_keywords": [
     {
       "rank": 1,
-      "keyword": "#推しの子",
-      "count": 125000,
+      "keyword": "#",
+      "count": 100000,
       "growth": "+45%"
     },
     {
       "rank": 2,
-      "keyword": "#呪術廻戦",
-      "count": 98500,
+      "keyword": "#",
+      "count": 85000,
       "growth": "+38%"
     },
     {
       "rank": 3,
-      "keyword": "#進撃の巨人",
-      "count": 87300,
+      "keyword": "#",
+      "count": 72000,
       "growth": "+32%"
     },
     {
       "rank": 4,
-      "keyword": "#ジャニーズ",
-      "count": 76400,
+      "keyword": "#",
+      "count": 65000,
       "growth": "+28%"
     },
     {
       "rank": 5,
-      "keyword": "#K-POP",
-      "count": 65800,
-      "growth": "+35%"
+      "keyword": "#",
+      "count": 58000,
+      "growth": "+25%"
     },
     {
       "rank": 6,
-      "keyword": "#日本テレビ",
-      "count": 54900,
+      "keyword": "#",
+      "count": 52000,
       "growth": "+22%"
     },
     {
       "rank": 7,
-      "keyword": "#TikTok",
-      "count": 48600,
+      "keyword": "#",
+      "count": 45000,
       "growth": "+18%"
     },
     {
       "rank": 8,
-      "keyword": "#新作ドラマ",
-      "count": 42300,
-      "growth": "+25%"
+      "keyword": "#",
+      "count": 38000,
+      "growth": "+15%"
     },
     {
       "rank": 9,
-      "keyword": "#推し活",
-      "count": 38900,
-      "growth": "+19%"
+      "keyword": "#",
+      "count": 32000,
+      "growth": "+12%"
     },
     {
       "rank": 10,
-      "keyword": "#令和",
-      "count": 34100,
-      "growth": "+12%"
+      "keyword": "#",
+      "count": 25000,
+      "growth": "+8%"
     }
   ],
   "stats": {
     "total_keywords": 10,
-    "data_source": "日本 SNS トレンド - Manual Update"
+    "data_source": "X, Threads, Instagram, TikTok"
   }
 }
