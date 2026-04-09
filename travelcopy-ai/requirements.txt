@@ -11,3 +11,9 @@ openai>=1.0
 
 # python-dotenv: 環境変数管理
 python-dotenv>=1.0
+
+# Flask: Web フレームワーク
+flask>=2.0
+
+# Flask-CORS: CORS対応
+flask-cors>=3.0
