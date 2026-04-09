@@ -1,0 +1,13 @@
+# TravelCopy AI の依存パッケージ
+
+# Pydantic: データ検証
+pydantic>=2.0
+
+# Playwright: ブラウザ自動化・スクレイピング
+playwright>=1.40.0
+
+# OpenAI: AI API クライアント（Ollama互換）
+openai>=1.0
+
+# python-dotenv: 環境変数管理
+python-dotenv>=1.0
