@@ -1,30 +1,22 @@
 {
-  "timestamp": "2026-04-09T12:00:00+00:00",
-  "last_updated": "2026-04-09 12:00:00 UTC",
   "trending_topics": [
     {
       "rank": 1,
-      "topic": "#トピック名",
-      "count": 数字,
-      "growth": "+XX%",
+      "topic": "#AI",
+      "count": 25000,
+      "growth": "+28%",
       "engagement": "High"
     }
   ],
   "trending_posts": [
     {
       "id": "trend_001",
-      "author": "@ユーザー名",
-      "content": "投稿内容",
-      "likes": 数字,
-      "replies": 数字,
-      "reposts": 数字,
-      "url": "https://threads.net/..."
+      "author": "@anthropic",
+      "content": "Claude 4.6 released",
+      "likes": 5000,
+      "replies": 800,
+      "reposts": 300,
+      "url": "https://threads.net/search?q=%23AI"
     }
-  ],
-  "stats": {
-    "total_posts_processed": 数字,
-    "trending_topics_count": 5,
-    "trending_posts_count": 5,
-    "data_source": "Manual Update"
-  }
+  ]
 }
