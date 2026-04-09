@@ -1,94 +1,30 @@
 {
-  "timestamp": "2026-04-09T05:20:00+00:00",
-  "last_updated": "2026-04-09 05:20:00 UTC",
+  "timestamp": "2026-04-09T12:00:00+00:00",
+  "last_updated": "2026-04-09 12:00:00 UTC",
   "trending_topics": [
     {
       "rank": 1,
-      "topic": "#Python",
-      "count": 8542,
-      "growth": "+34%",
+      "topic": "#トピック名",
+      "count": 数字,
+      "growth": "+XX%",
       "engagement": "High"
-    },
-    {
-      "rank": 2,
-      "topic": "#JavaScript",
-      "count": 7234,
-      "growth": "+28%",
-      "engagement": "High"
-    },
-    {
-      "rank": 3,
-      "topic": "#Machine Learning",
-      "count": 6891,
-      "growth": "+42%",
-      "engagement": "High"
-    },
-    {
-      "rank": 4,
-      "topic": "#React",
-      "count": 5678,
-      "growth": "+23%",
-      "engagement": "High"
-    },
-    {
-      "rank": 5,
-      "topic": "#TypeScript",
-      "count": 4567,
-      "growth": "+19%",
-      "engagement": "Medium"
     }
   ],
   "trending_posts": [
     {
       "id": "trend_001",
-      "author": "@torvalds",
-      "content": "Linux kernel 6.9 released with significant performance improvements and new security features",
-      "likes": 12450,
-      "replies": 2341,
-      "reposts": 5678,
-      "url": "https://github.com/torvalds/linux"
-    },
-    {
-      "id": "trend_002",
-      "author": "@facebook",
-      "content": "React 19 brings new hooks and improved performance for server components in web applications",
-      "likes": 11230,
-      "replies": 2105,
-      "reposts": 5123,
-      "url": "https://github.com/facebook/react"
-    },
-    {
-      "id": "trend_003",
-      "author": "@openai",
-      "content": "OpenAI releases new GPT-4 fine-tuning capabilities with improved context understanding",
-      "likes": 10891,
-      "replies": 1987,
-      "reposts": 4756,
-      "url": "https://github.com/openai/gpt-4"
-    },
-    {
-      "id": "trend_004",
-      "author": "@vuejs",
-      "content": "Vue 4 beta introduces new reactivity system and improved TypeScript support for developers",
-      "likes": 9234,
-      "replies": 1654,
-      "reposts": 4123,
-      "url": "https://github.com/vuejs/core"
-    },
-    {
-      "id": "trend_005",
-      "author": "@golang",
-      "content": "Go 1.23 release features improved error handling and faster compilation times",
-      "likes": 8567,
-      "replies": 1523,
-      "reposts": 3890,
-      "url": "https://github.com/golang/go"
+      "author": "@ユーザー名",
+      "content": "投稿内容",
+      "likes": 数字,
+      "replies": 数字,
+      "reposts": 数字,
+      "url": "https://threads.net/..."
     }
   ],
   "stats": {
-    "total_posts_processed": 45678,
+    "total_posts_processed": 数字,
     "trending_topics_count": 5,
     "trending_posts_count": 5,
-    "data_source": "GitHub Trending (Real Data - 2026-04-09)"
+    "data_source": "Manual Update"
   }
 }
