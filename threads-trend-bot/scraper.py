@@ -69,7 +69,7 @@ def extract_trends():
                 "likes": 2341,
                 "replies": 567,
                 "reposts": 234,
-                "url": "https://threads.net/@dev_community/123456789"
+                "url": "https://threads.net/search?q=%23Automation"
             },
             {
                 "id": "trend_002",
@@ -78,7 +78,7 @@ def extract_trends():
                 "likes": 1987,
                 "replies": 445,
                 "reposts": 198,
-                "url": "https://threads.net/@ai_researcher/987654321"
+                "url": "https://threads.net/search?q=%23AI"
             },
             {
                 "id": "trend_003",
@@ -87,7 +87,7 @@ def extract_trends():
                 "likes": 1654,
                 "replies": 389,
                 "reposts": 156,
-                "url": "https://threads.net/@code_wizard/456789123"
+                "url": "https://threads.net/search?q=%23Python"
             },
             {
                 "id": "trend_004",
@@ -96,7 +96,7 @@ def extract_trends():
                 "likes": 1456,
                 "replies": 321,
                 "reposts": 134,
-                "url": "https://threads.net/@github_tips/789123456"
+                "url": "https://threads.net/search?q=%23GitHub"
             },
             {
                 "id": "trend_005",
@@ -105,7 +105,7 @@ def extract_trends():
                 "likes": 1234,
                 "replies": 289,
                 "reposts": 112,
-                "url": "https://threads.net/@web_dev_daily/321654987"
+                "url": "https://threads.net/search?q=%23WebDevelopment"
             }
         ],
         "stats": {
