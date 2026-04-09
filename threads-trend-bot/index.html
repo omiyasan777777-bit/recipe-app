@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Threads トレンド 📊</title>
+    <title>SNS トレンドワード 📊</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -47,30 +47,13 @@
             margin-top: 10px;
         }
 
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .card {
             background: white;
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.6s ease-out;
         }
 
         .card h2 {
@@ -82,43 +65,45 @@
             gap: 10px;
         }
 
-        .trending-topic {
+        .trending-keyword {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 15px;
             margin-bottom: 12px;
             background: #f5f5f5;
             border-radius: 8px;
             border-left: 4px solid #667eea;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .trending-topic:hover {
+        .trending-keyword:hover {
             background: #efefef;
+            transform: translateX(5px);
         }
 
-        .topic-rank {
+        .keyword-rank {
             font-weight: bold;
             color: #667eea;
-            font-size: 1.2rem;
-            min-width: 30px;
+            font-size: 1.3rem;
+            min-width: 40px;
         }
 
-        .topic-info {
+        .keyword-info {
             flex: 1;
             margin-left: 15px;
         }
 
-        .topic-name {
+        .keyword-name {
             font-weight: 600;
             color: #333;
-            margin-bottom: 4px;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
         }
 
-        .topic-stats {
+        .keyword-stats {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             font-size: 0.85rem;
             color: #666;
         }
@@ -132,74 +117,7 @@
         .growth {
             color: #10b981;
             font-weight: 600;
-        }
-
-        .trending-post {
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #e5e5e5;
-            transition: all 0.2s ease;
-        }
-
-        .trending-post:hover {
-            background: #f0f0f0;
-            border-color: #667eea;
-        }
-
-        .post-author {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .post-content {
-            color: #555;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .post-stats {
-            display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .post-stat {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .post-link {
-            display: inline-block;
-            margin-top: 10px;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .post-link:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
-        .loading {
-            text-align: center;
-            color: white;
-            padding: 40px;
-            font-size: 1.2rem;
-        }
-
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
+            font-size: 1rem;
         }
 
         .stats-section {
@@ -209,7 +127,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
@@ -225,6 +143,21 @@
         .stat-label {
             font-size: 0.9rem;
             opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
         }
 
         @keyframes fadeIn {
@@ -253,13 +186,23 @@
             margin-top: 40px;
             opacity: 0.8;
         }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔥 Threads トレンド</h1>
-            <p>リアルタイムトレンド分析ダッシュボード</p>
+            <h1>📊 SNS トレンドワード</h1>
+            <p>トレンド分析ダッシュボード</p>
             <div class="update-time" id="updateTime">読み込み中...</div>
         </header>
 
@@ -268,7 +211,7 @@
         </div>
 
         <footer>
-            <p>自動更新: 6時間ごと | GitHub Actions + Pages で実現</p>
+            <p>手動更新 | GitHub Pages で実現</p>
         </footer>
     </div>
 
@@ -305,70 +248,38 @@
             let html = `
                 <div class="stats-section">
                     <div class="stat-box">
-                        <div class="stat-value">${data.stats.trending_topics_count}</div>
-                        <div class="stat-label">トレンドトピック</div>
+                        <div class="stat-value">${data.stats.total_keywords}</div>
+                        <div class="stat-label">トレンドワード</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-value">${data.stats.trending_posts_count}</div>
-                        <div class="stat-label">トレンド投稿</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">${data.stats.total_posts_processed.toLocaleString()}</div>
-                        <div class="stat-label">分析投稿数</div>
+                        <div class="stat-value">リアルタイム</div>
+                        <div class="stat-label">更新中</div>
                     </div>
                 </div>
                 
-                <div class="content">
-                    <div class="card">
-                        <h2>📈 トレンドトピック</h2>
+                <div class="card">
+                    <h2>🔥 SNS トレンドワード TOP ${data.stats.total_keywords}</h2>
             `;
             
-            // Render trending topics
-            if (data.trending_topics && data.trending_topics.length > 0) {
-                data.trending_topics.forEach(topic => {
+            // Render trending keywords
+            if (data.trending_keywords && data.trending_keywords.length > 0) {
+                data.trending_keywords.forEach(keyword => {
                     html += `
-                        <div class="trending-topic">
-                            <div class="topic-rank">#${topic.rank}</div>
-                            <div class="topic-info">
-                                <div class="topic-name">${topic.topic}</div>
-                                <div class="topic-stats">
-                                    <span class="stat">${topic.count.toLocaleString()} posts</span>
-                                    <span class="stat growth">${topic.growth}</span>
-                                    <span class="stat">${topic.engagement}</span>
+                        <div class="trending-keyword">
+                            <div class="keyword-rank">#${keyword.rank}</div>
+                            <div class="keyword-info">
+                                <div class="keyword-name">${keyword.keyword}</div>
+                                <div class="keyword-stats">
+                                    <span class="stat">${keyword.count.toLocaleString()} posts</span>
                                 </div>
                             </div>
+                            <div class="growth">${keyword.growth}</div>
                         </div>
                     `;
                 });
             }
             
             html += `
-                    </div>
-                    
-                    <div class="card">
-                        <h2>⭐ トレンド投稿</h2>
-            `;
-            
-            // Render trending posts
-            if (data.trending_posts && data.trending_posts.length > 0) {
-                data.trending_posts.forEach(post => {
-                    html += `
-                        <div class="trending-post">
-                            <div class="post-author">${post.author}</div>
-                            <div class="post-content">${post.content}</div>
-                            <div class="post-stats">
-                                <span class="post-stat">❤️ ${post.likes.toLocaleString()}</span>
-                                <span class="post-stat">💬 ${post.replies.toLocaleString()}</span>
-                                <span class="post-stat">🔄 ${post.reposts.toLocaleString()}</span>
-                            </div>
-                            <a href="${post.url}" target="_blank" class="post-link">スレッドを見る →</a>
-                        </div>
-                    `;
-                });
-            }
-            
-            html += `
-                    </div>
                 </div>
             `;
             
