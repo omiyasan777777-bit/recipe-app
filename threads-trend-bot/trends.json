@@ -1,94 +1,70 @@
 {
   "timestamp": "2026-04-09T12:00:00+00:00",
   "last_updated": "2026-04-09 12:00:00 UTC",
-  "trending_topics": [
+  "trending_keywords": [
     {
       "rank": 1,
-      "topic": "#AI",
+      "keyword": "#AI",
       "count": 25000,
-      "growth": "+28%",
-      "engagement": "High"
+      "growth": "+28%"
     },
     {
       "rank": 2,
-      "topic": "#WebDevelopment",
+      "keyword": "#WebDevelopment",
       "count": 18500,
-      "growth": "+22%",
-      "engagement": "High"
+      "growth": "+22%"
     },
     {
       "rank": 3,
-      "topic": "#Python",
+      "keyword": "#Python",
       "count": 15300,
-      "growth": "+18%",
-      "engagement": "High"
+      "growth": "+18%"
     },
     {
       "rank": 4,
-      "topic": "#JavaScript",
+      "keyword": "#JavaScript",
       "count": 12400,
-      "growth": "+15%",
-      "engagement": "Medium"
+      "growth": "+15%"
     },
     {
       "rank": 5,
-      "topic": "#CloudComputing",
+      "keyword": "#CloudComputing",
       "count": 9800,
-      "growth": "+12%",
-      "engagement": "Medium"
-    }
-  ],
-  "trending_posts": [
-    {
-      "id": "trend_001",
-      "author": "@anthropic",
-      "content": "Claude 4.6 released with improved capabilities",
-      "likes": 5000,
-      "replies": 850,
-      "reposts": 320,
-      "url": "https://threads.net/search?q=%23AI"
+      "growth": "+12%"
     },
     {
-      "id": "trend_002",
-      "author": "@webdev",
-      "content": "New web development frameworks released",
-      "likes": 3800,
-      "replies": 750,
-      "reposts": 280,
-      "url": "https://threads.net/search?q=%23WebDevelopment"
+      "rank": 6,
+      "keyword": "#MachineLearning",
+      "count": 8900,
+      "growth": "+25%"
     },
     {
-      "id": "trend_003",
-      "author": "@python",
-      "content": "Python 3.14 beta now available",
-      "likes": 3200,
-      "replies": 620,
-      "reposts": 240,
-      "url": "https://threads.net/search?q=%23Python"
+      "rank": 7,
+      "keyword": "#DevOps",
+      "count": 7600,
+      "growth": "+14%"
     },
     {
-      "id": "trend_004",
-      "author": "@javascript",
-      "content": "JavaScript framework updates announced",
-      "likes": 2800,
-      "replies": 550,
-      "reposts": 210,
-      "url": "https://threads.net/search?q=%23JavaScript"
+      "rank": 8,
+      "keyword": "#React",
+      "count": 6800,
+      "growth": "+11%"
     },
     {
-      "id": "trend_005",
-      "author": "@cloud",
-      "content": "Cloud computing trends in 2026",
-      "likes": 2400,
-      "replies": 480,
-      "reposts": 180,
-      "url": "https://threads.net/search?q=%23CloudComputing"
+      "rank": 9,
+      "keyword": "#Backend",
+      "count": 5900,
+      "growth": "+9%"
+    },
+    {
+      "rank": 10,
+      "keyword": "#Frontend",
+      "count": 5100,
+      "growth": "+7%"
     }
   ],
   "stats": {
-    "total_posts_processed": 500,
-    "trending_topics_count": 5,
-    "trending_posts_count": 5,
-    "data_source": "Manual Update"
+    "total_keywords": 10,
+    "data_source": "SNS Trending Keywords - Manual Update"
   }
 }
