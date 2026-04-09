@@ -4,12 +4,13 @@ Flask ベースのブラウザインターフェース
 """
 import asyncio
 import os
+import json
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from scraper import RakutenScraper
 from ai_engine import AIEngine
-from config import OUTPUT_DIR
+from config import OUTPUT_DIR, OLLAMA_BASE_URL, OLLAMA_MODEL, OPENAI_API_KEY
 
 app = Flask(__name__)
 CORS(app)
@@ -17,11 +18,51 @@ CORS(app)
 # 出力ディレクトリを作成
 Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
+# 設定ファイルパス
+CONFIG_FILE = Path('.') / 'web_config.json'
+
+
+def get_config():
+    """Web 設定を取得"""
+    if CONFIG_FILE.exists():
+        with open(CONFIG_FILE, 'r') as f:
+            return json.load(f)
+    return {
+        'ai_engine': 'ollama',
+        'ollama_base_url': OLLAMA_BASE_URL,
+        'ollama_model': OLLAMA_MODEL,
+        'openai_api_key': OPENAI_API_KEY or '',
+        'temperature': 0.7,
+        'max_tokens': 2000
+    }
+
+
+def save_config(config):
+    """Web 設定を保存"""
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=2)
+
 
 @app.route('/')
 def index():
     """メインページ"""
     return render_template('index.html')
+
+
+@app.route('/api/config', methods=['GET'])
+def get_web_config():
+    """設定を取得"""
+    return jsonify(get_config())
+
+
+@app.route('/api/config', methods=['POST'])
+def update_config():
+    """設定を更新"""
+    data = request.get_json()
+    config = get_config()
+    config.update(data)
+    save_config(config)
+    return jsonify({'status': 'ok', 'config': config})
 
 
 @app.route('/api/generate', methods=['POST'])
@@ -87,13 +128,13 @@ def health():
 
 if __name__ == '__main__':
     print("""
-╔════════════════════════════════════════╗
-║     TravelCopy AI - Web Version        ║
-╚════════════════════════════════════════╝
+╔═══════════════════════════════════════════╗
+║     TravelCopy AI - Web UI版              ║
+╚═══════════════════════════════════════════╝
 
 🌐 ブラウザで開いてください：
-   http://localhost:5000
+   http://localhost:8080
 
-📝 ホテルのURLを入力して、「生成」をクリック！
+📝 ホテルのURLを入力して、「✨ 生成」をクリック！
     """)
-    app.run(debug=True, host='localhost', port=5000)
+    app.run(debug=True, host='localhost', port=8080)
