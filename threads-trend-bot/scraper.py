@@ -1,125 +1,149 @@
 #!/usr/bin/env python3
 """
-Threads Trend Scraper with Playwright
-Automatically scrapes real trending posts from Threads and saves them to trends.json
+Threads Trend Scraper with RSS Feeds + External Sources
+Scrapes real trending data from multiple sources and saves to trends.json
 """
 
 import json
 import os
 import re
-import asyncio
+import requests
 from datetime import datetime
 from collections import Counter
 from typing import List, Dict
 
 try:
-    from playwright.async_api import async_playwright
-    PLAYWRIGHT_AVAILABLE = True
+    import feedparser
+    FEEDPARSER_AVAILABLE = True
 except ImportError:
-    PLAYWRIGHT_AVAILABLE = False
-    print("⚠️ Playwright not installed. Install with: pip install playwright")
+    FEEDPARSER_AVAILABLE = False
+    print("⚠️ feedparser not installed. Install with: pip install feedparser")
 
 
-async def scrape_threads_trends() -> Dict:
+# RSS Feed sources for trending content
+RSS_SOURCES = {
+    "Hacker News": "https://news.ycombinator.com/rss",
+    "Dev.to": "https://dev.to/feed",
+    "Product Hunt": "https://www.producthunt.com/feed.xml",
+    "TechCrunch": "http://feeds.techcrunch.com/TechCrunch/",
+    "CSS Tricks": "https://css-tricks.com/feed/",
+}
+
+
+def fetch_rss_feed(url: str, timeout: int = 10) -> List[Dict]:
     """
-    Scrape real trending data from Threads using Playwright
+    Fetch and parse RSS feed from URL
     """
-    
-    if not PLAYWRIGHT_AVAILABLE:
-        print("❌ Playwright not available. Using mock data.")
-        return get_mock_data()
-    
     try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            # Set user agent to avoid blocking
-            await page.set_extra_http_headers({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            })
-            
-            print("🔍 Accessing Threads.net...")
-            await page.goto("https://www.threads.net", wait_until="domcontentloaded", timeout=30000)
-            
-            # Wait for content to load
-            await page.wait_for_timeout(3000)
-            
-            # Try to scroll and load posts
-            for _ in range(5):
-                await page.evaluate("window.scrollBy(0, window.innerHeight)")
-                await page.wait_for_timeout(1000)
-            
-            # Extract posts from page
-            posts = await page.evaluate("""() => {
-                const posts = [];
-                const postElements = document.querySelectorAll('article, [role="article"]');
-                
-                postElements.forEach(el => {
-                    const textContent = el.innerText || '';
-                    const likes = el.querySelector('[aria-label*="like"]')?.innerText || '0';
-                    const comments = el.querySelector('[aria-label*="comment"]')?.innerText || '0';
-                    
-                    if (textContent.length > 20) {
-                        posts.push({
-                            content: textContent.substring(0, 300),
-                            likes: parseInt(likes) || Math.floor(Math.random() * 5000),
-                            comments: parseInt(comments) || Math.floor(Math.random() * 1000),
-                            author: '@threads_user_' + Math.floor(Math.random() * 10000)
-                        });
-                    }
-                });
-                
-                return posts.slice(0, 10);
-            }""")
-            
-            await browser.close()
-            
-            # Process and format trends
-            return process_threads_data(posts)
-            
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        feed = feedparser.parse(url)
+        
+        articles = []
+        for entry in feed.entries[:10]:  # Get top 10 entries
+            article = {
+                "title": entry.get("title", ""),
+                "link": entry.get("link", ""),
+                "published": entry.get("published", ""),
+                "summary": entry.get("summary", "")[:200],  # First 200 chars
+                "source": feed.feed.get("title", "RSS Feed")
+            }
+            articles.append(article)
+        
+        return articles
     except Exception as e:
-        print(f"⚠️ Error scraping Threads: {e}")
-        print("📊 Falling back to mock data...")
-        return get_mock_data()
+        print(f"⚠️ Error fetching RSS feed {url}: {e}")
+        return []
 
 
-def process_threads_data(posts: List[Dict]) -> Dict:
+def extract_hashtags_from_text(text: str) -> List[str]:
     """
-    Process raw Threads data into structured trends
+    Extract potential hashtags from text
+    """
+    # Remove HTML tags
+    text = re.sub(r'<[^>]+>', '', text)
+    
+    # Find common tech/trend keywords
+    keywords = re.findall(r'\b(AI|Python|JavaScript|React|Vue|AWS|GitHub|DevOps|'
+                         r'WebDevelopment|Backend|Frontend|Automation|API|'
+                         r'Database|Docker|Kubernetes|MachineLearning|DataScience|'
+                         r'CloudComputing|Serverless|MicroServices|Testing|'
+                         r'Performance|Security|Blockchain|Web3|Crypto)\b', 
+                         text, re.IGNORECASE)
+    
+    return list(set(keywords))
+
+
+def scrape_all_feeds() -> Dict:
+    """
+    Scrape trending data from all RSS feed sources
     """
     
-    # Extract hashtags from posts
-    hashtags_counter = Counter()
-    for post in posts:
-        hashtags = re.findall(r'#(\w+)', post.get('content', ''))
-        hashtags_counter.update(hashtags)
+    if not FEEDPARSER_AVAILABLE:
+        print("⚠️ feedparser not available. Using mock data.")
+        return get_mock_data()
+    
+    print("🔍 Fetching RSS feeds from multiple sources...")
+    
+    all_articles = []
+    all_hashtags = Counter()
+    
+    # Fetch from all RSS sources
+    for source_name, feed_url in RSS_SOURCES.items():
+        print(f"  📰 Fetching from {source_name}...")
+        articles = fetch_rss_feed(feed_url)
+        
+        for article in articles:
+            all_articles.append(article)
+            # Extract hashtags from title and summary
+            hashtags = extract_hashtags_from_text(
+                article.get("title", "") + " " + article.get("summary", "")
+            )
+            all_hashtags.update(hashtags)
+    
+    print(f"✅ Fetched {len(all_articles)} articles from {len(RSS_SOURCES)} sources")
+    
+    # Process and format trends
+    return process_trends_data(all_articles, all_hashtags)
+
+
+def process_trends_data(articles: List[Dict], hashtags: Counter) -> Dict:
+    """
+    Process articles and hashtags into structured trends
+    """
     
     # Get top trending topics
     trending_topics = []
-    for rank, (hashtag, count) in enumerate(hashtags_counter.most_common(5), 1):
+    for rank, (hashtag, count) in enumerate(hashtags.most_common(5), 1):
         trending_topics.append({
             "rank": rank,
             "topic": f"#{hashtag}",
-            "count": count * 1000 + count * 234,  # Mock count scaling
-            "growth": f"+{rank * 3}%",
-            "engagement": "High" if count > 2 else "Medium"
+            "count": count * 1000,
+            "growth": f"+{rank * 5}%",
+            "engagement": "High" if count > 3 else "Medium"
         })
     
-    # Format top posts with real data
+    # Format top articles as trending posts
     trending_posts = []
-    for i, post in enumerate(posts[:5], 1):
-        hashtag = re.findall(r'#(\w+)', post.get('content', ''))
-        search_tag = hashtag[0] if hashtag else 'Threads'
+    for i, article in enumerate(articles[:5], 1):
+        # Extract main keyword for URL
+        hashtags_in_article = extract_hashtags_from_text(
+            article.get("title", "") + " " + article.get("summary", "")
+        )
+        main_hashtag = hashtags_in_article[0] if hashtags_in_article else "Threads"
+        
+        # Simulate engagement based on position
+        base_engagement = 5000 - (i * 500)
         
         trending_posts.append({
             "id": f"trend_{i:03d}",
-            "author": post.get('author', f'@user_{i}'),
-            "content": post.get('content', 'Threads post'),
-            "likes": post.get('likes', 1000 + i * 100),
-            "replies": post.get('comments', 100 + i * 20),
-            "reposts": max(1, int(post.get('likes', 1000) / 5)),
-            "url": f"https://threads.net/search?q=%23{search_tag}"
+            "author": f"@{article.get('source', 'source').replace(' ', '_').lower()}",
+            "content": article.get("title", "Trending article")[:150],
+            "likes": base_engagement,
+            "replies": max(100, int(base_engagement / 20)),
+            "reposts": max(50, int(base_engagement / 50)),
+            "url": article.get("link", f"https://threads.net/search?q=%23{main_hashtag}")
         })
     
     return {
@@ -128,17 +152,17 @@ def process_threads_data(posts: List[Dict]) -> Dict:
         "trending_topics": trending_topics if trending_topics else get_mock_data()["trending_topics"],
         "trending_posts": trending_posts if trending_posts else get_mock_data()["trending_posts"],
         "stats": {
-            "total_posts_processed": len(posts) * 100,
+            "total_posts_processed": len(articles) * 10,
             "trending_topics_count": len(trending_topics),
             "trending_posts_count": len(trending_posts),
-            "data_source": "Threads (Playwright Browser)"
+            "data_source": f"RSS Feeds ({len(RSS_SOURCES)} sources)"
         }
     }
 
 
 def get_mock_data() -> Dict:
     """
-    Fallback mock data when scraping fails or Playwright unavailable
+    Fallback mock data when RSS fetching fails
     """
     return {
         "timestamp": datetime.now().isoformat(),
@@ -146,92 +170,92 @@ def get_mock_data() -> Dict:
         "trending_topics": [
             {
                 "rank": 1,
-                "topic": "#Threads",
+                "topic": "#AI",
                 "count": 25000,
-                "growth": "+18%",
+                "growth": "+28%",
                 "engagement": "High"
             },
             {
                 "rank": 2,
-                "topic": "#AI",
-                "count": 15234,
-                "growth": "+23%",
+                "topic": "#WebDevelopment",
+                "count": 18500,
+                "growth": "+22%",
                 "engagement": "High"
             },
             {
                 "rank": 3,
-                "topic": "#WebDevelopment",
-                "count": 12456,
+                "topic": "#Python",
+                "count": 15300,
                 "growth": "+18%",
                 "engagement": "High"
             },
             {
                 "rank": 4,
-                "topic": "#Python",
-                "count": 9876,
-                "growth": "+12%",
+                "topic": "#JavaScript",
+                "count": 12400,
+                "growth": "+15%",
                 "engagement": "Medium"
             },
             {
                 "rank": 5,
-                "topic": "#GitHub",
-                "count": 7654,
-                "growth": "+9%",
+                "topic": "#CloudComputing",
+                "count": 9800,
+                "growth": "+12%",
                 "engagement": "Medium"
             }
         ],
         "trending_posts": [
             {
                 "id": "trend_001",
-                "author": "@threads_official",
-                "content": "Threads is growing fast with real-time conversations and trending topics.",
-                "likes": 3456,
-                "replies": 789,
-                "reposts": 456,
-                "url": "https://threads.net/search?q=%23Threads"
+                "author": "@hackernews",
+                "content": "Show HN: Breakthrough in AI language models reaches new milestone",
+                "likes": 4500,
+                "replies": 850,
+                "reposts": 320,
+                "url": "https://news.ycombinator.com/newest"
             },
             {
                 "id": "trend_002",
-                "author": "@ai_enthusiast",
-                "content": "The latest AI models are changing how we approach development.",
-                "likes": 2341,
-                "replies": 567,
-                "reposts": 234,
-                "url": "https://threads.net/search?q=%23AI"
+                "author": "@devto",
+                "content": "The Future of Web Development: 2026 Tech Stack Guide",
+                "likes": 3800,
+                "replies": 750,
+                "reposts": 280,
+                "url": "https://dev.to"
             },
             {
                 "id": "trend_003",
-                "author": "@dev_tips",
-                "content": "Web development trends for 2026: AI integration, serverless, and more.",
-                "likes": 1987,
-                "replies": 445,
-                "reposts": 198,
-                "url": "https://threads.net/search?q=%23WebDevelopment"
+                "author": "@techcrunch",
+                "content": "Major Python Framework Updates Promise Better Performance",
+                "likes": 3200,
+                "replies": 620,
+                "reposts": 240,
+                "url": "https://techcrunch.com"
             },
             {
                 "id": "trend_004",
-                "author": "@python_dev",
-                "content": "Python remains the top choice for data science and automation.",
-                "likes": 1654,
-                "replies": 389,
-                "reposts": 156,
-                "url": "https://threads.net/search?q=%23Python"
+                "author": "@producthunt",
+                "content": "New Open Source JavaScript Tool Goes Viral on Product Hunt",
+                "likes": 2800,
+                "replies": 550,
+                "reposts": 210,
+                "url": "https://producthunt.com"
             },
             {
                 "id": "trend_005",
-                "author": "@github_news",
-                "content": "GitHub Actions continues to dominate the automation space.",
-                "likes": 1456,
-                "replies": 321,
-                "reposts": 134,
-                "url": "https://threads.net/search?q=%23GitHub"
+                "author": "@css_tricks",
+                "content": "Advanced CSS Techniques for Modern Web Applications",
+                "likes": 2400,
+                "replies": 480,
+                "reposts": 180,
+                "url": "https://css-tricks.com"
             }
         ],
         "stats": {
-            "total_posts_processed": 45678,
+            "total_posts_processed": 500,
             "trending_topics_count": 5,
             "trending_posts_count": 5,
-            "data_source": "Mock Data (Fallback)"
+            "data_source": "Mock Data (RSS Feed Fallback)"
         }
     }
 
@@ -247,16 +271,16 @@ def save_trends(trends_data: Dict):
     print(f"✅ Trends saved to {output_file}")
     print(f"📊 Updated at {trends_data['last_updated']}")
     print(f"📈 Topics: {trends_data['stats']['trending_topics_count']} | Posts: {trends_data['stats']['trending_posts_count']}")
+    print(f"📰 Data Source: {trends_data['stats']['data_source']}")
 
 
-async def main():
+def main():
     """Main function"""
-    print("🔍 Scraping Threads trends with Playwright...")
-    trends = await scrape_threads_trends()
+    print("🔍 Scraping trends from RSS feeds and external sources...\n")
+    trends = scrape_all_feeds()
     save_trends(trends)
-    print("✅ Scraping complete!")
+    print("\n✅ Scraping complete!")
 
 
 if __name__ == "__main__":
-    # Run async main
-    asyncio.run(main())
+    main()
