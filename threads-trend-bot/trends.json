@@ -4,67 +4,67 @@
   "trending_keywords": [
     {
       "rank": 1,
-      "keyword": "#AI",
-      "count": 25000,
-      "growth": "+28%"
+      "keyword": "#推しの子",
+      "count": 125000,
+      "growth": "+45%"
     },
     {
       "rank": 2,
-      "keyword": "#WebDevelopment",
-      "count": 18500,
-      "growth": "+22%"
+      "keyword": "#呪術廻戦",
+      "count": 98500,
+      "growth": "+38%"
     },
     {
       "rank": 3,
-      "keyword": "#Python",
-      "count": 15300,
-      "growth": "+18%"
+      "keyword": "#進撃の巨人",
+      "count": 87300,
+      "growth": "+32%"
     },
     {
       "rank": 4,
-      "keyword": "#JavaScript",
-      "count": 12400,
-      "growth": "+15%"
+      "keyword": "#ジャニーズ",
+      "count": 76400,
+      "growth": "+28%"
     },
     {
       "rank": 5,
-      "keyword": "#CloudComputing",
-      "count": 9800,
-      "growth": "+12%"
+      "keyword": "#K-POP",
+      "count": 65800,
+      "growth": "+35%"
     },
     {
       "rank": 6,
-      "keyword": "#MachineLearning",
-      "count": 8900,
-      "growth": "+25%"
+      "keyword": "#日本テレビ",
+      "count": 54900,
+      "growth": "+22%"
     },
     {
       "rank": 7,
-      "keyword": "#DevOps",
-      "count": 7600,
-      "growth": "+14%"
+      "keyword": "#TikTok",
+      "count": 48600,
+      "growth": "+18%"
     },
     {
       "rank": 8,
-      "keyword": "#React",
-      "count": 6800,
-      "growth": "+11%"
+      "keyword": "#新作ドラマ",
+      "count": 42300,
+      "growth": "+25%"
     },
     {
       "rank": 9,
-      "keyword": "#Backend",
-      "count": 5900,
-      "growth": "+9%"
+      "keyword": "#推し活",
+      "count": 38900,
+      "growth": "+19%"
     },
     {
       "rank": 10,
-      "keyword": "#Frontend",
-      "count": 5100,
-      "growth": "+7%"
+      "keyword": "#令和",
+      "count": 34100,
+      "growth": "+12%"
     }
   ],
   "stats": {
     "total_keywords": 10,
-    "data_source": "SNS Trending Keywords - Manual Update"
+    "data_source": "日本 SNS トレンド - Manual Update"
   }
 }
