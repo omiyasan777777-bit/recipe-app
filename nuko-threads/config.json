@@ -4,10 +4,22 @@
   "webapp_key": "pl4pJhjLOQ3uzOwQpT2xbo7fxhcclD-R_3V-Hwbq9Os",
   "threads_access_token": "THAF6Skrc5CY9BUVJFVzRWRkw0U3N3M04wZAUdYUFJsMDh5Y3duOUZAYSlFOd1oyU1RUVEVLa2FTVk9VY0w0T3hMRHR1SUJnM3QzTUNhUk1aOUhzUUMxNU5ONlNZAZAHd4UFlONmVwdU1XYnlKaDZAiOG1GWGZApRTBVR0M3Ty10YnJldXFsZAwZDZD",
   "threads_user_id": "26874509468833650",
+  "asp_affiliate_tool": {
+    "enabled": true,
+    "data_path": "../asp-affiliate-tool/data.json",
+    "auto_assign_links": true,
+    "links_per_post": 1,
+    "link_campaign": "threads_general",
+    "note": "ASP成約率最適化ダッシュボードとの自動連携設定"
+  },
   "schedule": {
     "start_date": "",
     "posting_hours": [7, 9, 12, 15, 19, 21],
-    "random_minutes": true
+    "random_minutes": true,
+    "links_enabled": false,
+    "links_per_day": 2,
+    "link_delay_min": 30,
+    "link_delay_max": 60
   },
   "cta": {
     "type": "",

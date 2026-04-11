@@ -4,6 +4,7 @@
   python scheduler.py output/batch_0001.txt --clipboard
   python scheduler.py output/batch_0001.txt output/batch_0002.txt -o schedule.tsv
   python scheduler.py output/batch_0001.txt --start-date 2026-04-01
+  python scheduler.py output/batch_0001.txt --post  # ASP連携して直接スプシ転記
 """
 import json
 import random
@@ -12,6 +13,12 @@ import sys
 import argparse
 from pathlib import Path
 from datetime import datetime, timedelta
+
+try:
+    from asp_integration import ASPIntegration, generate_post_id
+except ImportError:
+    # asp_integration がない場合は無視
+    ASPIntegration = None
 
 
 def extract_posts(text: str) -> list:
@@ -52,12 +59,20 @@ def extract_posts(text: str) -> list:
     return posts
 
 
-def create_schedule(posts, config, links):
-    """投稿リストにスケジュールを付与してTSV行を生成する"""
-    sch = config['schedule']
-    start_date = datetime.strptime(sch['start_date'], '%Y-%m-%d')
+def create_schedule(posts, config, links, asp_integration=None):
+    """投稿リストにスケジュールを付与してTSV行を生成する
+
+    Args:
+        posts: 投稿リスト
+        config: 設定辞書
+        links: links.json のリンク情報
+        asp_integration: ASP連携インスタンス（省略時は無効化）
+    """
+    sch = config.get('schedule', {})
+    start_date = datetime.strptime(sch.get('start_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
     use_random = sch.get('random_minutes', True)
-    use_links = sch.get('links_enabled', False)
+    use_asp_links = asp_integration is not None and asp_integration.enabled
+    use_links = sch.get('links_enabled', False) or use_asp_links
     max_links = sch.get('links_per_day', 2) if use_links else 0
     delay_lo = sch.get('link_delay_min', 30)
     delay_hi = sch.get('link_delay_max', 60)
@@ -90,11 +105,15 @@ def create_schedule(posts, config, links):
     link_count = 0
     seq = 1
     rows = []
+    batch_num = 1  # バッチ番号
 
-    for post, slot in zip(posts, slots):
+    for post_idx, (post, slot) in enumerate(zip(posts, slots)):
         if slot.date() != cur_day:
             cur_day = slot.date()
             link_count = 0
+
+        # 投稿ID を生成
+        post_id = generate_post_id(batch_num, post_idx + 1) if 'generate_post_id' in dir() else f'post_{post_idx + 1:03d}'
 
         d = slot.strftime('%Y/%m/%d')
         h = str(slot.hour)
@@ -105,18 +124,41 @@ def create_schedule(posts, config, links):
             cell = item.strip()
             escaped = cell.replace('"', '""')
             char_count = len(item.strip())
-            rows.append(f'{seq}\t"{escaped}"\t{post_type}\t{d}\t{h}\t{m}\t{char_count}\t下書き')
+            rows.append(f'{seq}\t"{escaped}"\t{post_type}\t{d}\t{h}\t{m}\t{char_count}\t下書き\t{post_id}')
 
         # リンク挿入
-        if link_count < max_links and links:
-            link = random.choice(links)
-            lt = slot + timedelta(minutes=random.randint(delay_lo, delay_hi))
-            body = f'{link["text"]}\n{link["url"]}'.replace('"', '""')
-            char_count = len(link['text']) + len(link['url']) + 1
-            rows.append(
-                f'{seq}\t"{body}"\tスレッド\t{lt.strftime("%Y/%m/%d")}\t{lt.hour}\t{lt.minute}\t{char_count}\t下書き'
-            )
-            link_count += 1
+        if link_count < max_links:
+            link = None
+
+            # ASP連携リンクを優先取得
+            if use_asp_links and asp_integration:
+                asp_links = asp_integration.get_available_links(
+                    campaign_id=asp_integration.asp_config.get('link_campaign'),
+                    count=1
+                )
+                if asp_links:
+                    link = asp_links[0]
+                    # 成約追跡用にリンクを加工
+                    link = asp_integration.create_tracking_link(link, post_id)
+
+            # フォールバック: links.json から取得
+            if not link and links:
+                link = random.choice(links)
+
+            if link:
+                lt = slot + timedelta(minutes=random.randint(delay_lo, delay_hi))
+                # リンク情報を tsv に追加
+                if 'short_url' in link:
+                    body = f'{link.get("title", "詳しくはこちら")}\n{link["short_url"]}'.replace('"', '""')
+                else:
+                    body = f'{link.get("text", "詳しくはこちら")}\n{link.get("url", "")}'.replace('"', '""')
+
+                char_count = len(body)
+                link_id = link.get('id', '') or link.get('link_id', '')
+                rows.append(
+                    f'{seq}\t"{body}"\tスレッド\t{lt.strftime("%Y/%m/%d")}\t{lt.hour}\t{lt.minute}\t{char_count}\t下書き\t{post_id}_cta\t{link_id}'
+                )
+                link_count += 1
 
         seq += 1
 
@@ -144,6 +186,17 @@ def main():
     with open(base / 'links.json', encoding='utf-8') as f:
         links = json.load(f)
 
+    # ASP 連携を初期化
+    asp_integration = None
+    asp_config = config.get('asp_affiliate_tool', {})
+    if asp_config.get('enabled', False) and ASPIntegration:
+        try:
+            asp_integration = ASPIntegration(asp_config, config_dir=base)
+            print(f'✅ ASP連携が有効化されています', file=sys.stderr)
+        except Exception as e:
+            print(f'⚠️ ASP連携の初期化に失敗: {e}', file=sys.stderr)
+            asp_integration = None
+
     if args.start_date:
         config['schedule']['start_date'] = args.start_date
     if args.start_hour is not None:
@@ -158,7 +211,7 @@ def main():
             combined += f.read() + '\n'
 
     posts = extract_posts(combined)
-    tsv = create_schedule(posts, config, links)
+    tsv = create_schedule(posts, config, links, asp_integration=asp_integration)
 
     if args.post:
         webapp_url = config.get('webapp_url', '')
