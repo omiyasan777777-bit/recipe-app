@@ -1,20 +1,362 @@
 {
   "version": "1.0",
-  "last_updated": "2026-04-11T00:00:00Z",
-  "links": [],
-  "conversions": [],
-  "posts": [],
+  "last_updated": "2026-04-11T18:00:00Z",
+  "links": [
+    {
+      "id": "link_001",
+      "short_url": "thr.link/abc123",
+      "original_url": "https://example.com/skincare-serum",
+      "title": "高級美容セラム",
+      "asp": "a8",
+      "program_id": "123456",
+      "campaign_id": "threads_general",
+      "tags": ["美容", "スキンケア"],
+      "created_at": "2026-04-01T09:00:00Z",
+      "notes": ""
+    },
+    {
+      "id": "link_002",
+      "short_url": "thr.link/def456",
+      "original_url": "https://example.com/supplement",
+      "title": "健康サプリメント",
+      "asp": "afb",
+      "program_id": "789012",
+      "campaign_id": "threads_general",
+      "tags": ["健康", "サプリメント"],
+      "created_at": "2026-04-02T10:30:00Z",
+      "notes": ""
+    },
+    {
+      "id": "link_003",
+      "short_url": "thr.link/ghi789",
+      "original_url": "https://example.com/fashion-dress",
+      "title": "トレンドワンピース",
+      "asp": "monetrack",
+      "program_id": "345678",
+      "campaign_id": "threads_general",
+      "tags": ["ファッション", "レディース"],
+      "created_at": "2026-04-03T11:15:00Z",
+      "notes": ""
+    },
+    {
+      "id": "link_004",
+      "short_url": "thr.link/jkl012",
+      "original_url": "https://amazon.co.jp/wireless-earbuds",
+      "title": "ワイヤレスイヤホン",
+      "asp": "amazon",
+      "program_id": "aws-123",
+      "campaign_id": "threads_general",
+      "tags": ["ガジェット", "電子機器"],
+      "created_at": "2026-04-04T14:00:00Z",
+      "notes": ""
+    },
+    {
+      "id": "link_005",
+      "short_url": "thr.link/mno345",
+      "original_url": "https://example.com/hair-care",
+      "title": "シャンプー＆トリートメント",
+      "asp": "a8",
+      "program_id": "234567",
+      "campaign_id": "threads_general",
+      "tags": ["美容", "ヘアケア"],
+      "created_at": "2026-04-05T15:45:00Z",
+      "notes": ""
+    }
+  ],
+  "conversions": [
+    {
+      "id": "conv_001",
+      "link_id": "link_001",
+      "post_id": "post_0001_001",
+      "click_timestamp": "2026-04-08T09:15:00Z",
+      "conversion_timestamp": "2026-04-08T09:35:00Z",
+      "amount": 5000,
+      "commission": 500,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_002",
+      "link_id": "link_001",
+      "post_id": "post_0001_002",
+      "click_timestamp": "2026-04-08T10:20:00Z",
+      "conversion_timestamp": "2026-04-08T10:45:00Z",
+      "amount": 5000,
+      "commission": 500,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_003",
+      "link_id": "link_002",
+      "post_id": "post_0001_003",
+      "click_timestamp": "2026-04-08T12:00:00Z",
+      "conversion_timestamp": "2026-04-08T12:22:00Z",
+      "amount": 3000,
+      "commission": 300,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_004",
+      "link_id": "link_003",
+      "post_id": "post_0001_004",
+      "click_timestamp": "2026-04-08T14:30:00Z",
+      "conversion_timestamp": "2026-04-08T15:10:00Z",
+      "amount": 8000,
+      "commission": 800,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_005",
+      "link_id": "link_001",
+      "post_id": "post_0001_005",
+      "click_timestamp": "2026-04-09T07:45:00Z",
+      "conversion_timestamp": "2026-04-09T08:15:00Z",
+      "amount": 5000,
+      "commission": 500,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_006",
+      "link_id": "link_004",
+      "post_id": "post_0001_006",
+      "click_timestamp": "2026-04-09T09:30:00Z",
+      "conversion_timestamp": "2026-04-09T10:00:00Z",
+      "amount": 12000,
+      "commission": 1200,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_007",
+      "link_id": "link_005",
+      "post_id": "post_0001_007",
+      "click_timestamp": "2026-04-09T11:00:00Z",
+      "conversion_timestamp": "2026-04-09T11:25:00Z",
+      "amount": 4000,
+      "commission": 400,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_008",
+      "link_id": "link_002",
+      "post_id": "post_0001_008",
+      "click_timestamp": "2026-04-09T15:15:00Z",
+      "conversion_timestamp": "2026-04-09T15:40:00Z",
+      "amount": 3000,
+      "commission": 300,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_009",
+      "link_id": "link_003",
+      "post_id": "post_0001_009",
+      "click_timestamp": "2026-04-09T19:00:00Z",
+      "conversion_timestamp": "2026-04-09T19:30:00Z",
+      "amount": 8000,
+      "commission": 800,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_010",
+      "link_id": "link_001",
+      "post_id": "post_0001_010",
+      "click_timestamp": "2026-04-10T08:30:00Z",
+      "conversion_timestamp": "2026-04-10T09:00:00Z",
+      "amount": 5000,
+      "commission": 500,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_011",
+      "link_id": "link_004",
+      "post_id": "post_0001_001",
+      "click_timestamp": "2026-04-10T12:45:00Z",
+      "conversion_timestamp": "2026-04-10T13:15:00Z",
+      "amount": 12000,
+      "commission": 1200,
+      "status": "confirmed"
+    },
+    {
+      "id": "conv_012",
+      "link_id": "link_005",
+      "post_id": "post_0001_002",
+      "click_timestamp": "2026-04-10T21:00:00Z",
+      "conversion_timestamp": "2026-04-10T21:30:00Z",
+      "amount": 4000,
+      "commission": 400,
+      "status": "confirmed"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_0001_001",
+      "content": "最新の美容セラムを試してみたら、肌がツルツルになった！テクスチャーも軽くて、毎日のスキンケアが楽しみに。特に乾燥肌さんには本当におすすめです。",
+      "links_used": ["link_001"],
+      "posted_at": "2026-04-08T09:00:00Z",
+      "platform": "Threads",
+      "impressions": 1200,
+      "clicks": 45,
+      "conversions": 2,
+      "revenue": 10000
+    },
+    {
+      "id": "post_0001_002",
+      "content": "健康診断で「ビタミン不足」と言われて、サプリメントを始めました。飲み始めて2週間で疲れにくくなった感じ。朝の目覚めが違う！",
+      "links_used": ["link_002"],
+      "posted_at": "2026-04-08T10:30:00Z",
+      "platform": "Threads",
+      "impressions": 980,
+      "clicks": 38,
+      "conversions": 2,
+      "revenue": 6000
+    },
+    {
+      "id": "post_0001_003",
+      "content": "春は新しいワンピースで気分リセット！このワンピース、何回も着回しできるし、どんなコーディネートにも合わせやすい。値段以上の価値がある。",
+      "links_used": ["link_003"],
+      "posted_at": "2026-04-08T12:00:00Z",
+      "platform": "Threads",
+      "impressions": 1500,
+      "clicks": 52,
+      "conversions": 1,
+      "revenue": 8000
+    },
+    {
+      "id": "post_0001_004",
+      "content": "通勤時間にワイヤレスイヤホンで音楽を聴くのが日課。バッテリーも長持ちするし、音質も良い。これなしの生活は考えられない。",
+      "links_used": ["link_004"],
+      "posted_at": "2026-04-08T14:30:00Z",
+      "platform": "Threads",
+      "impressions": 2100,
+      "clicks": 75,
+      "conversions": 2,
+      "revenue": 24000
+    },
+    {
+      "id": "post_0001_005",
+      "content": "毎日のヘアケアがこんなに大事だったなんて！シャンプーを変えたら、髪の広がりが治った。朝のセットが楽になって時間に余裕が出来た。",
+      "links_used": ["link_005"],
+      "posted_at": "2026-04-08T16:00:00Z",
+      "platform": "Threads",
+      "impressions": 1100,
+      "clicks": 40,
+      "conversions": 1,
+      "revenue": 4000
+    },
+    {
+      "id": "post_0001_006",
+      "content": "美容って自分への投資だと思う。お金をかけるべき場所と節約すべき場所を見極めることが大事。私は肌に絶対妥協しない。",
+      "links_used": ["link_001"],
+      "posted_at": "2026-04-09T07:30:00Z",
+      "platform": "Threads",
+      "impressions": 890,
+      "clicks": 32,
+      "conversions": 1,
+      "revenue": 5000
+    },
+    {
+      "id": "post_0001_007",
+      "content": "生活習慣を整えるって、実は美容よりも大事。サプリメントも大事だけど、まずは睡眠と食事。この3つのバランスが整うと、肌が変わる。",
+      "links_used": ["link_002"],
+      "posted_at": "2026-04-09T09:15:00Z",
+      "platform": "Threads",
+      "impressions": 1050,
+      "clicks": 38,
+      "conversions": 1,
+      "revenue": 3000
+    },
+    {
+      "id": "post_0001_008",
+      "content": "ガジェット好きさんなら絶対持つべき。ワイヤレスイヤホンは通勤の味方。自分時間を充実させるなら、これは必須アイテム。",
+      "links_used": ["link_004"],
+      "posted_at": "2026-04-09T11:45:00Z",
+      "platform": "Threads",
+      "impressions": 1350,
+      "clicks": 48,
+      "conversions": 1,
+      "revenue": 12000
+    },
+    {
+      "id": "post_0001_009",
+      "content": "ファッションは心の栄養。新しい洋服を買うと気分が上がる。春は新しい色に挑戦するなら今。このワンピースはマジで推し。",
+      "links_used": ["link_003"],
+      "posted_at": "2026-04-09T14:00:00Z",
+      "platform": "Threads",
+      "impressions": 1600,
+      "clicks": 58,
+      "conversions": 1,
+      "revenue": 8000
+    },
+    {
+      "id": "post_0001_010",
+      "content": "毎日のスキンケアをちょっと工夫するだけで、肌の調子が変わる。高いコスメも大事だけど、使い方と続ける習慣が一番大事。",
+      "links_used": ["link_001"],
+      "posted_at": "2026-04-09T16:30:00Z",
+      "platform": "Threads",
+      "impressions": 970,
+      "clicks": 35,
+      "conversions": 1,
+      "revenue": 5000
+    }
+  ],
   "analytics": {
-    "daily": [],
+    "daily": [
+      {
+        "date": "2026-04-08",
+        "clicks": 232,
+        "conversions": 4,
+        "conversion_rate": 1.7,
+        "revenue": 21000,
+        "commission": 2100
+      },
+      {
+        "date": "2026-04-09",
+        "clicks": 277,
+        "conversions": 5,
+        "conversion_rate": 1.8,
+        "revenue": 32000,
+        "commission": 3200
+      },
+      {
+        "date": "2026-04-10",
+        "clicks": 213,
+        "conversions": 3,
+        "conversion_rate": 1.4,
+        "revenue": 21000,
+        "commission": 2100
+      }
+    ],
     "by_hour": [],
     "by_day_of_week": [],
     "by_tag": [],
     "by_campaign": []
   },
   "import_history": {
-    "a8": [],
-    "afb": [],
-    "monetrack": [],
-    "amazon": []
+    "a8": [
+      {
+        "date": "2026-04-11T10:00:00Z",
+        "count": 5,
+        "status": "success"
+      }
+    ],
+    "afb": [
+      {
+        "date": "2026-04-11T10:15:00Z",
+        "count": 2,
+        "status": "success"
+      }
+    ],
+    "monetrack": [
+      {
+        "date": "2026-04-11T10:30:00Z",
+        "count": 3,
+        "status": "success"
+      }
+    ],
+    "amazon": [
+      {
+        "date": "2026-04-11T10:45:00Z",
+        "count": 2,
+        "status": "success"
+      }
+    ]
   }
 }
