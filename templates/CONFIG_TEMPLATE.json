@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "schedule": {
+    "start_date": "2026-04-12",
+    "start_hour": 9,
+    "posting_hours": [7, 9, 12, 15, 19, 21],
+    "random_minutes": true,
+    "interval": 180,
+    "links_enabled": true,
+    "links_per_day": 2,
+    "link_delay_min": 30,
+    "link_delay_max": 60
+  },
+
+  "asp_affiliate_tool": {
+    "enabled": true,
+    "data_path": "./asp-affiliate-tool/data.json",
+    "auto_assign_links": true,
+    "link_campaign": "threads_general"
+  },
+
+  "tracking": {
+    "utm_source": "threads",
+    "utm_medium": "social",
+    "utm_campaign": ""
+  },
+
+  "spreadsheet_url": "https://docs.google.com/spreadsheets/d/[YOUR_SPREADSHEET_ID]/edit",
+  "webapp_url": "https://script.google.com/macros/d/[YOUR_SCRIPT_ID]/usercontent",
+  "webapp_key": "[生成したキーをここに入力]"
+}
