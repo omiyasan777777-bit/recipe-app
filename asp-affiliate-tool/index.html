@@ -22,6 +22,7 @@
             <button class="tab-btn active" data-tab="overview">📈 概要</button>
             <button class="tab-btn" data-tab="links">🔗 リンク管理</button>
             <button class="tab-btn" data-tab="analytics">📊 分析</button>
+            <button class="tab-btn" data-tab="threads">📱 Threads投稿</button>
             <button class="tab-btn" data-tab="import">📥 インポート</button>
             <button class="tab-btn" data-tab="optimize">✨ 最適化</button>
             <button class="tab-btn" data-tab="settings">⚙️ 設定</button>
@@ -169,7 +170,50 @@
                 </table>
             </div>
 
-            <!-- [3] 分析タブ -->
+            <!-- [3] Threads投稿分析タブ（新規） -->
+            <div class="tab-content" id="threads">
+                <h2>Threads投稿別成約分析</h2>
+
+                <div class="action-bar">
+                    <button id="refresh-threads-data" class="btn btn-primary">🔄 データ更新</button>
+                    <button id="export-threads-report" class="btn btn-secondary">📥 レポート出力</button>
+                </div>
+
+                <h3>投稿パフォーマンス TOP 10</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>投稿内容</th>
+                            <th>投稿時刻</th>
+                            <th>インプレッション</th>
+                            <th>クリック</th>
+                            <th>成約</th>
+                            <th>成約率</th>
+                            <th>売上</th>
+                        </tr>
+                    </thead>
+                    <tbody id="threads-posts-table">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">投稿データなし</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>投稿別成約トレンド</h3>
+                <canvas id="threads-trend-chart" width="800" height="300"></canvas>
+
+                <h3>高成約パターン（推奨）</h3>
+                <div id="threads-patterns" style="margin-top: 20px;">
+                    <p style="text-align: center; color: #999;">分析データを読み込み中...</p>
+                </div>
+
+                <h3>インサイト</h3>
+                <div id="threads-insights" style="background: #f0f7ff; padding: 20px; border-radius: 5px; margin-top: 20px;">
+                    <p style="color: #666;">Threads投稿とアフィリエイト成約の関連性を分析して、改善提案を表示します</p>
+                </div>
+            </div>
+
+            <!-- [4] 分析タブ -->
             <div class="tab-content" id="analytics">
                 <h2>分析</h2>
 

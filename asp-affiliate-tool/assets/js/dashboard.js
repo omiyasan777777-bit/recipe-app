@@ -106,6 +106,16 @@ class DashboardApp {
         document.getElementById('export-data').addEventListener('click', () => this.exportData());
         document.getElementById('clear-data').addEventListener('click', () => this.clearData());
 
+        // Threads投稿分析
+        const refreshThreadsBtn = document.getElementById('refresh-threads-data');
+        if (refreshThreadsBtn) {
+            refreshThreadsBtn.addEventListener('click', () => this.updateThreadsAnalysis());
+        }
+        const exportThreadsBtn = document.getElementById('export-threads-report');
+        if (exportThreadsBtn) {
+            exportThreadsBtn.addEventListener('click', () => this.exportThreadsReport());
+        }
+
         // 同期ボタン
         document.getElementById('sync-btn').addEventListener('click', () => this.syncData());
     }
@@ -283,6 +293,128 @@ class DashboardApp {
                 `).join('');
             }
         }
+    }
+
+    updateThreadsAnalysis() {
+        // Threads投稿別の成約分析を更新
+        const posts = this.data.posts || [];
+
+        // 投稿パフォーマンスを計算
+        const postsWithMetrics = posts.map(post => {
+            const conversions = this.data.conversions.filter(c => c.post_id === post.id).length;
+            const clicks = conversions * 3; // 仮定: 3クリック = 1成約
+            const conversionRate = clicks > 0 ? ((conversions / clicks) * 100).toFixed(1) : 0;
+            const revenue = this.data.conversions
+                .filter(c => c.post_id === post.id)
+                .reduce((sum, c) => sum + (c.amount || 0), 0);
+
+            return {
+                ...post,
+                conversions,
+                clicks,
+                conversionRate,
+                revenue
+            };
+        }).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
+
+        // テーブルに表示
+        const tbody = document.getElementById('threads-posts-table');
+        if (postsWithMetrics.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">投稿データなし</td></tr>';
+        } else {
+            tbody.innerHTML = postsWithMetrics.map(post => `
+                <tr>
+                    <td>${post.content.substring(0, 30)}...</td>
+                    <td>${new Date(post.posted_at).toLocaleString('ja-JP')}</td>
+                    <td>${post.impressions || 0}</td>
+                    <td>${post.clicks || 0}</td>
+                    <td>${post.conversions}</td>
+                    <td>${post.conversionRate}%</td>
+                    <td>¥${post.revenue.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // パターン分析
+        this.analyzeThreadsPatterns(postsWithMetrics);
+
+        this.showMessage('Threads投稿分析を更新しました', 'success');
+    }
+
+    analyzeThreadsPatterns(posts) {
+        // 高成約パターンを分析
+        if (posts.length === 0) {
+            document.getElementById('threads-patterns').innerHTML = '<p style="color: #999;">投稿データがありません</p>';
+            return;
+        }
+
+        const topPost = posts[0];
+        const avgConversions = posts.reduce((sum, p) => sum + p.conversions, 0) / posts.length;
+
+        const patternsHtml = `
+            <div style="background: #fff; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
+                <h4>📌 最高パフォーマンス投稿</h4>
+                <p><strong>内容:</strong> ${topPost.content.substring(0, 100)}...</p>
+                <p><strong>成約数:</strong> ${topPost.conversions}件 | <strong>売上:</strong> ¥${topPost.revenue.toLocaleString()}</p>
+                <p><strong>成約率:</strong> ${topPost.conversionRate}%</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <h4>💡 改善提案</h4>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>最高パフォーマンス投稿の特徴を分析して、同様のパターンを増やす</li>
+                    <li>平均成約数: ${avgConversions.toFixed(1)}件 | 目標: この投稿レベルの品質を全投稿で実現</li>
+                    <li>低成約投稿の原因を特定し、テキスト・タイミング・リンク選定を改善</li>
+                    <li>高成約投稿の投稿時間帯を注視し、最適な時間に重点投稿</li>
+                </ul>
+            </div>
+        `;
+
+        document.getElementById('threads-patterns').innerHTML = patternsHtml;
+    }
+
+    exportThreadsReport() {
+        // Threads投稿分析レポートをCSVで出力
+        const posts = this.data.posts || [];
+
+        if (posts.length === 0) {
+            alert('投稿データがありません');
+            return;
+        }
+
+        const header = ['投稿ID', '投稿内容', '投稿時刻', 'インプレッション', 'クリック', '成約数', '成約率', '売上'];
+        const rows = posts.map(post => {
+            const conversions = this.data.conversions.filter(c => c.post_id === post.id).length;
+            const clicks = conversions * 3;
+            const conversionRate = clicks > 0 ? ((conversions / clicks) * 100).toFixed(1) : 0;
+            const revenue = this.data.conversions
+                .filter(c => c.post_id === post.id)
+                .reduce((sum, c) => sum + (c.amount || 0), 0);
+
+            return [
+                post.id,
+                `"${post.content.replace(/"/g, '""')}"`,
+                post.posted_at,
+                post.impressions || 0,
+                clicks,
+                conversions,
+                conversionRate,
+                revenue
+            ];
+        });
+
+        const csv = [header, ...rows]
+            .map(row => row.join(','))
+            .join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv; charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `threads-report-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        this.showMessage('Threads分析レポートをダウンロードしました', 'success');
     }
 
     showNewLinkForm() {

@@ -20,6 +20,45 @@ except ImportError:
     # asp_integration がない場合は無視
     ASPIntegration = None
 
+try:
+    from report_generator import ReportGenerator
+except ImportError:
+    # report_generator がない場合は無視
+    ReportGenerator = None
+
+
+def optimize_posting_hours(asp_integration=None, config=None):
+    """ASP成約データに基づいて最適な投稿時間を計算
+
+    Args:
+        asp_integration: ASPIntegration インスタンス
+        config: config.json の内容
+
+    Returns:
+        list: 最適化された投稿時間リスト
+    """
+    if not asp_integration or not asp_integration.data:
+        return config.get('schedule', {}).get('posting_hours', [7, 9, 12, 15, 19, 21])
+
+    # ASP成約データから時間帯別成約率を計算
+    hourly_conversions = [0] * 24
+    for conv in asp_integration.data.get('conversions', []):
+        hour = datetime.fromisoformat(
+            conv.get('conversion_timestamp', datetime.now().isoformat())
+        ).hour
+        hourly_conversions[hour] += 1
+
+    # 成約数が多い時間帯トップ6を抽出
+    if sum(hourly_conversions) > 0:
+        optimal_hours = sorted(
+            range(24),
+            key=lambda h: hourly_conversions[h],
+            reverse=True
+        )[:6]
+        return sorted(optimal_hours)
+    else:
+        return config.get('schedule', {}).get('posting_hours', [7, 9, 12, 15, 19, 21])
+
 
 def extract_posts(text: str) -> list:
     """投稿テキストからポストを抽出する
@@ -178,6 +217,8 @@ def main():
     parser.add_argument('-p', '--post', action='store_true', help='Web App経由でスプシに直接転記')
     parser.add_argument('--clear', action='store_true', help='転記前にデータ消去+書式リセット')
     parser.add_argument('--no-links', action='store_true', help='リンク挿入OFF')
+    parser.add_argument('--optimize-hours', action='store_true', help='ASP成約データから投稿時間を自動最適化')
+    parser.add_argument('--generate-report', action='store_true', help='成約レポートを生成して rules.md を更新')
     args = parser.parse_args()
 
     base = Path(__file__).parent
@@ -196,6 +237,24 @@ def main():
         except Exception as e:
             print(f'⚠️ ASP連携の初期化に失敗: {e}', file=sys.stderr)
             asp_integration = None
+
+    # 投稿時間の自動最適化
+    if args.optimize_hours and asp_integration:
+        optimal_hours = optimize_posting_hours(asp_integration, config)
+        config['schedule']['posting_hours'] = optimal_hours
+        print(f'✅ 最適な投稿時間帯に自動最適化: {optimal_hours}', file=sys.stderr)
+
+    # 成約レポート生成と rules.md 更新
+    if args.generate_report and ReportGenerator:
+        try:
+            asp_data_path = base.parent / asp_config.get('data_path', '../asp-affiliate-tool/data.json')
+            gen = ReportGenerator(asp_data_path, base / 'config.json')
+            rules_path = base / 'content' / 'rules.md'
+            if rules_path.exists():
+                gen.update_rules_file(rules_path)
+                print(f'✅ content/rules.md を成約データで更新しました', file=sys.stderr)
+        except Exception as e:
+            print(f'⚠️ レポート生成エラー: {e}', file=sys.stderr)
 
     if args.start_date:
         config['schedule']['start_date'] = args.start_date
