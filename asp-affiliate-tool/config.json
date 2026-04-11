@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "asp": {
+    "a8": {
+      "enabled": false,
+      "name": "A8.net",
+      "api_type": "csv",
+      "program_ids": [],
+      "csv_folder": "./data/a8-imports",
+      "note": "CSV形式でのインポートのみ対応。A8.net管理画面からCSVをダウンロード"
+    },
+    "afb": {
+      "enabled": false,
+      "name": "afb",
+      "api_type": "csv",
+      "csv_folder": "./data/afb-imports",
+      "note": "afb管理画面からCSVをダウンロード"
+    },
+    "monetrack": {
+      "enabled": false,
+      "name": "Monetrack",
+      "api_type": "csv",
+      "csv_folder": "./data/monetrack-imports",
+      "note": "Monetrack管理画面からCSVをダウンロード"
+    },
+    "amazon": {
+      "enabled": false,
+      "name": "Amazonアソシエイト",
+      "api_type": "csv",
+      "csv_folder": "./data/amazon-imports",
+      "note": "Amazonアソシエイト管理画面からCSVをダウンロード"
+    }
+  },
+  "campaigns": {
+    "threads_general": {
+      "id": "threads_general",
+      "name": "Threads 一般投稿",
+      "platform": "Threads",
+      "asp_list": ["a8", "afb", "amazon"],
+      "active": true,
+      "daily_posts": 10,
+      "notes": "Threads投稿用の主要キャンペーン"
+    }
+  },
+  "tracking": {
+    "utm_source": "threads",
+    "utm_medium": "social",
+    "utm_campaign_template": "{campaign_id}",
+    "short_url_domain": "thr.link"
+  },
+  "threads_integration": {
+    "enabled": false,
+    "spreadsheet_url": "",
+    "sync_interval_hours": 6,
+    "auto_generate_links": true,
+    "link_per_post": 1,
+    "note": "Threads投稿システムとの自動連携（オプション）"
+  },
+  "settings": {
+    "timezone": "Asia/Tokyo",
+    "currency": "JPY",
+    "decimal_places": 0,
+    "start_of_week": "monday",
+    "webhook_enabled": false,
+    "webhook_url": ""
+  }
+}

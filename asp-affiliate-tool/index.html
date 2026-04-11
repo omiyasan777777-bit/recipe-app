@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASP アフィリエイト成約率最適化ダッシュボード</title>
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1>📊 ASP アフィリエイト成約率最適化ダッシュボード</h1>
+            <div class="header-meta">
+                <span id="last-sync">前回同期: --:--</span>
+                <button id="sync-btn" class="btn btn-primary">同期する</button>
+            </div>
+        </header>
+
+        <!-- タブナビゲーション -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="overview">📈 概要</button>
+            <button class="tab-btn" data-tab="links">🔗 リンク管理</button>
+            <button class="tab-btn" data-tab="analytics">📊 分析</button>
+            <button class="tab-btn" data-tab="import">📥 インポート</button>
+            <button class="tab-btn" data-tab="optimize">✨ 最適化</button>
+            <button class="tab-btn" data-tab="settings">⚙️ 設定</button>
+        </nav>
+
+        <!-- タブコンテンツ -->
+        <div class="tabs-content">
+
+            <!-- [1] 概要タブ -->
+            <div class="tab-content active" id="overview">
+                <h2>今日の成績</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">成約数</div>
+                        <div class="metric-value" id="today-conversions">0</div>
+                        <div class="metric-unit">件</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">クリック数</div>
+                        <div class="metric-value" id="today-clicks">0</div>
+                        <div class="metric-unit">回</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">成約率</div>
+                        <div class="metric-value" id="today-conversion-rate">0%</div>
+                        <div class="metric-unit"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">売上</div>
+                        <div class="metric-value" id="today-revenue">¥0</div>
+                        <div class="metric-unit"></div>
+                    </div>
+                </div>
+
+                <h2>今月の累計</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">累計成約</div>
+                        <div class="metric-value" id="month-conversions">0</div>
+                        <div class="metric-unit">件</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">累計クリック</div>
+                        <div class="metric-value" id="month-clicks">0</div>
+                        <div class="metric-unit">回</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">平均成約率</div>
+                        <div class="metric-value" id="month-conversion-rate">0%</div>
+                        <div class="metric-unit"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">月間売上</div>
+                        <div class="metric-value" id="month-revenue">¥0</div>
+                        <div class="metric-unit"></div>
+                    </div>
+                </div>
+
+                <h2>トレンド（過去7日間）</h2>
+                <canvas id="trend-chart" width="800" height="300"></canvas>
+
+                <h2>トップパフォーマー（今月）</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>リンク名</th>
+                            <th>成約数</th>
+                            <th>売上</th>
+                            <th>成約率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-links">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #999;">データなし</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- [2] リンク管理タブ -->
+            <div class="tab-content" id="links">
+                <h2>リンク管理</h2>
+
+                <div class="action-bar">
+                    <button id="new-link-btn" class="btn btn-success">+ 新規リンク作成</button>
+                    <input type="text" id="link-search" placeholder="リンク検索..." class="search-box">
+                </div>
+
+                <!-- 新規リンク作成フォーム -->
+                <div id="new-link-form" class="form-panel" style="display: none;">
+                    <h3>新規リンク作成</h3>
+                    <form id="link-form">
+                        <div class="form-group">
+                            <label>リンク名</label>
+                            <input type="text" id="form-title" placeholder="商品名など" required>
+                        </div>
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="url" id="form-url" placeholder="https://example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>ASP</label>
+                            <select id="form-asp">
+                                <option value="">-- 選択 --</option>
+                                <option value="a8">A8.net</option>
+                                <option value="afb">afb</option>
+                                <option value="monetrack">Monetrack</option>
+                                <option value="amazon">Amazon</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>キャンペーン</label>
+                            <select id="form-campaign">
+                                <option value="">-- 選択 --</option>
+                                <option value="threads_general">Threads 一般投稿</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>タグ（カンマ区切り）</label>
+                            <input type="text" id="form-tags" placeholder="美容, スキンケア">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">作成</button>
+                            <button type="button" id="cancel-form" class="btn btn-secondary">キャンセル</button>
+                        </div>
+                    </form>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>短縮URL</th>
+                            <th>リンク名</th>
+                            <th>ASP</th>
+                            <th>成約数</th>
+                            <th>売上</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="links-table">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">リンクはまだありません</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- [3] 分析タブ -->
+            <div class="tab-content" id="analytics">
+                <h2>分析</h2>
+
+                <div class="analysis-section">
+                    <h3>投稿別成約率</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>投稿ID</th>
+                                <th>クリック数</th>
+                                <th>成約数</th>
+                                <th>成約率</th>
+                                <th>売上</th>
+                            </tr>
+                        </thead>
+                        <tbody id="post-analytics">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #999;">データなし</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>時間帯別成約率</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>時間帯</th>
+                                <th>クリック数</th>
+                                <th>成約数</th>
+                                <th>成約率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hour-analytics">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #999;">データなし</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>曜日別成約率</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>曜日</th>
+                                <th>クリック数</th>
+                                <th>成約数</th>
+                                <th>成約率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="day-analytics">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #999;">データなし</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>カテゴリ別成約率</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>カテゴリ</th>
+                                <th>リンク数</th>
+                                <th>成約数</th>
+                                <th>成約率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tag-analytics">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #999;">データなし</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- [4] インポートタブ -->
+            <div class="tab-content" id="import">
+                <h2>ASP データインポート</h2>
+
+                <div class="import-section">
+                    <h3>CSV ファイルアップロード</h3>
+                    <p>各ASPからダウンロードしたCSVファイルをドラッグ&ドロップまたは選択してアップロード</p>
+
+                    <div class="import-form">
+                        <div class="file-upload">
+                            <input type="file" id="csv-file" accept=".csv" style="display: none;">
+                            <div id="upload-area" class="upload-area">
+                                <p>📁 ここにファイルをドラッグ&ドロップ</p>
+                                <p>または</p>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('csv-file').click()">
+                                    ファイルを選択
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ASP を選択</label>
+                            <select id="import-asp">
+                                <option value="">-- 選択 --</option>
+                                <option value="a8">A8.net</option>
+                                <option value="afb">afb</option>
+                                <option value="monetrack">Monetrack</option>
+                                <option value="amazon">Amazon</option>
+                            </select>
+                        </div>
+
+                        <button id="import-btn" class="btn btn-primary" disabled>インポート</button>
+                    </div>
+
+                    <div id="import-result" style="display: none; margin-top: 20px;" class="alert">
+                        <p id="import-message"></p>
+                    </div>
+                </div>
+
+                <h3>インポート履歴</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ASP</th>
+                            <th>インポート日時</th>
+                            <th>件数</th>
+                            <th>状態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="import-history">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #999;">インポート履歴なし</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- [5] 最適化タブ -->
+            <div class="tab-content" id="optimize">
+                <h2>最適化提案</h2>
+
+                <div id="optimization-results">
+                    <p style="text-align: center; color: #999;">データが不足しています。成約データをインポートすると提案が表示されます。</p>
+                </div>
+            </div>
+
+            <!-- [6] 設定タブ -->
+            <div class="tab-content" id="settings">
+                <h2>設定</h2>
+
+                <div class="settings-section">
+                    <h3>ASP 設定</h3>
+                    <div id="asp-settings">
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="asp-a8" data-asp="a8">
+                                A8.net
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="asp-afb" data-asp="afb">
+                                afb
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="asp-monetrack" data-asp="monetrack">
+                                Monetrack
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="asp-amazon" data-asp="amazon">
+                                Amazonアソシエイト
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>キャンペーン設定</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>キャンペーン名</th>
+                                <th>プラットフォーム</th>
+                                <th>ステータス</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campaign-list">
+                            <tr>
+                                <td>Threads 一般投稿</td>
+                                <td>Threads</td>
+                                <td>
+                                    <input type="checkbox" class="campaign-toggle" data-campaign="threads_general" checked>
+                                </td>
+                                <td><button class="btn btn-small">編集</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Threads 連携</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="threads-integration">
+                            Threads投稿との自動連携を有効化
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>スプレッドシート URL</label>
+                        <input type="url" id="threads-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/...">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>データ管理</h3>
+                    <button id="export-data" class="btn btn-secondary">データをエクスポート</button>
+                    <button id="clear-data" class="btn btn-danger">データをリセット（復旧不可）</button>
+                </div>
+
+                <div class="settings-section">
+                    <button id="save-settings" class="btn btn-primary">設定を保存</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- スクリプト -->
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/analytics.js"></script>
+    <script src="assets/js/optimizer.js"></script>
+    <script src="assets/js/asp-connector.js"></script>
+</body>
+</html>

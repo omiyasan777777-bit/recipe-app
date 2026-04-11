@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-04-11T00:00:00Z",
+  "links": [],
+  "conversions": [],
+  "posts": [],
+  "analytics": {
+    "daily": [],
+    "by_hour": [],
+    "by_day_of_week": [],
+    "by_tag": [],
+    "by_campaign": []
+  },
+  "import_history": {
+    "a8": [],
+    "afb": [],
+    "monetrack": [],
+    "amazon": []
+  }
+}
