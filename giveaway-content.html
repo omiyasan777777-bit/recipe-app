@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code × Justfile 特典集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .gift-section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+
+        .gift-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .gift-emoji {
+            font-size: 2em;
+            margin-right: 12px;
+        }
+
+        .gift-content {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .gift-description {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .highlight-box {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .highlight-box.do {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .highlight-box.dont {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .method-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .method-list li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .method-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .feature-item strong {
+            color: #667eea;
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .checklist li:before {
+            content: "☑";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+        }
+
+        .setup-steps {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .setup-steps ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        .setup-steps li {
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .gift-section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Claude Code × Justfile</h1>
+            <p>「CI/CD を自分でスケジュール」する時代へ</p>
+            <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9;">3つの実装テンプレート＆試算シート</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Gift 1 -->
+            <div class="gift-section">
+                <div class="gift-title">
+                    <span class="gift-emoji">🎁</span>
+                    特典① Justfileテンプレート
+                </div>
+
+                <div class="gift-content">
+                    <div class="gift-description">
+                        <strong>すぐに使える自動化テンプレート</strong><br>
+                        プロジェクトに <code>justfile</code> として保存すれば、複雑な操作が1コマンドで完全自動化。
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">使い方</h4>
+                    <pre>just setup          # 初回セットアップ
+just generate-posts # 投稿生成
+just transfer-to-sheet  # スプシに転記
+just menu           # 操作メニュー</pre>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">含まれる内容</h4>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <strong>📋 フェーズ0</strong><br>
+                            環境チェック＆自動インストール
+                        </div>
+                        <div class="feature-item">
+                            <strong>🎯 フェーズ1</strong><br>
+                            コンセプト作成（対話形式）
+                        </div>
+                        <div class="feature-item">
+                            <strong>🔐 フェーズ2</strong><br>
+                            Threads API 接続
+                        </div>
+                        <div class="feature-item">
+                            <strong>📊 フェーズ3</strong><br>
+                            Google Apps Script デプロイ
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift 2 -->
+            <div class="gift-section">
+                <div class="gift-title">
+                    <span class="gift-emoji">🎁</span>
+                    特典② CLAUDE.md テンプレート
+                </div>
+
+                <div class="gift-content">
+                    <div class="gift-description">
+                        <strong>プロジェクト仕様書</strong><br>
+                        毎回の説明が不要に。プロジェクトの概要・技術スタック・ルールをまとめた標準フォーマット。
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">含まれる内容</h4>
+                    <ul class="method-list">
+                        <li>技術スタック定義</li>
+                        <li>ファイル構成と役割</li>
+                        <li>コーディング規約（Python / JavaScript / Markdown）</li>
+                        <li>初回セットアップ手順</li>
+                        <li>品質チェックリスト</li>
+                        <li>トラブルシューティング表</li>
+                    </ul>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">メリット</h4>
+                    <table>
+                        <tr>
+                            <th>効果</th>
+                            <th>詳細</th>
+                        </tr>
+                        <tr>
+                            <td>✅ トークン削減</td>
+                            <td>毎回の説明が不要 → コンテキスト節約</td>
+                        </tr>
+                        <tr>
+                            <td>✅ 一貫性</td>
+                            <td>チーム全体で同じ基準を共有</td>
+                        </tr>
+                        <tr>
+                            <td>✅ オンボーディング</td>
+                            <td>新しいメンバーが即座に理解</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gift 3 -->
+            <div class="gift-section">
+                <div class="gift-title">
+                    <span class="gift-emoji">🎁</span>
+                    特典③ コスト試算シート
+                </div>
+
+                <div class="gift-content">
+                    <div class="gift-description">
+                        <strong>Claude API vs Claude Pro の完全比較</strong><br>
+                        月額コスト・セキュリティ・管理負担を数字で見える化。
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">パターン比較</h4>
+                    <table>
+                        <tr>
+                            <th>項目</th>
+                            <th>API従量課金</th>
+                            <th>Claude Pro</th>
+                        </tr>
+                        <tr>
+                            <td><strong>月額</strong></td>
+                            <td>¥5～200</td>
+                            <td>¥2,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>APIキー管理</strong></td>
+                            <td>必要（負担）</td>
+                            <td>不要</td>
+                        </tr>
+                        <tr>
+                            <td><strong>セキュリティ</strong></td>
+                            <td>中程度</td>
+                            <td>高い</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vision API</strong></td>
+                            <td>別途費用</td>
+                            <td>無制限</td>
+                        </tr>
+                        <tr>
+                            <td><strong>結論</strong></td>
+                            <td>請求リスク大</td>
+                            <td>安心・安定</td>
+                        </tr>
+                    </table>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #333;">使用パターン別シミュレーション</h4>
+                    <div class="highlights">
+                        <div class="highlight-box do">
+                            <strong>月60本（毎日2本）</strong><br>
+                            API: ¥5-10<br>
+                            Pro: ¥2,000<br>
+                            → Pro が安い ✅
+                        </div>
+                        <div class="highlight-box do">
+                            <strong>月360本（毎日12本）</strong><br>
+                            API: ¥50-100<br>
+                            Pro: ¥2,000<br>
+                            → Pro が圧倒的に安い ✅✅
+                        </div>
+                    </div>
+
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff9800;">
+                        <strong style="color: #e65100;">💡 結論</strong><br>
+                        一般的には <strong>Claude Pro で十分</strong>。<br>
+                        定額制で予算確定、セキュリティも高い。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="gift-section" style="margin-top: 60px; border-top: 2px solid #e0e0e0; padding-top: 40px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📋 まとめ</h2>
+
+                <div class="setup-steps">
+                    <h4>3つの特典を note に貼り付ける手順</h4>
+                    <ol>
+                        <li>このPDFの各セクションをコピー</li>
+                        <li>note の新規記事を開く</li>
+                        <li>マークダウン形式で貼り付け</li>
+                        <li>自動で整形される ✨</li>
+                        <li>公開 🚀</li>
+                    </ol>
+                </div>
+
+                <h4 style="margin: 30px 0 15px 0; color: #333;">各テンプレートの利用シーン</h4>
+                <ul class="method-list" style="margin-top: 15px;">
+                    <li><strong>Justfile</strong> → 読者がすぐ実装できる「即戦力ツール」</li>
+                    <li><strong>CLAUDE.md</strong> → プロジェクトの「スタンダード仕様書」</li>
+                    <li><strong>コスト試算シート</strong> → Claude Pro への「説得資料」</li>
+                </ul>
+
+                <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 20px; border-radius: 8px; margin-top: 30px; border: 1px solid #667eea33;">
+                    <p style="color: #667eea; font-weight: 600; margin-bottom: 10px;">💼 ビジネスインパクト</p>
+                    <p>これらの3つのテンプレートを読者に提供することで、単なる「知識提供」から「実装支援」へアップグレード。note の評価 ⭐ と読者満足度が大きく向上します。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📚 Claude Code × Justfile 特典集</p>
+            <p style="color: #999; font-size: 0.85em;">このテンプレートはそのまま note に転記できます</p>
+        </div>
+    </div>
+</body>
+</html>
