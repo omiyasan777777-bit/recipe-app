@@ -45,7 +45,6 @@
       height: 56px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
     }
     .header-title {
       font-size: 18px;
@@ -56,26 +55,12 @@
       gap: 6px;
       text-decoration: none;
     }
-    .header-actions { display: flex; gap: 8px; }
-    .icon-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: var(--gray-100);
-      color: var(--gray-600);
-      font-size: 20px;
-      display: flex; align-items: center; justify-content: center;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .icon-btn:hover { background: var(--gray-200); }
 
     /* メインコンテンツ */
     main {
       max-width: 600px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 16px 16px calc(80px + env(safe-area-inset-bottom));
     }
 
     /* フラッシュメッセージ */
@@ -175,22 +160,56 @@
     .post-meta { font-size: 13px; color: var(--gray-400); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     .post-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
 
-    /* FAB (投稿ボタン) */
-    .fab {
+    /* ボトムナビ */
+    .bottom-nav {
       position: fixed;
-      bottom: 24px; right: 24px;
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      background: var(--blue);
-      color: #fff;
-      font-size: 28px;
-      display: flex; align-items: center; justify-content: center;
-      text-decoration: none;
-      box-shadow: 0 4px 16px rgba(0,133,255,.4);
-      transition: transform .15s, box-shadow .15s;
-      z-index: 50;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 12px rgba(0,0,0,.06);
     }
-    .fab:active { transform: scale(.93); box-shadow: 0 2px 8px rgba(0,133,255,.3); }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px 10px;
+      text-decoration: none;
+      color: var(--gray-400);
+      transition: color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-item.active { color: var(--blue); }
+    .nav-icon { font-size: 22px; line-height: 1; }
+    .nav-label { font-size: 10px; font-weight: 600; margin-top: 3px; }
+
+    /* 中央の追加ボタン */
+    .nav-item.nav-add {
+      color: #fff;
+      justify-content: flex-start;
+      padding-top: 0;
+    }
+    .nav-add-bubble {
+      background: var(--blue);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 300;
+      box-shadow: 0 4px 14px rgba(0,133,255,.45);
+      margin-top: -18px;
+      transition: transform .15s;
+    }
+    .nav-item.nav-add:active .nav-add-bubble { transform: scale(.93); }
 
     .empty {
       text-align: center;
@@ -205,11 +224,6 @@
 <header>
   <div class="header-inner">
     <a href="{{ url_for('index') }}" class="header-title">🦋 予約投稿</a>
-    <div class="header-actions">
-      <a href="{{ url_for('thumbnail_generator') }}" class="icon-btn" title="サムネイルプロンプト生成">🖼️</a>
-      <a href="{{ url_for('templates_list') }}" class="icon-btn" title="テンプレート">📋</a>
-      <a href="{{ url_for('settings') }}" class="icon-btn" title="設定">⚙️</a>
-    </div>
   </div>
 </header>
 
@@ -220,5 +234,27 @@
 
   {% block content %}{% endblock %}
 </main>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ホーム</span>
+  </a>
+  <a href="{{ url_for('templates_list') }}" class="nav-item {% if request.endpoint in ['templates_list', 'template_new', 'template_use'] %}active{% endif %}">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">テンプレ</span>
+  </a>
+  <a href="{{ url_for('add') }}" class="nav-item nav-add">
+    <div class="nav-add-bubble">＋</div>
+  </a>
+  <a href="{{ url_for('thumbnail_generator') }}" class="nav-item {% if request.endpoint == 'thumbnail_generator' %}active{% endif %}">
+    <span class="nav-icon">🖼️</span>
+    <span class="nav-label">サムネ</span>
+  </a>
+  <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">設定</span>
+  </a>
+</nav>
 </body>
 </html>
