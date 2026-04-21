@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="padding: 8px 0 20px;">
+  <h1 style="font-size: 22px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px;">メニュー</h1>
+  <p style="font-size: 14px; color: var(--gray-400);">ツールを選択してください</p>
+</div>
+
+<div class="menu-grid">
+  <a href="{{ url_for('index') }}" class="menu-card">
+    <div class="menu-icon">📅</div>
+    <div class="menu-info">
+      <div class="menu-title">予約投稿一覧</div>
+      <div class="menu-desc">Blueskyへの投稿を予約・管理</div>
+    </div>
+    <div class="menu-arrow">›</div>
+  </a>
+
+  <a href="{{ url_for('add') }}" class="menu-card">
+    <div class="menu-icon">✏️</div>
+    <div class="menu-info">
+      <div class="menu-title">新規投稿</div>
+      <div class="menu-desc">新しい予約投稿を作成する</div>
+    </div>
+    <div class="menu-arrow">›</div>
+  </a>
+
+  <a href="{{ url_for('templates_list') }}" class="menu-card">
+    <div class="menu-icon">📋</div>
+    <div class="menu-info">
+      <div class="menu-title">テンプレート</div>
+      <div class="menu-desc">投稿テンプレートの管理・使用</div>
+    </div>
+    <div class="menu-arrow">›</div>
+  </a>
+
+  <a href="{{ url_for('thumbnail_generator') }}" class="menu-card">
+    <div class="menu-icon">🖼️</div>
+    <div class="menu-info">
+      <div class="menu-title">サムネイル生成</div>
+      <div class="menu-desc">投稿用サムネイルのプロンプト生成</div>
+    </div>
+    <div class="menu-arrow">›</div>
+  </a>
+
+  <a href="{{ url_for('settings') }}" class="menu-card">
+    <div class="menu-icon">⚙️</div>
+    <div class="menu-info">
+      <div class="menu-title">設定</div>
+      <div class="menu-desc">BlueskyアカウントIDとパスワード</div>
+    </div>
+    <div class="menu-arrow">›</div>
+  </a>
+</div>
+
+<style>
+  .menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .menu-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .menu-card:active { transform: scale(.98); }
+  .menu-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.12); }
+  .menu-icon {
+    font-size: 26px;
+    width: 52px;
+    height: 52px;
+    background: var(--gray-100);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .menu-info { flex: 1; }
+  .menu-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+  .menu-desc { font-size: 13px; color: var(--gray-400); }
+  .menu-arrow { font-size: 22px; color: var(--gray-400); font-weight: 300; }
+</style>
+
+{% endblock %}

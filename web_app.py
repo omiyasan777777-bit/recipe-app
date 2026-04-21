@@ -63,6 +63,11 @@ def index():
     return render_template("index.html", posts=posts, now=now, status_filter=status_filter)
 
 
+@app.route("/menu")
+def menu():
+    return render_template("menu.html")
+
+
 @app.route("/add", methods=["GET", "POST"])
 def add():
     if not credentials_set():
