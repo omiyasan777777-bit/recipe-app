@@ -70,6 +70,11 @@
       transition: background .15s;
     }
     .icon-btn:hover { background: var(--gray-200); }
+    .icon-btn-menu {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
 
     /* メインコンテンツ */
     main {
@@ -209,6 +214,7 @@
       <a href="{{ url_for('thumbnail_generator') }}" class="icon-btn" title="サムネイルプロンプト生成">🖼️</a>
       <a href="{{ url_for('templates_list') }}" class="icon-btn" title="テンプレート">📋</a>
       <a href="{{ url_for('settings') }}" class="icon-btn" title="設定">⚙️</a>
+      <a href="{{ url_for('menu') }}" class="icon-btn icon-btn-menu" title="メインメニュー">☰</a>
     </div>
   </div>
 </header>
