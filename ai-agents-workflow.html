@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agents Workflow</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #e8e0d8;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+</style>
+</head>
+<body>
+<svg width="760" height="970" xmlns="http://www.w3.org/2000/svg" style="font-family:'Hiragino Kaku Gothic Pro',Meiryo,'Noto Sans JP',sans-serif;">
+<defs>
+  <linearGradient id="hdrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#c86050"/>
+    <stop offset="100%" stop-color="#d48878"/>
+  </linearGradient>
+  <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+    <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="rgba(0,0,0,0.12)"/>
+  </filter>
+  <marker id="arrRed" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto">
+    <path d="M0,0.5 L0,5.5 L7,3 z" fill="#c86050"/>
+  </marker>
+  <marker id="arrGray" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto">
+    <path d="M0,0.5 L0,5.5 L7,3 z" fill="#aaa"/>
+  </marker>
+</defs>
+
+<!-- Card -->
+<rect width="760" height="970" fill="#fdf9f5" rx="16" filter="url(#shadow)"/>
+
+<!-- Header -->
+<rect x="0" y="0" width="760" height="80" fill="url(#hdrGrad)" rx="16"/>
+<rect x="0" y="62" width="760" height="18" fill="url(#hdrGrad)"/>
+<text x="380" y="43" text-anchor="middle" fill="white" font-size="26" font-weight="bold" letter-spacing="4">AI AGENTS WORKFLOW</text>
+<text x="380" y="64" text-anchor="middle" fill="rgba(255,255,255,0.88)" font-size="12">13人のエージェントが連携する1日の流れ</text>
+
+<!-- Input label -->
+<rect x="28" y="90" width="132" height="27" fill="white" rx="14" stroke="#d0d0d0" stroke-width="1.5"/>
+<text x="94" y="108" text-anchor="middle" fill="#555" font-size="11" font-weight="600">↓ 入力（INPUT）</text>
+
+<!-- Input box: Gemini AI -->
+<rect x="28" y="127" width="157" height="72" fill="white" rx="10" stroke="#e8e8e8" stroke-width="1.5"/>
+<text x="107" y="154" text-anchor="middle" font-size="22">🧠</text>
+<text x="107" y="173" text-anchor="middle" fill="#333" font-size="12" font-weight="700">Gemini AI</text>
+<text x="107" y="189" text-anchor="middle" fill="#aaa" font-size="10">大規模言語モデル</text>
+
+<!-- Input box: 楽天API -->
+<rect x="198" y="127" width="157" height="72" fill="white" rx="10" stroke="#e8e8e8" stroke-width="1.5"/>
+<text x="277" y="154" text-anchor="middle" font-size="22">🛒</text>
+<text x="277" y="173" text-anchor="middle" fill="#333" font-size="12" font-weight="700">楽天API</text>
+<text x="277" y="189" text-anchor="middle" fill="#aaa" font-size="10">商品データ</text>
+
+<!-- Input box: Threads API -->
+<rect x="368" y="127" width="157" height="72" fill="white" rx="10" stroke="#e8e8e8" stroke-width="1.5"/>
+<text x="447" y="154" text-anchor="middle" font-size="22">📱</text>
+<text x="447" y="173" text-anchor="middle" fill="#333" font-size="12" font-weight="700">Threads API</text>
+<text x="447" y="189" text-anchor="middle" fill="#aaa" font-size="10">SNS連携</text>
+
+<!-- Input box: ナレッジ -->
+<rect x="538" y="127" width="157" height="72" fill="white" rx="10" stroke="#e8e8e8" stroke-width="1.5"/>
+<text x="617" y="154" text-anchor="middle" font-size="22">📚</text>
+<text x="617" y="173" text-anchor="middle" fill="#333" font-size="12" font-weight="700">ナレッジ</text>
+<text x="617" y="189" text-anchor="middle" fill="#aaa" font-size="10">過去データ・声</text>
+
+<!-- Dashed connectors input→process -->
+<line x1="107" y1="199" x2="107" y2="244" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/>
+<line x1="277" y1="199" x2="277" y2="244" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/>
+<line x1="447" y1="199" x2="447" y2="244" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/>
+<line x1="617" y1="199" x2="617" y2="244" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+<!-- Process section border -->
+<rect x="22" y="237" width="716" height="575" fill="#fdf7f3" rx="12" stroke="#d0d0d0" stroke-width="1.5"/>
+
+<!-- Process label -->
+<rect x="44" y="249" width="196" height="25" fill="white" rx="12.5" stroke="#d0d0d0" stroke-width="1.5"/>
+<text x="142" y="266" text-anchor="middle" fill="#555" font-size="10.5" font-weight="600">🔗 AIエージェント連携（PROCESS）</text>
+
+<!-- ── AGENT ROW 1 ── -->
+<!-- 計 ファネル設計 -->
+<circle cx="110" cy="315" r="30" fill="#5c9e60"/>
+<text x="110" y="323" text-anchor="middle" fill="white" font-size="21" font-weight="700">計</text>
+<text x="110" y="357" text-anchor="middle" fill="#333" font-size="11" font-weight="700">ファネル設計</text>
+<text x="110" y="371" text-anchor="middle" fill="#999" font-size="10">週次計画</text>
+
+<!-- 計→商 -->
+<text x="183" y="308" text-anchor="middle" fill="#999" font-size="9.5">計画</text>
+<line x1="144" y1="315" x2="218" y2="315" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 商 商品リサーチ -->
+<circle cx="256" cy="315" r="30" fill="#b84840"/>
+<text x="256" y="323" text-anchor="middle" fill="white" font-size="21" font-weight="700">商</text>
+<text x="256" y="357" text-anchor="middle" fill="#333" font-size="11" font-weight="700">商品リサーチ</text>
+<text x="256" y="371" text-anchor="middle" fill="#999" font-size="10">楽天売れ筋</text>
+
+<!-- 商→口 -->
+<text x="330" y="308" text-anchor="middle" fill="#999" font-size="9.5">選定</text>
+<line x1="290" y1="315" x2="364" y2="315" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 口 口コミ審査 -->
+<circle cx="402" cy="315" r="30" fill="#c8a038"/>
+<text x="402" y="323" text-anchor="middle" fill="white" font-size="21" font-weight="700">口</text>
+<text x="402" y="357" text-anchor="middle" fill="#333" font-size="11" font-weight="700">口コミ審査</text>
+<text x="402" y="371" text-anchor="middle" fill="#999" font-size="10">訴求抽出</text>
+
+<!-- 口→研 -->
+<text x="474" y="308" text-anchor="middle" fill="#999" font-size="9.5">分析</text>
+<line x1="436" y1="315" x2="510" y2="315" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 研 情報リサーチ -->
+<circle cx="548" cy="315" r="30" fill="#3a5888"/>
+<text x="548" y="323" text-anchor="middle" fill="white" font-size="21" font-weight="700">研</text>
+<text x="548" y="357" text-anchor="middle" fill="#333" font-size="11" font-weight="700">情報リサーチ</text>
+<text x="548" y="371" text-anchor="middle" fill="#999" font-size="10">ブリーフィング</text>
+
+<!-- Arrows to ライター -->
+<line x1="329" y1="345" x2="329" y2="416" stroke="#c86050" stroke-width="1.5"/>
+<line x1="329" y1="416" x2="396" y2="416" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- Dashed: 研→ライター -->
+<line x1="548" y1="345" x2="548" y2="426" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5,3"/>
+<line x1="548" y1="426" x2="464" y2="426" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrGray)"/>
+
+<!-- ── ライター ── -->
+<circle cx="430" cy="468" r="33" fill="#d07868"/>
+<text x="430" y="476" text-anchor="middle" fill="white" font-size="22" font-weight="700">筆</text>
+<text x="430" y="513" text-anchor="middle" fill="#333" font-size="12" font-weight="700">ライター</text>
+<text x="430" y="527" text-anchor="middle" fill="#999" font-size="10">3案作成</text>
+
+<!-- ライター→コンプラ -->
+<line x1="404" y1="500" x2="319" y2="552" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- ── ROW 2: 法 審 主 ── -->
+<!-- 法 コンプラ -->
+<circle cx="286" cy="594" r="30" fill="#7a3030"/>
+<text x="286" y="602" text-anchor="middle" fill="white" font-size="21" font-weight="700">法</text>
+<text x="286" y="636" text-anchor="middle" fill="#333" font-size="11" font-weight="700">コンプラ</text>
+<text x="286" y="650" text-anchor="middle" fill="#999" font-size="10">法令チェック</text>
+
+<!-- 法→審 -->
+<text x="360" y="587" text-anchor="middle" fill="#999" font-size="9.5">審査OK</text>
+<line x1="320" y1="594" x2="394" y2="594" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 審 校閲 -->
+<circle cx="432" cy="594" r="30" fill="#8a3535"/>
+<text x="432" y="602" text-anchor="middle" fill="white" font-size="21" font-weight="700">審</text>
+<text x="432" y="636" text-anchor="middle" fill="#333" font-size="11" font-weight="700">校閲</text>
+<text x="432" y="650" text-anchor="middle" fill="#999" font-size="10">品質審査</text>
+
+<!-- Dashed: 審→ライター (revision loop) -->
+<path d="M 450 565 Q 510 528 463 503" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arrGray)"/>
+
+<!-- 主 オーナー (outer ring) -->
+<circle cx="606" cy="594" r="35" fill="none" stroke="#c86050" stroke-width="2"/>
+<circle cx="606" cy="594" r="30" fill="#8a3535"/>
+<text x="606" y="602" text-anchor="middle" fill="white" font-size="21" font-weight="700">主</text>
+<text x="606" y="641" text-anchor="middle" fill="#333" font-size="11" font-weight="700">オーナー</text>
+<text x="606" y="655" text-anchor="middle" fill="#999" font-size="10">承認</text>
+
+<!-- 主→審 -->
+<line x1="571" y1="594" x2="466" y2="594" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- Dashed: 主→ライター (loop back) -->
+<path d="M 593 560 Q 590 500 465 479" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arrGray)"/>
+
+<!-- Arrows: 法→output agents -->
+<line x1="272" y1="623" x2="182" y2="686" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+<line x1="286" y1="624" x2="296" y2="686" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- ── OUTPUT AGENTS ROW ── -->
+<!-- 令 司令塔 -->
+<circle cx="102" cy="722" r="26" fill="#9e7830"/>
+<text x="102" y="730" text-anchor="middle" fill="white" font-size="18" font-weight="700">令</text>
+<text x="102" y="760" text-anchor="middle" fill="#333" font-size="11" font-weight="700">司令塔</text>
+<text x="102" y="774" text-anchor="middle" fill="#999" font-size="9.5">全体統括</text>
+
+<!-- 投 投稿・計測 -->
+<circle cx="248" cy="722" r="26" fill="#4a9878"/>
+<text x="248" y="730" text-anchor="middle" fill="white" font-size="18" font-weight="700">投</text>
+<text x="248" y="760" text-anchor="middle" fill="#333" font-size="11" font-weight="700">投稿・計測</text>
+<text x="248" y="774" text-anchor="middle" fill="#999" font-size="9.5">Threads投稿</text>
+
+<!-- 投→収 -->
+<line x1="278" y1="719" x2="346" y2="719" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 収 収益トラッカー -->
+<circle cx="374" cy="722" r="26" fill="#c8a038"/>
+<text x="374" y="730" text-anchor="middle" fill="white" font-size="18" font-weight="700">収</text>
+<text x="374" y="760" text-anchor="middle" fill="#333" font-size="11" font-weight="700">収益トラッカー</text>
+<text x="374" y="774" text-anchor="middle" fill="#999" font-size="9.5">報酬集計</text>
+
+<!-- 収→析 -->
+<line x1="404" y1="719" x2="474" y2="719" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- 析 分析官 -->
+<circle cx="502" cy="722" r="26" fill="#4870a0"/>
+<text x="502" y="730" text-anchor="middle" fill="white" font-size="18" font-weight="700">析</text>
+<text x="502" y="760" text-anchor="middle" fill="#333" font-size="11" font-weight="700">分析官</text>
+<text x="502" y="774" text-anchor="middle" fill="#999" font-size="9.5">戦略レポ</text>
+
+<!-- 視 監視 -->
+<circle cx="648" cy="722" r="26" fill="#3a4878"/>
+<text x="648" y="730" text-anchor="middle" fill="white" font-size="18" font-weight="700">視</text>
+<text x="648" y="760" text-anchor="middle" fill="#333" font-size="11" font-weight="700">監視</text>
+<text x="648" y="774" text-anchor="middle" fill="#999" font-size="9.5">全体ウォッチ</text>
+
+<!-- Output section label -->
+<rect x="28" y="826" width="130" height="27" fill="white" rx="13.5" stroke="#d0d0d0" stroke-width="1.5"/>
+<text x="93" y="844" text-anchor="middle" fill="#555" font-size="11" font-weight="600">↓ 出力（OUTPUT）</text>
+
+<!-- Arrows: agents→output boxes -->
+<line x1="248" y1="748" x2="156" y2="868" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+<line x1="374" y1="748" x2="388" y2="868" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+<line x1="502" y1="748" x2="496" y2="868" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+<line x1="648" y1="748" x2="624" y2="868" stroke="#c86050" stroke-width="1.5" marker-end="url(#arrRed)"/>
+
+<!-- ── OUTPUT BOXES ── -->
+<!-- Threads投稿 -->
+<rect x="30" y="868" width="214" height="82" fill="#4e8868" rx="10"/>
+<text x="137" y="896" text-anchor="middle" font-size="24">📱</text>
+<text x="137" y="920" text-anchor="middle" fill="white" font-size="13" font-weight="700">Threads投稿</text>
+<text x="137" y="938" text-anchor="middle" fill="rgba(255,255,255,0.78)" font-size="10">1日3投稿自動</text>
+
+<!-- Google Sheets -->
+<rect x="258" y="868" width="214" height="82" fill="#5a8850" rx="10"/>
+<text x="365" y="896" text-anchor="middle" font-size="24">📊</text>
+<text x="365" y="920" text-anchor="middle" fill="white" font-size="13" font-weight="700">Google Sheets</text>
+<text x="365" y="938" text-anchor="middle" fill="rgba(255,255,255,0.78)" font-size="10">成果を自動記録</text>
+
+<!-- Discord通知 -->
+<rect x="486" y="868" width="214" height="82" fill="#68788a" rx="10"/>
+<text x="593" y="896" text-anchor="middle" font-size="24">💬</text>
+<text x="593" y="920" text-anchor="middle" fill="white" font-size="13" font-weight="700">Discord通知</text>
+<text x="593" y="938" text-anchor="middle" fill="rgba(255,255,255,0.78)" font-size="10">進捗リアルタイム</text>
+
+</svg>
+</body>
+</html>
