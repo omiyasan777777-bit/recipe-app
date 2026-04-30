@@ -11,7 +11,8 @@ h1,h2{font-weight:400;line-height:1.45;margin:0 0 28px;font-size:34px}
 p,li{font-size:18px;line-height:2}
 ul{padding-left:20px}
 .btn{display:block;margin-top:34px;padding:18px 24px;border-radius:999px;background:#17323a;color:white;text-decoration:none;text-align:center;font-size:18px}
-.photo{height:280px;border-radius:28px;margin:0 0 36px;background-size:cover;background-position:center;background-repeat:no-repeat}
+.photo{border-radius:28px;margin:0 0 36px;overflow:hidden;height:260px}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
 .dark{background:linear-gradient(180deg,#17323a,#315965);color:white}
 .light{background:linear-gradient(180deg,#f8f2e8,#d9eef1)}
 .small{font-size:15px;opacity:.75}
@@ -20,7 +21,7 @@ ul{padding-left:20px}
 <body>
 
 <section>
-  <div class="photo" style="background-image:url('https://picsum.photos/seed/beach1/800/560')"></div>
+  <div class="photo"><img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80" alt=""></div>
   <h1>気づかないうちに、<br>ずっと頑張り続けていませんか。</h1>
   <p>休み方を忘れた人へ。</p>
   <a class="btn" href="https://travel.rakuten.co.jp/" target="_blank">静かな時間を予約する</a>
@@ -41,7 +42,7 @@ ul{padding-left:20px}
 </section>
 
 <section class="light">
-  <div class="photo" style="background-image:url('https://picsum.photos/seed/ocean2/800/560')"></div>
+  <div class="photo"><img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&q=80" alt=""></div>
   <h2>ここでは、<br>何もしなくていい。</h2>
   <p>ただ海を見て、風を感じて、<br>自分のペースを取り戻す時間。</p>
 </section>
