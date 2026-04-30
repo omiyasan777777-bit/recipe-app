@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>止まることを思い出す宿</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;color:#17323a;background:#f3efe7}
+section{min-height:100vh;padding:72px 28px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,#d9eef1,#f3efe7)}
+h1,h2{font-weight:400;line-height:1.55;margin:0 0 28px;font-size:32px}
+p{font-size:18px;line-height:2;margin-bottom:16px}
+ul{padding-left:20px;font-size:18px;line-height:2.2}
+.btn{display:block;margin-top:34px;padding:18px 24px;border-radius:999px;background:#17323a;color:white;text-decoration:none;text-align:center;font-size:18px}
+.hero-img{width:100%;height:280px;object-fit:cover;border-radius:28px;margin:0 0 36px;display:block}
+.dark{background:linear-gradient(180deg,#17323a,#315965);color:white}
+.dark .btn{background:white;color:#17323a}
+.light{background:linear-gradient(180deg,#f8f2e8,#d9eef1)}
+.kimono-bg{position:relative;overflow:hidden;background:linear-gradient(180deg,#17323a,#315965);color:white}
+.kimono-bg::before{content:'';position:absolute;inset:0;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjQwIDM2MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnMyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWU1YTZlIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMmI4YTllIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0idXJsKCNiZzMpIi8+CiAgPGcgb3BhY2l0eT0iMC41NSI+CiAgICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iMTgiIGZpbGw9IiNkMGU4ZjAiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iMTAiIGZpbGw9IiNhMGM4ZDgiLz4KICAgIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjE1MCIgcj0iMTUiIGZpbGw9IiNjOGUwZWUiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjgiIGZpbGw9IiM5MGI4Y2MiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjI1MCIgcj0iMjAiIGZpbGw9IiNkOGVjZjQiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSIyNTAiIHI9IjExIiBmaWxsPSIjYThkMGUwIi8+CiAgICA8Y2lyY2xlIGN4PSIzMjAiIGN5PSI2MCIgcj0iMTYiIGZpbGw9IiNjY2U0ZjAiLz4KICAgIDxjaXJjbGUgY3g9IjQyMCIgY3k9IjEyMCIgcj0iMTQiIGZpbGw9IiNiOGQ4ZWEiLz4KICAgIDxjaXJjbGUgY3g9IjUwMCIgY3k9IjIwMCIgcj0iMTgiIGZpbGw9IiNkMGVhZjQiLz4KICAgIDxjaXJjbGUgY3g9IjM4MCIgY3k9IjI4MCIgcj0iMTIiIGZpbGw9IiNjMGRjZTgiLz4KICAgIDxjaXJjbGUgY3g9IjYwIiBjeT0iMzEwIiByPSIxNCIgZmlsbD0iI2I0ZDJlMiIvPgogICAgPGNpcmNsZSBjeD0iNTYwIiBjeT0iODAiIHI9IjIwIiBmaWxsPSIjZDRlYWY0Ii8+CiAgICA8Y2lyY2xlIGN4PSIxNjAiIGN5PSIxMjAiIHI9IjgiIGZpbGw9IiNlMDc4NzgiIG9wYWNpdHk9IjAuNyIvPgogICAgPGNpcmNsZSBjeD0iMjgwIiBjeT0iMjAwIiByPSI4IiBmaWxsPSIjZTA3ODc4IiBvcGFjaXR5PSIwLjciLz4KICAgIDxjaXJjbGUgY3g9IjQ2MCIgY3k9IjMwMCIgcj0iOCIgZmlsbD0iI2UwNzg3OCIgb3BhY2l0eT0iMC43Ii8+CiAgPC9nPgogIDxyZWN0IHg9IjIwMCIgeT0iMTcwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjU1IiByeD0iNCIgZmlsbD0iI2YwZjBmMCIgb3BhY2l0eT0iMC41Ii8+CiAgPHJlY3QgeD0iMjIwIiB5PSIxNzIiIHdpZHRoPSIyMDAiIGhlaWdodD0iNTEiIHJ4PSIzIiBmaWxsPSIjZTA3ODc4IiBvcGFjaXR5PSIwLjUiLz4KICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMTk3IiByeD0iNTUiIHJ5PSIzNSIgZmlsbD0iI2QwNjA2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPGVsbGlwc2UgY3g9IjI4NiIgY3k9IjE5NyIgcng9IjI4IiByeT0iMjAiIGZpbGw9IiNlMDgwODAiIG9wYWNpdHk9IjAuNSIvPgogIDxlbGxpcHNlIGN4PSIzNTQiIGN5PSIxOTciIHJ4PSIyOCIgcnk9IjIwIiBmaWxsPSIjZTA4MDgwIiBvcGFjaXR5PSIwLjUiLz4KPC9zdmc+');background-size:cover;background-position:center;opacity:0.18}
+.kimono-bg>*{position:relative}
+.small{font-size:15px;opacity:.65;margin-top:12px}
+</style>
+</head>
+<body>
+
+<section>
+  <img class="hero-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjQwIDM2MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNjODYyM2EiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMmQ1YTAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI0NSUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmOWUwIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI3MCUiIHN0b3AtY29sb3I9IiNmMmM5N2MiIHN0b3Atb3BhY2l0eT0iMC44Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhiNDUxMiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0idXJsKCNiZykiLz4KICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMTYwIiByeD0iMjAwIiByeT0iMTYwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTU1IiByPSI3MiIgZmlsbD0iI2ZmZjllOCIgb3BhY2l0eT0iMC45NSIvPgogIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjE1NSIgcj0iNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzVhMmQwYyIgc3Ryb2tlLXdpZHRoPSI2Ii8+CiAgPGcgc3Ryb2tlPSIjNWEyZDBjIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyI+CiAgICA8bGluZSB4MT0iODAiIHkxPSIyMCIgeDI9IjgwIiB5Mj0iMzQwIi8+PGxpbmUgeDE9IjEyMCIgeTE9IjIwIiB4Mj0iMTIwIiB5Mj0iMzQwIi8+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMjAiIHgyPSIxNjAiIHkyPSIzNDAiLz48bGluZSB4MT0iMjAwIiB5MT0iMjAiIHgyPSIyMDAiIHkyPSIzNDAiLz4KICAgIDxsaW5lIHgxPSI4MCIgeTE9IjYwIiB4Mj0iMjAwIiB5Mj0iNjAiLz48bGluZSB4MT0iODAiIHkxPSIxMDAiIHgyPSIyMDAiIHkyPSIxMDAiLz4KICAgIDxsaW5lIHgxPSI4MCIgeTE9IjE0MCIgeDI9IjIwMCIgeTI9IjE0MCIvPjxsaW5lIHgxPSI4MCIgeTE9IjE4MCIgeDI9IjIwMCIgeTI9IjE4MCIvPgogICAgPGxpbmUgeDE9IjgwIiB5MT0iMjIwIiB4Mj0iMjAwIiB5Mj0iMjIwIi8+PGxpbmUgeDE9IjgwIiB5MT0iMjYwIiB4Mj0iMjAwIiB5Mj0iMjYwIi8+CiAgICA8bGluZSB4MT0iODAiIHkxPSIzMDAiIHgyPSIyMDAiIHkyPSIzMDAiLz4KICA8L2c+CiAgPGcgc3Ryb2tlPSIjNWEyZDBjIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyI+CiAgICA8bGluZSB4MT0iNDQwIiB5MT0iMjAiIHgyPSI0NDAiIHkyPSIzNDAiLz48bGluZSB4MT0iNDgwIiB5MT0iMjAiIHgyPSI0ODAiIHkyPSIzNDAiLz4KICAgIDxsaW5lIHgxPSI1MjAiIHkxPSIyMCIgeDI9IjUyMCIgeTI9IjM0MCIvPjxsaW5lIHgxPSI1NjAiIHkxPSIyMCIgeDI9IjU2MCIgeTI9IjM0MCIvPgogICAgPGxpbmUgeDE9IjQ0MCIgeTE9IjYwIiB4Mj0iNTYwIiB5Mj0iNjAiLz48bGluZSB4MT0iNDQwIiB5MT0iMTAwIiB4Mj0iNTYwIiB5Mj0iMTAwIi8+CiAgICA8bGluZSB4MT0iNDQwIiB5MT0iMTQwIiB4Mj0iNTYwIiB5Mj0iMTQwIi8+PGxpbmUgeDE9IjQ0MCIgeTE9IjE4MCIgeDI9IjU2MCIgeTI9IjE4MCIvPgogICAgPGxpbmUgeDE9IjQ0MCIgeTE9IjIyMCIgeDI9IjU2MCIgeTI9IjIyMCIvPjxsaW5lIHgxPSI0NDAiIHkxPSIyNjAiIHgyPSI1NjAiIHkyPSIyNjAiLz4KICAgIDxsaW5lIHgxPSI0NDAiIHkxPSIzMDAiIHgyPSI1NjAiIHkyPSIzMDAiLz4KICA8L2c+CiAgPHJlY3QgeD0iMCIgeT0iMzAwIiB3aWR0aD0iNjQwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjYzhhNTVhIiBvcGFjaXR5PSIwLjYiLz4KICA8cmVjdCB4PSIyNzAiIHk9IjI2MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI4IiByeD0iMyIgZmlsbD0iIzRhMmExMCIvPgogIDxyZWN0IHg9IjI4MCIgeT0iMjY4IiB3aWR0aD0iNiIgaGVpZ2h0PSIyNSIgZmlsbD0iIzNhMWYwOCIvPgogIDxyZWN0IHg9IjM1NCIgeT0iMjY4IiB3aWR0aD0iNiIgaGVpZ2h0PSIyNSIgZmlsbD0iIzNhMWYwOCIvPgo8L3N2Zz4=" alt="畳と丸窓の和室">
+  <h1>気づかないうちに、<br>ずっと頑張り続けていませんか。</h1>
+  <p>休み方を忘れた人へ。</p>
+  <a class="btn" href="https://travel.rakuten.co.jp/" target="_blank">静かな時間を予約する</a>
+</section>
+
+<section class="light">
+  <h2>気づかないうちに、<br>心も体も動き続けていませんか。</h2>
+  <ul>
+    <li>休んでも疲れが抜けない</li>
+    <li>何もしてないのに余裕がない</li>
+    <li>1日があっという間に終わる</li>
+  </ul>
+  <p>それ、あなたのせいじゃない。</p>
+</section>
+
+<section>
+  <h2>ただ、<br>「止まる時間」が<br>足りていないだけ。</h2>
+</section>
+
+<section class="light">
+  <img class="hero-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjQwIDM2MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMmEyYTJhIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNGE0YTRhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0idXJsKCNiZzIpIi8+CiAgPGVsbGlwc2UgY3g9IjMyMCIgY3k9IjIxMCIgcng9IjIwMCIgcnk9IjI4IiBmaWxsPSIjYTBkOGUwIiBmaWxsLW9wYWNpdHk9IjAuMzUiIHN0cm9rZT0iIzgwYzBjOCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8ZWxsaXBzZSBjeD0iMTQ1IiBjeT0iMTk4IiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZjBlOCIvPgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxODUiIHJ4PSIyMCIgcnk9IjEyIiBmaWxsPSIjZThjODc4Ii8+CiAgPGVsbGlwc2UgY3g9IjE5NyIgY3k9IjE5NiIgcng9IjIyIiByeT0iMTYiIGZpbGw9IiNmNWYwZTgiLz4KICA8ZWxsaXBzZSBjeD0iMTk3IiBjeT0iMTgzIiByeD0iMjAiIHJ5PSIxMiIgZmlsbD0iI2NjNDQ0NCIvPgogIDxlbGxpcHNlIGN4PSIyNDkiIGN5PSIxOTQiIHJ4PSIyMiIgcnk9IjE2IiBmaWxsPSIjZjVmMGU4Ii8+CiAgPGVsbGlwc2UgY3g9IjI0OSIgY3k9IjE4MSIgcng9IjIwIiByeT0iMTIiIGZpbGw9IiMxYTFhMmUiLz4KICA8ZWxsaXBzZSBjeD0iMjQ5IiBjeT0iMTgxIiByeD0iMTAiIHJ5PSI2IiBmaWxsPSIjZjVmMGU4IiBvcGFjaXR5PSIwLjUiLz4KICA8ZWxsaXBzZSBjeD0iMzAxIiBjeT0iMTk0IiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZjBlOCIvPgogIDxlbGxpcHNlIGN4PSIzMDEiIGN5PSIxODEiIHJ4PSIyMCIgcnk9IjEyIiBmaWxsPSIjZjVkMGMwIi8+CiAgPGVsbGlwc2UgY3g9IjM1MyIgY3k9IjE5NSIgcng9IjIyIiByeT0iMTYiIGZpbGw9IiNmNWYwZTgiLz4KICA8ZWxsaXBzZSBjeD0iMzUzIiBjeT0iMTgyIiByeD0iMjAiIHJ5PSIxMiIgZmlsbD0iI2ZmZDBhMCIvPgogIDxlbGxpcHNlIGN4PSI0MDUiIGN5PSIxOTciIHJ4PSIyMiIgcnk9IjE2IiBmaWxsPSIjZjVmMGU4Ii8+CiAgPGVsbGlwc2UgY3g9IjQwNSIgY3k9IjE4NCIgcng9IjIwIiByeT0iMTIiIGZpbGw9IiNlOGEwYjAiLz4KICA8ZWxsaXBzZSBjeD0iNDU3IiBjeT0iMTk5IiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZjBlOCIvPgogIDxlbGxpcHNlIGN4PSI0NTciIGN5PSIxODYiIHJ4PSIyMCIgcnk9IjEyIiBmaWxsPSIjYzhlOGMwIi8+CiAgPGVsbGlwc2UgY3g9IjMyMCIgY3k9IjIzMCIgcng9IjE5NSIgcnk9IjEyIiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjE1Ii8+Cjwvc3ZnPg==" alt="職人の握り寿司">
+  <h2>ここでは、<br>何もしなくていい。</h2>
+  <p>ただ海を見て、風を感じて、<br>自分のペースを取り戻す時間。</p>
+</section>
+
+<section>
+  <h2>海と自然に囲まれた、<br>静かな宿です。</h2>
+  <p>日常から少し離れて、<br>「止まる時間」を取り戻す場所。</p>
+</section>
+
+<section class="kimono-bg">
+  <h2>目の前に広がるのは、<br>ただ静かな海。</h2>
+</section>
+
+<section>
+  <h2>人が少ないから、<br>本当に静か。</h2>
+</section>
+
+<section class="light">
+  <h2>それだけでいい。</h2>
+  <ul>
+    <li>何もせず海を見る</li>
+    <li>ゆっくり本を読む</li>
+    <li>そのまま眠る</li>
+  </ul>
+</section>
+
+<section class="dark">
+  <h2>また来たい、じゃなくて<br>帰りたくない。</h2>
+</section>
+
+<section>
+  <h2>静かな時間を、<br>今すぐ。</h2>
+  <a class="btn" href="https://travel.rakuten.co.jp/" target="_blank">楽天トラベルで空室を見る</a>
+</section>
+
+<section class="light">
+  <h2>よくある質問</h2>
+  <p><b>Q. 一人でも大丈夫？</b><br>お一人で来られる方も多いです。</p>
+  <p><b>Q. 何を持っていけばいい？</b><br>特別な準備は不要です。</p>
+</section>
+
+<section class="dark">
+  <h2>忙しさを手放して、<br>自分に戻る時間を。</h2>
+  <a class="btn" href="https://travel.rakuten.co.jp/" target="_blank">楽天トラベルで予約する</a>
+  <p class="small">※リンク先は差し替えてください。</p>
+</section>
+
+</body>
+</html>
