@@ -7,3 +7,6 @@ build/
 *.db
 .venv/
 venv/
+
+# note-publisher
+note-publisher/output/archive/*.json

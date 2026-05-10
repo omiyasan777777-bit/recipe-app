@@ -1,0 +1,23 @@
+{
+  "claude": {
+    "api_key": "YOUR_CLAUDE_API_KEY_HERE",
+    "model": "claude-sonnet-4-6"
+  },
+  "note": {
+    "email": "",
+    "password": ""
+  },
+  "schedule": {
+    "posting_hour": 10,
+    "posting_minute": 0,
+    "interval_days": 2
+  },
+  "article": {
+    "tags": [],
+    "price": 0
+  },
+  "browser": {
+    "headless": false,
+    "slow_mo": 80
+  }
+}
