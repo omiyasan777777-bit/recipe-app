@@ -18,6 +18,7 @@ from flask import (
     redirect,
     url_for,
     flash,
+    send_file,
 )
 from dotenv import load_dotenv, set_key
 
@@ -278,6 +279,11 @@ def template_use(template_id: int):
 @app.route("/thumbnail-generator")
 def thumbnail_generator():
     return render_template("thumbnail_generator.html")
+
+
+@app.route("/tetris")
+def tetris():
+    return send_file(Path(__file__).parent / "tetris.html")
 
 
 # ── バックグラウンドスケジューラー ────────────────────────────────
