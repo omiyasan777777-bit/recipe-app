@@ -178,6 +178,24 @@
 
   .generate-btn:hover { background: #252525; border-color: #444; }
 
+  .random-btn {
+    padding: 14px 18px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    color: #8888cc;
+    border-radius: 8px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .random-btn:hover { background: #1e1e3a; border-color: #5555aa; color: #aaaaee; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 4px; }
+
   .output-area {
     display: none;
     margin-top: 28px;
@@ -292,7 +310,10 @@
     <div class="count-row" id="countRow"></div>
   </div>
 
-  <button class="generate-btn" onclick="generate()">プロンプトを生成する</button>
+  <div class="btn-row">
+    <button class="random-btn" onclick="randomize()">ランダム</button>
+    <button class="generate-btn" style="flex:1;margin-top:0;" onclick="generate()">プロンプトを生成する</button>
+  </div>
 
   <!-- 出力 -->
   <div class="output-area" id="outputArea">
@@ -454,6 +475,22 @@ TBSアナウンサー。「日曜天国」をはじめ数多くのラジオ・�
 
 ---
 
+## 安住スタイルを決定する4つの柱（最重要・必ず守ること）
+
+### 観察眼
+起点は「一番つまらない具体的な細部」から始めよ。「コンビニ」ではなく「コンビニのレジ横の棚に斜めに刺さっていた週刊誌、その表紙の人物が少し目線を外していた」。「電車の中」ではなく「斜め前の人の荷物が15分かけて少しずつ自分の方へ倒れてくる感触」。書き手だけが気づいた・言語化した、というレベルの解像度が必要。「観察した」とは書かない。観察した結果の細部そのものだけを書く。読者が「そこまで見ていたのか」と感じるものを探せ。
+
+### 話の組み立て
+冒頭と末尾は同じ素材を使う（円環構造）。脱線は計算されていて、脱線の中に着地のヒントが隠れている。「なぜこんな話をしたかというと」は絶対に使わない。読者が最後に「あ、あの話がここに繋がるのか」と後から気づく構造にする。伏線は張る側が意識しない程度に自然に埋めること。結論は言い切らない。着地の一文は短く、静かに、断言しない。余韻が文章より長く続くように。
+
+### 品のある毒
+毒の表現に形容詞を使わない。「最悪だった」「残念な人だ」ではなく、事実を淡々と積み上げることで読者が勝手に気づく構造にする。毒を刺した後、書き手はもう何事もなかったように次の話題へ移っている。読者が「今、刺されたのでは？」と気づいた頃には安住はもう別の場所にいる。ターゲットは「社会の慣習の奇妙さ」「自分自身の滑稽さ」であり、特定の個人・商品・企業・属性グループを直接批判しない。品とは、毒を隠す技術ではなく、毒を必要としない洗練さのこと。
+
+### 生活者目線
+「私たち消費者は」「マーケティング的には」「〜という観点で分析すると」は使わない。スーパーで値段を比べる人、電車で吊り革を掴む人、テレビを見ながら一人で突っ込む人、として書く。専門家・評論家・インフルエンサー・解説者の立場を一切取らない。「普通の一人」として、ただ丁寧に世界を眺める視点。知識があっても、それを「知識として見せる」ことはしない。博識は感じさせるが、教えようとはしない。
+
+---
+
 ## 言語パターン・口癖
 
 - 「というか」「というよりも」「正確に言いますと」（自己修正しながら進む）
@@ -534,6 +571,30 @@ function copyAll() {
       btn.textContent = '全文コピー';
       btn.classList.remove('copied');
     }, 2500);
+  });
+}
+
+function randomize() {
+  // ランダムにタイプを1〜3個選ぶ
+  const allKeys = TYPES.map(([k]) => k);
+  const shuffled = allKeys.slice().sort(() => Math.random() - 0.5);
+  const pickCount = Math.floor(Math.random() * 3) + 1;
+  selectedTypes = shuffled.slice(0, pickCount);
+  document.querySelectorAll('.type-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', selectedTypes.includes(TYPES[i][0]));
+  });
+
+  // ランダムにCTAを選ぶ
+  selectedCta = CTAS[Math.floor(Math.random() * CTAS.length)][0];
+  document.querySelectorAll('.cta-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', CTAS[i][0] === selectedCta);
+  });
+
+  // ランダムに本数を選ぶ
+  const counts = [1, 2, 3, 5, 7, 10];
+  selectedCount = counts[Math.floor(Math.random() * counts.length)];
+  document.querySelectorAll('.count-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.textContent) === selectedCount);
   });
 }
 </script>
