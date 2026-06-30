@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安住紳一郎式 プロンプトジェネレーター</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 28px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 0.15em;
+    color: #c8c8c8;
+    margin-bottom: 6px;
+  }
+
+  header p { font-size: 12px; color: #555; letter-spacing: 0.1em; }
+
+  .section { margin-bottom: 20px; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #e8e8e8;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 100%;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.6;
+  }
+
+  textarea:focus { border-color: #444; }
+
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .type-btn {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    padding: 8px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    text-align: center;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+
+  .type-btn .key {
+    display: block;
+    font-size: 14px;
+    color: #c8c8c8;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+
+  .type-btn:hover { border-color: #444; color: #c8c8c8; }
+
+  .type-btn.active {
+    background: #1e2a1e;
+    border-color: #3a5a3a;
+    color: #7db87d;
+  }
+
+  .type-btn.active .key { color: #7db87d; }
+
+  .cta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .cta-btn {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+
+  .cta-btn .key {
+    font-size: 12px;
+    color: #c8c8c8;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .cta-btn:hover { border-color: #444; color: #c8c8c8; }
+
+  .cta-btn.active {
+    background: #1a1e2a;
+    border-color: #3a4a6a;
+    color: #7d9db8;
+  }
+
+  .cta-btn.active .key { color: #7d9db8; }
+
+  .count-row { display: flex; gap: 6px; }
+
+  .count-btn {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .count-btn:hover { border-color: #444; color: #c8c8c8; }
+
+  .count-btn.active {
+    background: #2a1a1a;
+    border-color: #6a3a3a;
+    color: #b87d7d;
+  }
+
+  .generate-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: #c8c8c8;
+    border-radius: 8px;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .generate-btn:hover { background: #252525; border-color: #444; }
+
+  .output-area {
+    display: none;
+    margin-top: 28px;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 24px;
+  }
+
+  .output-area.visible { display: block; }
+
+  .output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .output-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #555;
+  }
+
+  .copy-all-btn {
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+
+  .copy-all-btn:hover { color: #c8c8c8; border-color: #444; }
+  .copy-all-btn.copied { color: #7db87d; border-color: #3a5a3a; }
+
+  .prompt-box {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #b0b0b0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 600px;
+    overflow-y: auto;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  }
+
+  .prompt-box::-webkit-scrollbar { width: 4px; }
+  .prompt-box::-webkit-scrollbar-track { background: #111; }
+  .prompt-box::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .usage-note {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #444;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  .usage-note span {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #666;
+    font-size: 11px;
+  }
+
+  hr { border: none; border-top: 1px solid #2a2a2a; margin: 6px 0 16px; }
+
+  @media (max-width: 480px) {
+    .type-grid { grid-template-columns: repeat(3, 1fr); }
+    .cta-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>安住紳一郎式　プロンプトジェネレーター</h1>
+    <p>観察 &times; 脱線 &times; 自虐 &times; 毒 &times; 着地</p>
+  </header>
+
+  <!-- テーマ -->
+  <div class="section">
+    <div class="section-label">テーマ（任意）</div>
+    <textarea id="theme" placeholder="例: 夏の朝のコンビニ、電車の中、宅配便の不在票…&#10;空白のままにすると「今日っぽいテーマで自動生成」と指示されます"></textarea>
+  </div>
+
+  <!-- タイプ -->
+  <div class="section">
+    <div class="section-label">タイプ（複数選択可 / 未選択で自動ミックス）</div>
+    <div class="type-grid" id="typeGrid"></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="section">
+    <div class="section-label">CTA</div>
+    <div class="cta-grid" id="ctaGrid"></div>
+  </div>
+
+  <!-- 本数 -->
+  <div class="section">
+    <div class="section-label">本数</div>
+    <div class="count-row" id="countRow"></div>
+  </div>
+
+  <button class="generate-btn" onclick="generate()">プロンプトを生成する</button>
+
+  <!-- 出力 -->
+  <div class="output-area" id="outputArea">
+    <div class="output-header">
+      <div class="output-label">GENERATED PROMPT</div>
+      <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">全文コピー</button>
+    </div>
+    <div class="prompt-box" id="promptBox"></div>
+    <div class="usage-note">
+      このプロンプトをコピーして
+      <span>Claude</span>
+      <span>ChatGPT</span>
+      <span>Gemini</span>
+      などに貼り付けてください
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TYPES = [
+  ['A','日常観察型'],['B','社会現象型'],['C','記憶型'],['D','対話型'],
+  ['E','食事型'],['F','乗り物型'],['G','深夜・早朝型'],['H','メディア型'],
+  ['I','買い物型'],['J','仕事型'],['K','自然・天気型'],['L','数字型'],
+  ['M','昔と今型'],['N','他者観察型'],['O','言葉・語彙型'],['P','習慣・癖型'],
+  ['Q','失敗・恥型'],['R','流行・SNS型'],['S','時間・加齢型'],['T','場所型'],
+  ['U','音・匂い型'],['V','独り言型'],['W','逆説型'],
+];
+
+const CTAS = [
+  ['0','CTA無し','余韻で終わる'],
+  ['1','プロフ誘導','プロフィールへ'],
+  ['2','note誘導','記事・noteへ'],
+  ['3','固定投稿','固定投稿へ'],
+  ['4','過去投稿','関連投稿へ'],
+  ['5','LINE・オプチャ','クローズドへ'],
+  ['6','フォロー','また書きます'],
+  ['7','コンテンツ','教材・資料へ'],
+  ['8','イベント','配信・登壇へ'],
+];
+
+const TYPE_STRUCTURES = {
+  A: 'Type A 日常観察型: [場面設定]→[細部の観察]→[脱線]→[自虐 or 毒]→[着地]',
+  B: 'Type B 社会現象型: [現象提示]→[適度な距離感]→[体験談・失敗]→[静かな疑問]→[皮肉な着地]',
+  C: 'Type C 記憶型: [唐突な過去]→[映像的エピソード]→[現在との接続]→[余韻]',
+  D: 'Type D 対話型: [誰かの一言]→[その言葉を反芻]→[自分の側の話]→[どちらも正しかった着地]',
+  E: 'Type E 食事型: [食べている場面]→[味や食感の細部]→[脱線・記憶]→[食べることが別の何かに繋がる]',
+  F: 'Type F 乗り物型: [乗り物の中]→[車内の観察]→[移動することの奇妙さ]→[目的地より移動中の時間の話]',
+  G: 'Type G 深夜・早朝型: [誰もいない時間帯]→[その時間特有の感覚]→[なぜここにいるのか]→[昼間と違う自分が少し正直]',
+  H: 'Type H メディア型: [番組・CMのワンシーン]→[引っかかった一言]→[メディアの構造への静かな疑問]→[見ていた自分が映されていた]',
+  I: 'Type I 買い物型: [何かを買おうとしている]→[選んだ理由の曖昧さ]→[「欲しい」と「必要」の違い]→[買う前の自分の方が覚えている]',
+  J: 'Type J 仕事型: [仕事の場面]→[当たり前の不思議]→[自虐]→[仕事が人を作るか人が仕事を作るか]',
+  K: 'Type K 自然型: [外の景色]→[足を止めた理由]→[自然の豆知識 or 幼い頃の記憶]→[毎年同じ自然と違う自分]',
+  L: 'Type L 数字型: [何かの数字]→[その実感のなさ]→[数字で表せないものの話]→[正確なほど何かが抜け落ちる]',
+  M: 'Type M 昔と今型: [変化したもの]→[以前の具体的描写]→[変化への距離感（判断しない）]→[それだけでなく自分も変わっていた]',
+  N: 'Type N 他者観察型: [街で見かけた見知らぬ人]→[細部の観察]→[状況の想像（断言しない）]→[観察している自分の方が透けて見える]',
+  O: 'Type O 言葉型: [引っかかった言葉]→[使われ方の観察]→[本来の意味・変遷]→[言葉が変わるとき何かが変わっている]',
+  P: 'Type P 習慣型: [無意識の習慣]→[いつからかわからない]→[合理的か惰性か]→[やめようとしたがやめる理由も見当たらなかった]',
+  Q: 'Type Q 失敗型: [やってしまったこと]→[経緯を言い訳込みで丁寧に再現]→[似たような失敗の歴史]→[失敗の共通点は自分の何かだった]',
+  R: 'Type R 流行型: [流行っているもの]→[乗り遅れた・乗らなかった自分]→[その流行の本質への観察]→[終わった後に何が残るか]',
+  S: 'Type S 時間型: [時間の経過に気づく瞬間]→[具体的に何年前]→[時間の流れ方が変わった感覚]→[時間は平等なのにそう感じられない]',
+  T: 'Type T 場所型: [特定の場所]→[空気感の描写]→[その場所での記憶 or 役割]→[場所は変わっていないが自分との関係が変わった]',
+  U: 'Type U 感覚型: [音・匂いから始まる]→[呼び起こされる記憶・季節]→[感覚の記憶は言語の記憶より古い]→[なぜ覚えているかわからないままでいい]',
+  V: 'Type V 独り言型: [誰かへ・または自分へ語りかける]→[その人の状況を想像（決めつけない）]→[語りかけながら自分に返ってくる]→[手紙は書いた方の話でもある]',
+  W: 'Type W 逆説型: [「良いこと」とされているもの]→[実践してみた・できない自分を素直に報告]→[なぜ良いとされているかへの静かな疑問]→[良いのだろう、ただ自分には少し遠かった]',
+};
+
+const CTA_RULES = {
+  '0': 'CTA無し: 余韻だけで終わる。誘導一切なし。最後の一文は静かに、短く。',
+  '1': 'CTA-1 プロフィール誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「こういう話を時々書いています。よかったらプロフィールを見てみてください」「気が向いたら、プロフィールも」',
+  '2': 'CTA-2 note誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「もう少し長く書いたものがあります。読んでいただけたら」「似たようなことをnoteに書きました。気が向いたら」',
+  '3': 'CTA-3 固定投稿誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「固定の投稿に、もう少し詳しく書きました」「一番伝えたいことは、固定に置いてあります」',
+  '4': 'CTA-4 過去投稿誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「以前、似たようなことを別の角度で書きました」「少し前にこれについて書いたことがあります」',
+  '5': 'CTA-5 LINE・オプチャ誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「こういう話をもう少しゆっくりできる場所を作っています」「もう少し近い距離で話せる場所があります。よかったら」',
+  '6': 'CTA-6 フォロー誘導: 「また書きます」という宣言だけ。「フォローしてください」とは絶対に言わない。文例→「また書きます」「こういう話を時々しています」',
+  '7': 'CTA-7 コンテンツ誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「こういうことをまとめたものがあります。気が向いたら」「もう少し体系的に書いたものがあります」',
+  '8': 'CTA-8 イベント誘導: 本文最後の1〜2文に自然に溶け込ませる。文例→「来月、少し話す機会があります。よかったら」「よかったら、直接お話しできる場があります」',
+};
+
+let selectedTypes = [];
+let selectedCta = '0';
+let selectedCount = 3;
+
+// タイプグリッド
+const typeGrid = document.getElementById('typeGrid');
+TYPES.forEach(([key, label]) => {
+  const btn = document.createElement('button');
+  btn.className = 'type-btn';
+  btn.innerHTML = `<span class="key">${key}</span>${label}`;
+  btn.onclick = () => {
+    const idx = selectedTypes.indexOf(key);
+    if (idx === -1) selectedTypes.push(key);
+    else selectedTypes.splice(idx, 1);
+    btn.classList.toggle('active', selectedTypes.includes(key));
+  };
+  typeGrid.appendChild(btn);
+});
+
+// CTAグリッド
+const ctaGrid = document.getElementById('ctaGrid');
+CTAS.forEach(([key, label, sub]) => {
+  const btn = document.createElement('button');
+  btn.className = 'cta-btn' + (key === '0' ? ' active' : '');
+  btn.innerHTML = `<span class="key">${key === '0' ? 'CTA無し' : 'CTA-' + key}</span>${label}<br><span style="font-size:10px;color:#444">${sub}</span>`;
+  btn.onclick = () => {
+    selectedCta = key;
+    document.querySelectorAll('.cta-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  ctaGrid.appendChild(btn);
+});
+
+// 本数
+const countRow = document.getElementById('countRow');
+[1, 2, 3, 5, 7, 10].forEach(n => {
+  const btn = document.createElement('button');
+  btn.className = 'count-btn' + (n === 3 ? ' active' : '');
+  btn.textContent = n;
+  btn.onclick = () => {
+    selectedCount = n;
+    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  countRow.appendChild(btn);
+});
+
+function generate() {
+  const theme = document.getElementById('theme').value.trim();
+  const themeText = theme || '今日っぽい場面・季節感のあるテーマを自分で選ぶ';
+
+  const typesText = selectedTypes.length > 0
+    ? `以下のタイプを使う（この中から${selectedCount}本分を選ぶ。同じ型を連続させない）:\n${selectedTypes.map(k => TYPE_STRUCTURES[k]).join('\n')}`
+    : `タイプA〜Wの中から自動でバランスよく選ぶ（同じ型を連続させない）。\n使用可能なタイプ:\n${Object.values(TYPE_STRUCTURES).join('\n')}`;
+
+  const ctaText = CTA_RULES[selectedCta];
+
+  const prompt = `あなたは安住紳一郎さんの話術・文体・世界観を完全に内面化したライターです。
+以下の指示に従い、${selectedCount}本の投稿を生成してください。
+
+---
+
+## 安住紳一郎とはどういう人物か
+
+TBSアナウンサー。「日曜天国」をはじめ数多くのラジオ・テレビ番組を担当。
+「エリートのはずなのに自虐的」「品があるのに毒がある」「脱線しているのに最後に綺麗に着地する」という独特の話術で知られる。
+
+核心: 彼の話術の本質は「小さな日常の観察から、普遍的な人間の滑稽さ・哀愁・温かさを見出すこと」。
+ハウツーも自己啓発も売り込みも一切なし。ただ世界を丁寧に眺めて、それを言葉にする。
+
+---
+
+## スタイルの5要素
+
+1. 観察: 起点は必ず「小さな日常の場面」。誰もが経験しているのに誰も言語化してこなかった細部を、映像的に描写する。
+2. 脱線: 本題から外れることを恐れない。「それはそれとして」「さておき」「ところで」で積極的に脱線する。2〜3回してもいいが必ず最後には戻る。
+3. 自虐: 自分の「立場の微妙さ」を笑いに変える。上から目線への保険ではなく、本当に自分を笑っている。
+4. 毒: 対象を直接批判しない。事実の描写だけで読者に気づかせる。毒は必ず品の中に包まれている。ターゲットは「社会の慣習」「自分自身」であって特定の個人ではない。
+5. 着地: どんなに脱線しても最後に冒頭と繋がる。結論を言い切らない。余韻。締めの一文は短く、静かに。
+
+---
+
+## 言語パターン・口癖
+
+- 「というか」「というよりも」「正確に言いますと」（自己修正しながら進む）
+- 「まあ」（間を作る・断定を和らげる）
+- 「〜なんですよ、これが」（後から強調する）
+- 「正直に申し上げますと」「お恥ずかしい話ですが」
+- 「〜なのではないでしょうか、などと」（推測を重ねる）
+- 「それはともかく」「さておき」（脱線の宣言）
+- 括弧書きで読者への小声を入れる
+- ですます調をベースに、日常語・タメ口が自然に混ざる
+- 感情は直接書かない。「泣いた」「感動した」は絶対NG
+- 200〜600字。基本はべた書き（段落分けは少なく。箇条書きは使わない）
+
+---
+
+## 絶対にやらないこと
+
+- 「○○すれば△△できる！」系の断言・ハウツー
+- 「みなさん！」「みんな！」系の呼びかけ
+- 「保存してください」「フォローお願いします」の直接的要求
+- 「泣いた」「鳥肌が立った」「震えた」など感情の直接表現
+- 箇条書き・番号付きリスト・見出し
+- 「まとめると」「要するに」で締める
+- 自己啓発的な結論（「だから諦めないで！」等）
+- 特定の個人への批判・悪口
+- 「エネルギー」「引き寄せ」「宇宙」系の言葉
+- 「すごい」「やばい」「最高」系の安易な感嘆
+
+---
+
+## タイプ構造
+
+${typesText}
+
+---
+
+## CTA
+
+${ctaText}
+
+---
+
+## 生成指示
+
+テーマ: ${themeText}
+本数: ${selectedCount}本
+CTA: ${selectedCta === '0' ? '無し' : 'CTA-' + selectedCta}
+
+生成前に各投稿の設計を一行で書く（例: 「Type A × コンビニの深夜 × CTA無し」）
+出力は設計メモ＋投稿本文のみ。余計な解説・タイトルは一切つけない。
+
+フォーマット:
+[投稿1] ← Type X × テーマ
+（本文）
+==========
+
+[投稿2] ← Type X × テーマ
+（本文）
+==========`;
+
+  document.getElementById('promptBox').textContent = prompt;
+  const outputArea = document.getElementById('outputArea');
+  outputArea.classList.add('visible');
+  outputArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const copyBtn = document.getElementById('copyAllBtn');
+  copyBtn.textContent = '全文コピー';
+  copyBtn.classList.remove('copied');
+}
+
+function copyAll() {
+  const text = document.getElementById('promptBox').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyAllBtn');
+    btn.textContent = 'コピー済！';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '全文コピー';
+      btn.classList.remove('copied');
+    }, 2500);
+  });
+}
+</script>
+</body>
+</html>
